@@ -2,3 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+[x-cloak] {
+    display: none;
+}
+
+/* Stiluri pentru WebKit (Chrome, Safari, newer Edge) */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgb(var(--color-red-900) / 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgb(127, 29, 29); /* red-900 */
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgb(153, 27, 27); /* red-800 */
+}
+
+/* Stiluri pentru Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(127, 29, 29) rgb(127 29 29 / 0.1);
+}

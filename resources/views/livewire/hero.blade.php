@@ -24,7 +24,7 @@
                 showDesc: false,
                 showButtons: false
         }">
-            <div class="border rounded-lg shadow-lg bg-black/20 border-red-800/20 shadow-red-900/10">
+            <div class="border-b rounded-lg shadow-lg bg-black/20 border-red-800/20 shadow-red-900/10">
                 <!-- Main Title -->
                 <div class="flex flex-wrap items-center justify-center text-5xl font-bold md:text-7xl gap-x-4">
                     <!-- Welcome to - cu animație mai pronunțată -->
@@ -85,21 +85,21 @@
                             </div>
                         </div>
 
-                        <!-- Curator Info -->
-                        <div class="text-center text-gray-300">
-                            <div class="inline-flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-500"
-                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M9 18V5l12-2v13" />
-                                    <circle cx="6" cy="18" r="3" />
-                                    <circle cx="18" cy="16" r="3" />
-                                </svg>
-                                <span class="font-medium">Tastemaker & Curator of several Spotify playlists</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                     <!-- Curator Info -->
+<div class="mt-8">
+    <div class="flex items-center justify-center px-4 py-3 mx-auto space-x-3 text-gray-300 transition-all duration-300 rounded-lg bg-white/5 hover:bg-white/10 max-w-fit">
+        <!-- Spotify Icon -->
+         <svg class="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                                    </svg>
+        
+        <!-- Text -->
+        <span class="text-sm font-medium md:text-base">
+            Tastemaker & Curator of 
+            <span class="block md:inline">several Spotify playlists</span>
+        </span>
+    </div>
+</div>
             
             <!-- Buttons -->
             <div class="flex flex-col items-center justify-center gap-4 my-12 sm:flex-row"

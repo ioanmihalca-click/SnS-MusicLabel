@@ -38,7 +38,7 @@
                 </h3>
 
                 <p class="italic">
-                    Snow ´n´ Stuff is releasing Tech House, Deep House, House and Techno.
+                    Snow `n` Stuff is releasing Tech House, Deep House, House and Techno.
                     Management for: THK, G&S, Snow N Stuff and Style Da Kid among others.
                     Tastemaker & Curator of several Spotify playlists. Deep House & Ibiza and many more playlists.
                 </p>

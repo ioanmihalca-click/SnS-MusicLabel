@@ -74,18 +74,7 @@
     </button>
 
     <!-- Footer -->
-    <footer class="mt-12 bg-black border-t border-gray-900">
-        <div class="container px-4 py-8 mx-auto">
-            <div class="text-center">
-                <p class="text-gray-400">&copy; Copyright <strong>Snow n Stuff</strong>. All Rights Reserved</p>
-                <p class="mt-2 text-gray-500">
-                    Web application by <a href="https://clickstudios-digital.com"
-                        class="text-red-800 transition-colors duration-300 hover:text-red-700">Click Studios
-                        Digital</a>
-                </p>
-            </div>
-        </div>
-    </footer>
+    <x-footer />
 
     @livewireScripts
 

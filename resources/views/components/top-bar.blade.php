@@ -50,13 +50,13 @@
                 <!-- Desktop Navigation -->
                 <div class="items-center hidden space-x-8 md:flex">
                     <a href="/" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Home</a>
-                    <a href="#about" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">About</a>
-                    <a href="#artists" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Artists</a>
-                    <a href="#releases" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Releases</a>
-                    <a href="#playlists" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Playlists</a>
+                    <a href="/#about" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">About</a>
+                    <a href="/#artists" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Artists</a>
+                    <a href="/#releases" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Releases</a>
+                    <a href="/#playlists" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Playlists</a>
                     <a href="/blog" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Blog</a>
-                    <a href="#gallery" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Gallery</a>
-                    <a href="#contact" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Contact</a>
+                    <a href="/#gallery" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Gallery</a>
+                    <a href="/#contact" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Contact</a>
                 </div>
 
                 <!-- Mobile Menu Button -->
@@ -85,19 +85,19 @@
                 <div class="flex flex-col items-center justify-center min-h-screen p-4 space-y-6">
                     <a href="/" @click="mobileMenuOpen = false"
                         class="w-full max-w-sm p-4 text-xl text-center text-white transition-all duration-300 rounded-lg hover:bg-red-800/20 hover:text-red-500">Home</a>
-                    <a href="#about" @click="mobileMenuOpen = false"
+                    <a href="/#about" @click="mobileMenuOpen = false"
                         class="w-full max-w-sm p-4 text-xl text-center text-white transition-all duration-300 rounded-lg hover:bg-red-800/20 hover:text-red-500">About</a>
-                    <a href="#artists" @click="mobileMenuOpen = false"
+                    <a href="/#artists" @click="mobileMenuOpen = false"
                         class="w-full max-w-sm p-4 text-xl text-center text-white transition-all duration-300 rounded-lg hover:bg-red-800/20 hover:text-red-500">Artists</a>
-                    <a href="#releases" @click="mobileMenuOpen = false"
+                    <a href="/#releases" @click="mobileMenuOpen = false"
                         class="w-full max-w-sm p-4 text-xl text-center text-white transition-all duration-300 rounded-lg hover:bg-red-800/20 hover:text-red-500">Releases</a>
-                    <a href="#playlists" @click="mobileMenuOpen = false"
+                    <a href="/#playlists" @click="mobileMenuOpen = false"
                         class="w-full max-w-sm p-4 text-xl text-center text-white transition-all duration-300 rounded-lg hover:bg-red-800/20 hover:text-red-500">Playlists</a>
                     <a href="/blog" @click="mobileMenuOpen = false"
                         class="w-full max-w-sm p-4 text-xl text-center text-white transition-all duration-300 rounded-lg hover:bg-red-800/20 hover:text-red-500">Blog</a>
-                    <a href="#gallery" @click="mobileMenuOpen = false"
+                    <a href="/#gallery" @click="mobileMenuOpen = false"
                         class="w-full max-w-sm p-4 text-xl text-center text-white transition-all duration-300 rounded-lg hover:bg-red-800/20 hover:text-red-500">Gallery</a>
-                    <a href="#contact" @click="mobileMenuOpen = false"
+                    <a href="/#contact" @click="mobileMenuOpen = false"
                         class="w-full max-w-sm p-4 text-xl text-center text-white transition-all duration-300 rounded-lg hover:bg-red-800/20 hover:text-red-500">Contact</a>
                 </div>
             </div>
