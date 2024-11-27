@@ -115,7 +115,7 @@
 
     <x-top-bar />
 
-    <x-hero />
+  <livewire:hero />
 
      
 
