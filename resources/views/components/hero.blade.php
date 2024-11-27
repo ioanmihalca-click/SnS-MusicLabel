@@ -25,15 +25,15 @@
 
                 <div class="flex flex-col items-center justify-center gap-4 mt-12 sm:flex-row">
                     <a href="#releases"
-                        class="px-4 py-2 text-center text-white transition-all duration-300 border-2 border-red-800  hover:bg-red-800 hover:scale-105 sm:w-auto">
+                        class="w-full px-4 py-2 text-center text-white transition-all duration-300 border-2 border-red-800 hover:bg-red-800 hover:scale-105 sm:w-auto">
                         Our Music
                     </a>
                     <a href="#artists"
-                        class="px-4 py-2 text-center text-white transition-all duration-300 border-2 border-red-800  hover:bg-red-800 hover:scale-105 sm:w-auto">
+                        class="w-full px-4 py-2 text-center text-white transition-all duration-300 border-2 border-red-800 hover:bg-red-800 hover:scale-105 sm:w-auto">
                         Our Artists
                     </a>
                     <a href="/blog"
-                        class="px-4 py-2 text-center text-white transition-all duration-300 border-2 border-red-800  hover:bg-red-800 hover:scale-105 sm:w-auto">
+                        class="w-full px-4 py-2 text-center text-white transition-all duration-300 border-2 border-red-800 hover:bg-red-800 hover:scale-105 sm:w-auto">
                         Blog/Latest News
                     </a>
                 </div>
