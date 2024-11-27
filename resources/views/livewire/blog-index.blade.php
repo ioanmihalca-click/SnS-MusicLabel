@@ -46,7 +46,7 @@
 
                 <!-- Content -->
                 <div class="p-6 space-y-4">
-                    <h2 class="text-xl font-bold text-white transition-colors duration-300 line-clamp-1 group-hover:text-red-800 line-clamp-2">
+                    <h2 class="text-xl font-bold text-white transition-colors duration-300 line-clamp-1 group-hover:text-red-800">
                         <a href="{{ route('blog.show', $blog->slug) }}" class="hover:text-red-700">
                             {{ $blog->title }}
                         </a>

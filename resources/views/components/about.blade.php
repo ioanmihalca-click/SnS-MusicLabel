@@ -25,7 +25,7 @@
                 
                 <!-- Main Image -->
                 <img 
-                    src="/assets/img/about.jpg" 
+                    src="/assets/img/logo-sns.webp" 
                     alt="About Snow n Stuff" 
                     class="w-full rounded-lg shadow-2xl transition-transform duration-300 group-hover:scale-[1.02]"
                 >

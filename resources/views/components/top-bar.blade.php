@@ -13,13 +13,13 @@
         <div class="container px-4 mx-auto">
             <div class="flex items-center justify-center md:justify-between">
                 <div class="flex space-x-6 text-sm">
-                    <a href="mailto:info@1namm.com" class="flex items-center space-x-2 text-gray-300 transition-colors duration-300 hover:text-red-800">
+                    <a href="mailto:info@1namm.com" class="flex items-center space-x-2 font-semibold text-gray-300 transition-colors duration-300 hover:text-red-700">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
                         <span>info@1namm.com</span>
                     </a>
-                    <a href="mailto:glenn@1namm.com" class="flex items-center space-x-2 text-gray-300 transition-colors duration-300 hover:text-red-800">
+                    <a href="mailto:glenn@1namm.com" class="flex items-center space-x-2 font-semibold text-gray-300 transition-colors duration-300 hover:text-red-700">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
@@ -49,14 +49,14 @@
 
                 <!-- Desktop Navigation -->
                 <div class="items-center hidden space-x-8 md:flex">
-                    <a href="/" class="text-white transition-colors duration-300 hover:text-red-800">Home</a>
-                    <a href="#about" class="text-white transition-colors duration-300 hover:text-red-800">About</a>
-                    <a href="#artists" class="text-white transition-colors duration-300 hover:text-red-800">Artists</a>
-                    <a href="#releases" class="text-white transition-colors duration-300 hover:text-red-800">Releases</a>
-                    <a href="#playlists" class="text-white transition-colors duration-300 hover:text-red-800">Playlists</a>
-                    <a href="/blog" class="text-white transition-colors duration-300 hover:text-red-800">Blog</a>
-                    <a href="#gallery" class="text-white transition-colors duration-300 hover:text-red-800">Gallery</a>
-                    <a href="#contact" class="text-white transition-colors duration-300 hover:text-red-800">Contact</a>
+                    <a href="/" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Home</a>
+                    <a href="#about" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">About</a>
+                    <a href="#artists" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Artists</a>
+                    <a href="#releases" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Releases</a>
+                    <a href="#playlists" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Playlists</a>
+                    <a href="/blog" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Blog</a>
+                    <a href="#gallery" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Gallery</a>
+                    <a href="#contact" class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Contact</a>
                 </div>
 
                 <!-- Mobile Menu Button -->
