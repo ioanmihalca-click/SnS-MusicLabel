@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
+use Mohamedsabil83\FilamentFormsTinyeditor\Components\TinyEditor;
 
 class ReleaseResource extends Resource
 {
@@ -28,12 +29,14 @@ class ReleaseResource extends Resource
                 Forms\Components\TextInput::make('title')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Textarea::make('description')
-                    ->maxLength(65535),
+                   
                 Forms\Components\Textarea::make('spotify_embed_code')
                     ->label('Spotify Embed Code')
                     ->helperText('Paste the full Spotify embed iframe code here')
                     ->rows(4),
+                    TinyEditor::make('description')
+                    ->columnSpanFull()
+                    ->maxLength(65535),
             ]);
     }
     public static function table(Table $table): Table
