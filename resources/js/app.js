@@ -37,3 +37,5 @@ import './bootstrap';
     window.addEventListener('photo-added', event => {
         Fancybox.bind('#gallery [data-fancybox]', options);
     });
+
+    

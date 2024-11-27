@@ -5,7 +5,7 @@
         <h1 class="text-4xl font-bold text-white">Our Blog <span class="text-red-800">Posts</span></h1>
         
         <!-- Search Bar -->
-        <div class="relative max-w-xl">
+        {{-- <div class="relative max-w-xl">
             <input 
                 type="text"
                 wire:model.debounce.300ms="search"
@@ -18,7 +18,7 @@
                 </svg>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <!-- Blog Grid -->
     <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -46,7 +46,7 @@
 
                 <!-- Content -->
                 <div class="p-6 space-y-4">
-                    <h2 class="text-xl font-bold text-white transition-colors duration-300 group-hover:text-red-800 line-clamp-2">
+                    <h2 class="text-xl font-bold text-white transition-colors duration-300 line-clamp-1 group-hover:text-red-800 line-clamp-2">
                         <a href="{{ route('blog.show', $blog->slug) }}" class="hover:text-red-700">
                             {{ $blog->title }}
                         </a>

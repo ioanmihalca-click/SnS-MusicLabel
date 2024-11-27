@@ -1,4 +1,4 @@
-<div class="py-24 bg-black/95">
+<div id="releases" class="py-24 bg-black/95">
     <div class="container px-4 mx-auto">
         <!-- Section Header -->
         <div class="mb-16 text-center">
