@@ -95,24 +95,24 @@
 
     <!-- Preloader cu animație mai subtilă -->
 
-    <div x-data="{ loading: true }" x-init="setTimeout(() => loading = false, 1000)" x-show="loading" x-transition.opacity.duration.700ms
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-        <div class="relative">
-            <!-- Inel exterior -->
-            <div class="absolute w-24 h-24 border-4 border-gray-700 rounded-full border-t-red-900 animate-spin"></div>
-
-            <!-- Inel mijlociu -->
-            <div
-                class="absolute w-16 h-16 mt-4 ml-4 border-4 border-gray-700 rounded-full border-t-red-700 animate-[spin_1.5s_linear_infinite]">
-            </div>
-
-            <!-- Inel interior -->
-            <div
-                class="absolute w-8 h-8 mt-8 ml-8 border-4 border-gray-700 rounded-full border-t-red-500 animate-[spin_2s_linear_infinite]">
-            </div>
-
-        </div>
+    <div 
+    x-data="{ loading: true }" 
+    x-init="setTimeout(() => loading = false, 1000)" 
+    x-show="loading" 
+    x-transition.opacity.duration.700ms
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+>
+    <div class="grid w-24 h-24 place-items-center">
+        <!-- Inel exterior -->
+        <div class="absolute w-24 h-24 border-4 border-gray-700 rounded-full border-t-red-900 animate-spin"></div>
+        
+        <!-- Inel mijlociu -->
+        <div class="absolute w-16 h-16 border-4 border-gray-700 rounded-full border-t-red-700 animate-[spin_1.5s_linear_infinite]"></div>
+        
+        <!-- Inel interior -->
+        <div class="absolute w-8 h-8 border-4 border-gray-700 rounded-full border-t-red-500 animate-[spin_2s_linear_infinite]"></div>
     </div>
+</div>
 
     <!-- Back to Top cu animație smooth -->
     <button x-cloak x-data="{ show: false }" x-init="window.addEventListener('scroll', () => { show = window.pageYOffset > 500 })" x-show="show"
