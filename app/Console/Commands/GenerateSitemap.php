@@ -15,8 +15,8 @@ class GenerateSitemap extends Command
 
     public function handle()
     {
-        $sitemap = SitemapGenerator::create(config('app.url'))
-            ->getSitemap();
+        // Creăm sitemap-ul manual în loc să folosim generatorul automat
+        $sitemap = app()->make(\Spatie\Sitemap\Sitemap::class);
 
         // Adăugăm pagina principală
         $sitemap->add(Url::create('/')
