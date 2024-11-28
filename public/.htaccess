@@ -5,14 +5,14 @@
 
     RewriteEngine On
 
-    # Handle Authorization Header
-    RewriteCond %{HTTP:Authorization} .
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    # Redirect from http:// and https://www to https://snow-n-stuff.com (non-www)
+    RewriteCond %{HTTP_HOST} ^(www\.)?snow-n-stuff\.com [NC,OR]
+    RewriteCond %{HTTP_HOST} ^snow-n-stuff\.com [NC]
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://snow-n-stuff.com/$1 [L,R=301]
 
-    # Redirect Trailing Slashes If Not A Folder...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
+    RewriteCond %{HTTP_HOST} ^www\.snow-n-stuff\.com [NC]
+    RewriteRule ^(.*)$ https://snow-n-stuff.com/$1 [L,R=301]
 
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
