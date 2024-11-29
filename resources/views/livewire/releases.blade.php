@@ -30,7 +30,7 @@
                     <!-- Description -->
                     @if($release->description)
                         <div class="relative overflow-hidden">
-                            <div x-ref="fullDescription" class="hidden">{{ $release->description }}</div>
+                            <div x-ref="fullDescription" class="hidden">{!! $release->description !!}</div>
                             
                             <div class="p-4 space-y-2 text-gray-300 border bg-gray-900/50 rounded-xl backdrop-blur-sm border-gray-800/50">
                                 <p x-text="expanded ? $refs.fullDescription.textContent : shortDescription"></p>
