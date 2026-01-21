@@ -1,115 +1,110 @@
-<div class="relative">
-    <!-- Top Bar - se ascunde la scroll -->
-    <div x-data="{ isVisible: true }" x-show="isVisible" @scroll.window="isVisible = window.pageYOffset < 100"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 transform -translate-y-4"
-        x-transition:enter-end="opacity-100 transform translate-y-0" x-transition:leave="transition ease-in duration-300"
-        x-transition:leave-start="opacity-100 transform translate-y-0"
-        x-transition:leave-end="opacity-0 transform -translate-y-4"
-        class="fixed top-0 z-50 w-full py-2 bg-black/90 backdrop-blur-sm">
-        <div class="container px-4 mx-auto">
-            <div class="flex items-center justify-center md:justify-between">
-                <div class="flex space-x-6 text-sm">
-                    <a href="mailto:info@1namm.com"
-                        class="flex items-center space-x-2 font-semibold text-gray-300 transition-colors duration-300 hover:text-red-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        <span>info@1namm.com</span>
-                    </a>
-                    <a href="mailto:glenn@1namm.com"
-                        class="flex items-center space-x-2 font-semibold text-gray-300 transition-colors duration-300 hover:text-red-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        <span>glenn@1namm.com</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Navigation - devine sticky la scroll -->
-    <header x-data="{ isScrolled: false, mobileMenuOpen: false }" @scroll.window="isScrolled = window.pageYOffset > 100"
+<div class="relative z-50">
+    <!-- Main Navigation - Floating Glass Design -->
+    <header 
+        x-data="{ 
+            isScrolled: false, 
+            mobileMenuOpen: false,
+            init() {
+                window.addEventListener('scroll', () => {
+                    this.isScrolled = window.pageYOffset > 50;
+                });
+            }
+        }" 
+        class="fixed left-0 right-0 z-50 transition-all duration-500 ease-out"
         :class="{
-            'bg-black/95 shadow-lg': isScrolled,
-            'bg-transparent': !isScrolled,
-            'top-0': isScrolled,
-            'top-10': !isScrolled
+            'top-4': !isScrolled,
+            'top-0': isScrolled
         }"
-        class="fixed z-40 w-full transition-all duration-300">
-        <div class="container px-4 mx-auto">
-            <nav class="flex items-center justify-between py-4">
-                <!-- Logo -->
-                <a href="/"
-                    class="text-2xl font-bold tracking-tight text-white transition-colors duration-300 hover:text-red-800">
-                    Snow n Stuff
-                </a>
-
+    >
+        <div class="px-4 mx-auto max-w-5xl">
+            <div 
+                class="relative flex items-center justify-center px-6 py-4 transition-all duration-500"
+                :class="{
+                    'rounded-2xl': !isScrolled,
+                    'rounded-none border-x-0 border-t-0': isScrolled
+                }"
+                :style="isScrolled 
+                    ? 'background: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.9) 100%); border-bottom: 1px solid rgba(220, 38, 38, 0.15); backdrop-filter: blur(20px); box-shadow: 0 4px 30px -10px rgba(0, 0, 0, 0.5);'
+                    : 'background: linear-gradient(145deg, rgba(15, 15, 15, 0.85), rgba(10, 10, 10, 0.9)); border: 1px solid rgba(75, 75, 75, 0.15); backdrop-filter: blur(20px); box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.03);'"
+            >
                 <!-- Desktop Navigation -->
-                <div class="items-center hidden space-x-8 md:flex">
-                    <a href="/"
-                        class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Home</a>
-                    <a href="/#about"
-                        class="font-semibold text-white transition-colors duration-300 hover:text-red-700">About</a>
-                    <a href="/#artists"
-                        class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Artists</a>
-                    <a href="/#releases"
-                        class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Releases</a>
-                    <a href="/#playlists"
-                        class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Playlists</a>
-                    <a href="/#gallery"
-                        class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Gallery</a>
-                    <a href="/blog"
-                        class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Blog</a>
-                    <a href="/#contact"
-                        class="font-semibold text-white transition-colors duration-300 hover:text-red-700">Contact</a>
-                </div>
+                <nav class="hidden md:flex items-center space-x-1">
+                    @foreach([
+                        ['label' => 'Home', 'url' => '/'],
+                        ['label' => 'About', 'url' => '/#about'],
+                        ['label' => 'Artists', 'url' => '/#artists'],
+                        ['label' => 'Releases', 'url' => '/#releases'],
+                        ['label' => 'Playlists', 'url' => '/#playlists'],
+                        ['label' => 'Gallery', 'url' => '/#gallery'],
+                        ['label' => 'Blog', 'url' => '/blog'],
+                        ['label' => 'Contact', 'url' => '/#contact'],
+                    ] as $item)
+                        <a href="{{ $item['url'] }}" 
+                           class="relative px-4 py-2 text-sm font-medium text-gray-400 transition-all duration-300 rounded-lg group hover:text-white overflow-hidden">
+                            <span class="relative z-10">{{ $item['label'] }}</span>
+                            <div class="absolute inset-0 transition-opacity duration-300 opacity-0 rounded-lg group-hover:opacity-100"
+                                 style="background: linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));"></div>
+                            <div class="absolute bottom-0 left-0 w-full h-[2px] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
+                                 style="background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.7), transparent);"></div>
+                        </a>
+                    @endforeach
+                </nav>
 
                 <!-- Mobile Menu Button -->
-                <button @click="mobileMenuOpen = !mobileMenuOpen"
-                    class="z-50 p-2 text-white transition-colors duration-300 md:hidden hover:text-red-800">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path x-show="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16" />
-                        <path x-show="mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                <button 
+                    @click="mobileMenuOpen = !mobileMenuOpen"
+                    class="p-2 text-white transition-colors duration-300 md:hidden hover:text-red-500"
+                >
+                    <div class="w-6 h-5 relative flex flex-col justify-between">
+                        <span class="w-full h-0.5 bg-current transform transition-all duration-300 origin-left" :class="{'rotate-45 translate-x-px': mobileMenuOpen}"></span>
+                        <span class="w-full h-0.5 bg-current transition-all duration-300" :class="{'opacity-0': mobileMenuOpen}"></span>
+                        <span class="w-full h-0.5 bg-current transform transition-all duration-300 origin-left" :class="{'-rotate-45 translate-x-px': mobileMenuOpen}"></span>
+                    </div>
                 </button>
-            </nav>
+            </div>
+        </div>
 
-            <!-- Mobile Menu Panel - Modificat pentru full screen -->
-            <div x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-300"
-                x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-                x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100"
-                x-transition:leave-end="opacity-0 scale-95"
-                class="fixed inset-0 z-40 min-h-screen bg-black/95 backdrop-blur-lg md:hidden"
-                style="top: 0; left: 0; right: 0; bottom: 0;" @click.away="mobileMenuOpen = false">
-
-                <!-- Menu Links Container -->
-                <div class="flex flex-col items-center justify-center min-h-screen p-4 space-y-6">
-                    <a href="/" @click="mobileMenuOpen = false"
-                        class="w-full max-w-sm p-4 text-xl text-center text-white transition-all duration-300 rounded-lg hover:bg-red-800/20 hover:text-red-500">Home</a>
-                    <a href="/#about" @click="mobileMenuOpen = false"
-                        class="w-full max-w-sm p-4 text-xl text-center text-white transition-all duration-300 rounded-lg hover:bg-red-800/20 hover:text-red-500">About</a>
-                    <a href="/#artists" @click="mobileMenuOpen = false"
-                        class="w-full max-w-sm p-4 text-xl text-center text-white transition-all duration-300 rounded-lg hover:bg-red-800/20 hover:text-red-500">Artists</a>
-                    <a href="/#releases" @click="mobileMenuOpen = false"
-                        class="w-full max-w-sm p-4 text-xl text-center text-white transition-all duration-300 rounded-lg hover:bg-red-800/20 hover:text-red-500">Releases</a>
-                    <a href="/#playlists" @click="mobileMenuOpen = false"
-                        class="w-full max-w-sm p-4 text-xl text-center text-white transition-all duration-300 rounded-lg hover:bg-red-800/20 hover:text-red-500">Playlists</a>
-                    <a href="/#gallery" @click="mobileMenuOpen = false"
-                        class="w-full max-w-sm p-4 text-xl text-center text-white transition-all duration-300 rounded-lg hover:bg-red-800/20 hover:text-red-500">Gallery</a>
-                    <a href="/blog" @click="mobileMenuOpen = false"
-                        class="w-full max-w-sm p-4 text-xl text-center text-white transition-all duration-300 rounded-lg hover:bg-red-800/20 hover:text-red-500">Blog</a>
-                    <a href="/#contact" @click="mobileMenuOpen = false"
-                        class="w-full max-w-sm p-4 text-xl text-center text-white transition-all duration-300 rounded-lg hover:bg-red-800/20 hover:text-red-500">Contact</a>
-                </div>
+        <!-- Mobile Menu Overlay -->
+        <div 
+            x-show="mobileMenuOpen" 
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 -translate-y-4"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 -translate-y-4"
+            class="absolute top-20 left-4 right-4 z-40 md:hidden"
+            @click.away="mobileMenuOpen = false"
+        >
+            <div class="p-5 rounded-2xl"
+                 style="
+                    background: linear-gradient(145deg, rgba(15, 15, 15, 0.98), rgba(10, 10, 10, 0.99));
+                    border: 1px solid rgba(75, 75, 75, 0.15);
+                    backdrop-filter: blur(30px);
+                    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+                 ">
+                <nav class="flex flex-col space-y-2">
+                    @foreach([
+                        ['label' => 'Home', 'url' => '/'],
+                        ['label' => 'About', 'url' => '/#about'],
+                        ['label' => 'Artists', 'url' => '/#artists'],
+                        ['label' => 'Releases', 'url' => '/#releases'],
+                        ['label' => 'Playlists', 'url' => '/#playlists'],
+                        ['label' => 'Gallery', 'url' => '/#gallery'],
+                        ['label' => 'Blog', 'url' => '/blog'],
+                        ['label' => 'Contact', 'url' => '/#contact'],
+                    ] as $item)
+                        <a href="{{ $item['url'] }}" 
+                           @click="mobileMenuOpen = false"
+                           class="flex items-center justify-between px-4 py-3.5 text-lg font-medium text-gray-300 transition-all rounded-xl hover:text-white group"
+                           style="background: transparent;"
+                           x-on:mouseenter="$el.style.background = 'linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02))'"
+                           x-on:mouseleave="$el.style.background = 'transparent'">
+                            <span class="font-display">{{ $item['label'] }}</span>
+                            <svg class="w-5 h-5 opacity-0 text-red-500 transform -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                        </a>
+                    @endforeach
+                </nav>
             </div>
         </div>
     </header>

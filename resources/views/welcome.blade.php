@@ -4,9 +4,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snow 'n' Stuff - Music Management, Label and Music Production</Label></title>
+    <title>Snow 'n' Stuff - Music Management, Label and Music Production</title>
 
     <link rel="canonical" href="{{ url()->current() }}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
     <meta name="description"
         content="Snow 'n' Stuff is an innovative music label specializing in Tech House, Deep House, House, and Techno. Discover exceptional artists and immersive live events curated by industry veterans.">
@@ -91,44 +94,58 @@
     @livewireStyles
 </head>
 
-<body class="text-white bg-black">
+<body class="text-white bg-black font-sans antialiased selection:bg-red-500 selection:text-white">
 
-    <!-- Preloader cu animație mai subtilă -->
-
-    <div 
-    x-data="{ loading: true }" 
-    x-init="setTimeout(() => loading = false, 1000)" 
-    x-show="loading" 
-    x-transition.opacity.duration.700ms
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
->
-    <div class="grid w-24 h-24 place-items-center">
-        <!-- Inel exterior -->
-        <div class="absolute w-24 h-24 border-4 border-gray-700 rounded-full border-t-red-900 animate-spin"></div>
-        
-        <!-- Inel mijlociu -->
-        <div class="absolute w-16 h-16 border-4 border-gray-700 rounded-full border-t-red-700 animate-[spin_1.5s_linear_infinite]"></div>
-        
-        <!-- Inel interior -->
-        <div class="absolute w-8 h-8 border-4 border-gray-700 rounded-full border-t-red-500 animate-[spin_2s_linear_infinite]"></div>
+    <!-- Global Noise Overlay -->
+    <div class="fixed inset-0 z-0 pointer-events-none opacity-[0.03] mix-blend-overlay" 
+         style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');">
     </div>
-</div>
 
-    <!-- Back to Top cu animație smooth -->
+    <!-- Background Gradients -->
+    <div class="fixed inset-0 z-0 pointer-events-none">
+        <div class="absolute top-0 left-0 w-[600px] h-[600px] bg-red-900/15 rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2 animate-pulse-soft"></div>
+        <div class="absolute bottom-0 right-0 w-[600px] h-[600px] bg-red-900/8 rounded-full blur-[150px] translate-x-1/2 translate-y-1/2 animate-pulse-soft" style="animation-delay: 2s;"></div>
+    </div>
+
+    <!-- Preloader -->
+    <div 
+        x-data="{ loading: true }" 
+        x-init="setTimeout(() => loading = false, 800)" 
+        x-show="loading" 
+        x-transition.opacity.duration.500ms
+        class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"
+        style="background: rgba(0, 0, 0, 0.9);"
+    >
+        <div class="grid w-24 h-24 place-items-center">
+            <!-- Outer ring -->
+            <div class="absolute w-24 h-24 rounded-full animate-spin"
+                 style="border: 3px solid rgba(75, 75, 75, 0.3); border-top-color: #991b1b;"></div>
+            
+            <!-- Middle ring -->
+            <div class="absolute w-16 h-16 rounded-full animate-[spin_1.5s_linear_infinite]"
+                 style="border: 3px solid rgba(75, 75, 75, 0.2); border-top-color: #dc2626;"></div>
+            
+            <!-- Inner ring -->
+            <div class="absolute w-8 h-8 rounded-full animate-[spin_2s_linear_infinite]"
+                 style="border: 3px solid rgba(75, 75, 75, 0.15); border-top-color: #ef4444;"></div>
+        </div>
+    </div>
+
+    <!-- Back to Top -->
     <button x-cloak x-data="{ show: false }" x-init="window.addEventListener('scroll', () => { show = window.pageYOffset > 500 })" x-show="show"
-        x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+        x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4"
+        x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-4"
         @click="window.scrollTo({top: 0, behavior: 'smooth'})"
-        class="fixed z-50 bottom-6 right-6 p-2.5
-           bg-gray-800/80 hover:bg-red-900/90
-           rounded-lg
-           backdrop-blur-sm
-           transform hover:scale-105
-           transition-all duration-200 ease-out
-           group">
+        class="fixed z-50 bottom-6 right-6 p-3 rounded-xl transition-all duration-300 transform hover:scale-110 hover:-translate-y-1 group"
+        style="
+            background: linear-gradient(145deg, rgba(30, 30, 30, 0.9), rgba(20, 20, 20, 0.95));
+            border: 1px solid rgba(75, 75, 75, 0.15);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.4);
+        ">
         <svg xmlns="http://www.w3.org/2000/svg"
-            class="w-4 h-4 transition-colors duration-200 text-white/80 group-hover:text-white" fill="none"
+            class="w-5 h-5 transition-colors duration-300 text-gray-400 group-hover:text-red-500" fill="none"
             viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
         </svg>
@@ -137,23 +154,6 @@
     <x-top-bar />
 
     <livewire:hero />
-
-
-
-    <!-- Latest Articles -->
-    {{-- <div class="max-w-3xl mx-auto mt-24">
-            <div class="mb-12 text-center">
-                <h2 class="text-sm tracking-wider text-gray-400 uppercase">Latest Updates</h2>
-                <p class="mt-2 text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-800 to-red-500">
-                    Recent News
-                </p>
-            </div>
-            <div class="relative overflow-hidden rounded-lg shadow-2xl shadow-red-900/20">
-                <livewire:latest-articles />
-            </div>
-        </div> --}}
-    </div>
-    </section>
 
     <!-- Content Sections -->
     <x-about />
@@ -169,6 +169,11 @@
     @livewireScripts
 
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.28/dist/fancybox/fancybox.umd.js"></script>
+    <script>
+        Fancybox.bind('[data-fancybox]', {
+            // Custom options
+        });
+    </script>
 </body>
 
 </html>
