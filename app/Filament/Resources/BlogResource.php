@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\BlogResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\BlogResource\RelationManagers;
-use Mohamedsabil83\FilamentFormsTinyeditor\Components\TinyEditor;
+
 
 class BlogResource extends Resource
 {
@@ -32,7 +32,7 @@ class BlogResource extends Resource
                 Forms\Components\TextInput::make('meta_title')
                     ->maxLength(60)
                     ->helperText('Optimal length is 50-60 characters'),
-                TinyEditor::make('content')
+                Forms\Components\RichEditor::make('content')
                     ->required()
                     ->columnSpanFull(),
                     Forms\Components\FileUpload::make('cover_image')

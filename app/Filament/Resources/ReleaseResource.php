@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
-use Mohamedsabil83\FilamentFormsTinyeditor\Components\TinyEditor;
 
 class ReleaseResource extends Resource
 {
@@ -34,7 +33,7 @@ class ReleaseResource extends Resource
                     ->label('Spotify Embed Code')
                     ->helperText('Paste the full Spotify embed iframe code here')
                     ->rows(4),
-                    TinyEditor::make('description')
+                Forms\Components\RichEditor::make('description')
                     ->columnSpanFull()
                     ->maxLength(65535),
             ]);

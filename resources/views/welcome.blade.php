@@ -38,6 +38,7 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.28/dist/fancybox/fancybox.css" />
 
+    @verbatim
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -71,6 +72,7 @@
       ]
     }
     </script>
+    @endverbatim
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-1PQQSTPYZC"></script>

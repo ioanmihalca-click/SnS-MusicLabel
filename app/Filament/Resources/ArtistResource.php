@@ -8,7 +8,7 @@ use App\Models\Artist;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use Mohamedsabil83\FilamentFormsTinyeditor\Components\TinyEditor;
+
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Builder;
@@ -36,7 +36,7 @@ class ArtistResource extends Resource
                     ->required()
                     ->url()
                     ->maxLength(255),
-                TinyEditor::make('description')
+                Forms\Components\RichEditor::make('description')
                     ->required()
                     ->columnSpanFull()
                     ->maxLength(65535),
