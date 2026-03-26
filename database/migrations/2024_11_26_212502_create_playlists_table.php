@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up()
     {
+        if (Schema::hasTable('playlists')) return;
         Schema::create('playlists', function (Blueprint $table) {
             $table->id();
             $table->text('spotify_embed_url'); 
