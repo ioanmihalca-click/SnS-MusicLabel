@@ -1,5 +1,6 @@
 <x-layouts.app>
     <livewire:hero />
+    <livewire:stats-strip />
 
     <x-about />
     <livewire:artists />

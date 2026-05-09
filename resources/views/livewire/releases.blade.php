@@ -11,8 +11,18 @@
             @foreach ($releases as $release)
                 <div
                     x-data="{ expanded: false }"
-                    class="p-6 transition-all duration-300 group rounded-xl bg-gradient-to-b from-gray-900/50 to-black hover:shadow-2xl hover:shadow-red-800/10"
+                    class="p-6 transition-all duration-500 group rounded-xl bg-gradient-to-b from-gray-900/50 to-black border border-white/5 hover:border-red-800/30 hover:translate-y-[-6px] hover:shadow-[var(--sh-card-hover)]"
                 >
+                    @if ($release->title)
+                        <div class="mb-4">
+                            <p class="text-[0.65rem] uppercase tracking-[0.3em] text-red-500 font-semibold">Release</p>
+                            <h3 class="mt-1 font-display font-black uppercase tracking-tight leading-none text-white transition-colors duration-300 group-hover:text-red-500"
+                                style="font-size: clamp(1.5rem, 2.5vw, 2rem);">
+                                {{ $release->title }}
+                            </h3>
+                        </div>
+                    @endif
+
                     <!-- Spotify Embed -->
                     <div class="relative mb-6 overflow-hidden rounded-lg">
                         {!! $release->spotify_embed_code !!}

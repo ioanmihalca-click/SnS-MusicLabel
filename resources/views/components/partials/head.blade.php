@@ -43,6 +43,13 @@
         <link rel="preload" as="image" href="{{ $preloadImage }}" fetchpriority="high" />
     @endif
 
+    {{-- Bunny Fonts (GDPR-safe Google Fonts proxy) --}}
+    <link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
+    <link
+        rel="stylesheet"
+        href="https://fonts.bunny.net/css?family=big-shoulders-display:900|inter:400,500,600,700&display=swap"
+    />
+
     {{ $slot }}
 
     {{-- Google Analytics --}}

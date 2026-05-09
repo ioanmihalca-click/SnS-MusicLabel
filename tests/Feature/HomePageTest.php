@@ -5,6 +5,12 @@ use App\Models\FeaturedTrack;
 use App\Models\Photo;
 use App\Models\Playlist;
 use App\Models\Release;
+use Illuminate\Support\Facades\Cache;
+
+beforeEach(function () {
+    // Stats Strip caches aggregate counts; clear so each test sees fresh seeds.
+    Cache::forget('homepage.stats-strip');
+});
 
 it('responds 200 for the homepage', function () {
     $this->get('/')->assertOk();
@@ -32,6 +38,10 @@ it('renders every documented homepage section so nothing silently disappears', f
     $response->assertSeeText('Now Spinning');
     $response->assertSeeText('Featured One');
     $response->assertSeeText('Featured Artist');
+
+    // Stats Strip (Stage E) — labels unique to this section
+    $response->assertSeeText('Genres');
+    $response->assertSeeText('Established');
 
     // About
     $response->assertSeeText('About');

@@ -12,7 +12,8 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Inter', 'Figtree', ...defaultTheme.fontFamily.sans],
+                display: ['"Big Shoulders Display"', 'Inter', ...defaultTheme.fontFamily.sans],
             },
         },
     },

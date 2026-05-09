@@ -14,15 +14,18 @@
                     class="group"
                     style="transition-delay: {{ 100 * $loop->iteration }}ms"
                 >
-                    <div class="relative p-6 overflow-hidden transition-all duration-300 rounded-xl bg-gradient-to-b from-gray-900 to-black hover:translate-y-[-4px] hover:shadow-2xl">
+                    <div class="relative p-6 overflow-hidden transition-all duration-500 rounded-xl bg-gradient-to-b from-gray-900 to-black border border-white/5 hover:border-red-800/30 hover:translate-y-[-6px] hover:shadow-[var(--sh-card-hover)]">
                         <!-- Artist Number -->
-                        <div class="absolute text-6xl font-bold transition-colors duration-300 top-4 right-4 text-red-800/10 group-hover:text-red-800/20">
+                        <div class="absolute font-display font-black tracking-tighter leading-none transition-all duration-500 top-3 right-4 text-red-800/15 group-hover:text-red-700/30 group-hover:scale-105"
+                             style="font-size: clamp(4rem, 8vw, 6rem);">
                             {{ str_pad($artist->order, 2, '0', STR_PAD_LEFT) }}
                         </div>
 
                         <!-- Artist Content -->
                         <div class="relative z-10">
-                            <h4 class="mb-4 text-2xl font-bold text-white transition-colors duration-300 group-hover:text-red-800">
+                            <p class="text-[0.65rem] uppercase tracking-[0.3em] text-red-500 font-semibold">Artist</p>
+                            <h4 class="mt-1 mb-4 font-display font-black uppercase tracking-tight leading-none text-white transition-colors duration-300 group-hover:text-red-500"
+                                style="font-size: clamp(1.75rem, 3.5vw, 2.25rem);">
                                 {{ $artist->name }}
                             </h4>
 

@@ -1,21 +1,23 @@
-# Implementare — Cleanup, UI Polish, Tests & Featured Track
+# Implementare — Cleanup, UI Polish, Tests, Featured Track & Design Refresh
 
-Această implementare s-a desfășurat în 4 stage-uri (A–D). Stage-urile A–C au fost livrate pe branch-ul `refactor/cleanup-and-polish` în 3 commit-uri; Stage D este o iterație ulterioară pe `main` (cerința explicită „featured track în hero + resursă Filament dedicată"). Niciun conținut, secțiune, link sau imagine existentă nu a fost eliminat. Toate cele 10 secțiuni de homepage, paginile blog și cele 5 resurse Filament inițiale rămân exact unde erau; Stage D adaugă o nouă resursă (FeaturedTrack) și un pill condiționat sub CTAs din hero.
+Această implementare s-a desfășurat în 5 stage-uri (A–E). Stage-urile A–C au fost livrate pe branch-ul `refactor/cleanup-and-polish` în 3 commit-uri; Stage D este o iterație ulterioară pe `main` („featured track în hero + resursă Filament dedicată"); Stage E este un design refresh pe branch-ul `design/refresh` (display font, logomark, motion, stats strip, card restyle). Niciun conținut, secțiune, link sau imagine existentă nu a fost eliminat. Toate cele 10 secțiuni de homepage, paginile blog și cele 5 resurse Filament inițiale rămân exact unde erau; Stage D adaugă o nouă resursă (FeaturedTrack) și un pill condiționat sub CTAs; Stage E adaugă o secțiune de stats strip și transformă vibe-ul vizual fără să modifice copy-ul.
 
 ## Sumar executiv
 
-| Metric | Înainte | După Stage C | După Stage D |
-|---|---|---|---|
-| Fișiere șterse | — | 7 dead-code | (idem) |
-| Componente Blade reutilizabile | 0 | 14 | 14 |
-| SVG-uri inline duplicate | ~22 copii | 0 | 0 |
-| Teste | 0 | 47 (90 assertions) | **55 (108 assertions)** |
-| Modele | 5 | 5 | **6** (+ FeaturedTrack) |
-| Resurse Filament | 5 | 5 | **6** (+ FeaturedTrack) |
-| Componente Livewire | 7 | 7 | **8** (+ FeaturedTrack) |
-| Răspuns `/` (HTTP 200) | ~116 KB | ~132 KB | ~133 KB cu pill activ, ~132 KB fără |
-| Bundle JS | 141 KB CDN | 142 KB local | 142 KB local (neschimbat) |
-| Acoperire focus-visible | 0 | toate links/butoane | (idem, plus CTA pill) |
+| Metric | Înainte | După Stage C | După Stage D | După Stage E |
+|---|---|---|---|---|
+| Fișiere șterse | — | 7 dead-code | (idem) | (idem) |
+| Componente Blade reutilizabile | 0 | 14 | 14 | **17** (+ logomark, brand-name, stats-strip) |
+| Secțiuni homepage | 10 | 10 | 10 | **11** (+ Stats Strip între Hero și About) |
+| Teste | 0 | 47 (90 assertions) | 55 (108 assertions) | **55 (108 assertions)** |
+| Modele | 5 | 5 | 6 | 6 |
+| Resurse Filament | 5 | 5 | 6 | 6 |
+| Componente Livewire | 7 | 7 | 8 | 8 |
+| Display font | nimic (system) | nimic | nimic | **Big Shoulders Display 900** (+ Inter 400-700) via Bunny Fonts |
+| Brand consistency | „Snow n Stuff" / „Snow 'n' Stuff" mixt | (idem) | (idem) | **uniform „Snow 'n' Stuff"** via `<x-brand-name>` |
+| Bundle CSS | ~93 KB | ~92 KB | ~102 KB | **~108 KB** (+tokens, noise, equalizer, font fallbacks) |
+| Bundle JS | 141 KB CDN | 142 KB local | 142.47 KB | **142.83 KB** (+parallax) |
+| Acoperire focus-visible | 0 | toate links/butoane | (idem, plus CTA pill) | (idem) |
 
 ## Stage A — Cleanup (commit `8ac3ecc`)
 
@@ -281,6 +283,119 @@ public/build/assets/app-*.css   25.31 + 77.10 kB
 public/build/assets/app-*.js   142.47 kB
 ```
 
+## Stage E — Design Refresh (branch `design/refresh`, post Stage D)
+
+Cerința utilizator: *„crezi că putem îmbunătăți și design-ul aplicației?"* — discuție design urmată de 4 direcții confirmate (typo + logomark + motion + cards). Implementat fără să se piardă conținut sau funcționalitate.
+
+### Decizii confirmate cu utilizatorul
+
+| Decizie | Răspuns |
+|---|---|
+| Display font | Big Shoulders Display Black + Inter via Bunny Fonts (GDPR-safe Google Fonts proxy) |
+| Logomark | Concept 2 — monogramă **SnS** într-un hexagon (interlocked S forms) |
+| Cursor custom | **Skip** — cursor browser default păstrat |
+| Card system scope | **D-light** — restyle cu datele existente, fără migrări noi |
+| Strategie livrare | Branch separat `design/refresh` off `main` |
+
+### A — Tipografie + ierarhie hero
+
+`tailwind.config.js`:
+- `sans: ['Inter', 'Figtree', ...defaultTheme.fontFamily.sans]`
+- `display: ['"Big Shoulders Display"', 'Inter', ...defaultTheme.fontFamily.sans]`
+
+`<x-partials.head>` — adăugat `<link rel="preconnect">` + `<link rel="stylesheet">` către `fonts.bunny.net` cu Big Shoulders Display 900 și Inter 400/500/600/700.
+
+`livewire/hero.blade.php` rescris complet:
+- **Eyebrow „Welcome to"** — `text-xs uppercase tracking-[0.4em] text-gray-500` (de la same-size cu brand-ul, devine accent discret)
+- **Brand wordmark** — `font-display font-black uppercase` cu `font-size: clamp(3.5rem, 13vw, 9.5rem)`, gradient `from-red-700 via-red-500 to-red-300`, leading 0.82, tracking-tight. La 1920px brand-ul ocupă ~150px height vs ~80px înainte
+- **Subtitle** — păstrat copy-ul exact (test guardrail), redus din `text-2xl md:text-3xl font-light` (subtitle prea greu) la `text-lg md:text-2xl font-light text-gray-200`
+- **Genres** — consolidate într-un singur rând cu separatori `·` red-700/80 (înainte: paragraf prozaic „Snow 'n' Stuff is releasing Tech House, Deep House, House and Techno.")
+- **Management** — eyebrow gradient cu rule horizontale + lista numelor cu separatori `·` (înainte: chips boxed `bg-white/5 rounded-md`, mai cluttered)
+- **Curator pill** — păstrat ca element distinct, un singur stil cu border subtle
+- **CTAs** — primary „Our Music" cu gradient red + shadow glow `0 8px 30px -8px rgba(220,38,38,0.6)` care intensifică la hover; secondary „Our Artists →" / „Blog & News →" devin text-only cu arrow care alunecă pe hover (înainte: bordered ghost buttons cu același weight ca primary)
+- **Container bordat** (`bg-black/20 border-red-800/20`) eliminat — adăuga padding fără structură vizibilă
+- **Scroll indicator** — pe desktop, în partea de jos absolută, „SCROLL" + linia gradient
+
+### B — Logomark + design tokens + brand consistency
+
+`resources/views/components/icons/logomark.blade.php` — SVG hexagon cu 2 forme S interlocked + dot central (~700 bytes). `viewBox="0 0 64 64"`, `currentColor`, `aria-hidden` default. Folosit în top-bar (cu `group-hover:rotate-180`) și footer.
+
+`resources/views/components/brand-name.blade.php` — întoarce `Snow 'n' Stuff` (sau uppercase prin prop `:uppercase`). 6 locații normalizate (top-bar, footer ×2, about ×4 unde scria „Snow N Stuff" / „Snow `n` Stuff" cu backticks (!)).
+
+`resources/css/app.css` extins cu un bloc complet de design tokens:
+- Brand red channels (RGB triplets pentru `rgb(var(--xxx) / alpha)`)
+- Surface borders/shadows tinted brand (`--sh-card`, `--sh-card-hover`, `--sh-cta-glow`, `--sh-cta-glow-hover`)
+- Radii (`--r-card`, `--r-pill`, `--r-control`)
+- Motion (`--ease-out-expo`, `--t-fast/base/slow`)
+- `[data-reveal]` migrat la `var(--t-slow)` + `var(--ease-out-expo)`
+
+`resources/views/components/section-header.blade.php` — eyebrow trecut la `text-red-500 tracking-[0.4em] font-semibold`; titlul migrat de la `text-4xl font-bold text-red-800` la `font-display font-black uppercase` cu clamp 2.5–4.5rem. Toate cele 5 secțiuni (Releases, Artists, Photo Gallery, Contact, Blog) împrumută noul stil instant fără edit per-secțiune.
+
+### C — Motion + textură
+
+`body::before` — overlay `<svg><filter feTurbulence baseFrequency="0.9"></svg>` inline ca data URI (~600 bytes), `mix-blend-mode: overlay`, `opacity: 0.05`. Suprimat la `prefers-reduced-motion`. Efectul: surfața devine tactilă, mai puțin „plastic", fără ca utilizatorul să-l observe conștient.
+
+**Equalizer în pill-ul Featured Track** — 3 bare verticale `0.5×3` cu animații keyframe staggered (0.7s / 0.9s / 1.1s); apar lângă „NOW SPINNING". `aria-hidden="true"` (decorativ). Suprimate la `prefers-reduced-motion`.
+
+**Parallax bg** — `data-hero-bg` translate3d cu 0.15× scrollY, prin `requestAnimationFrame` pentru smoothness. Skip pe touch (`pointer: coarse`) și `prefers-reduced-motion: reduce`. ~20 linii JS.
+
+**CTA glow** (deja inclus în A) — primary CTA shadow gradient roșu care intensifică la hover.
+
+### D-light — Stats strip + card restyle
+
+`<x-stats-strip />` — secțiune nouă între Hero și About:
+- 5 stat cards: Artists, Releases, Playlists (active), Genres (4 fix), Established (2020)
+- Numere live din DB: `Artist::count()`, `Release::count()`, `Playlist::where('is_active', true)->count()`
+- Padded la 2 caractere (01, 02, 23, 04) — Established afișat ca an plain (2020)
+- **Count-up animat la scroll** via Alpine + IntersectionObserver: numerele sar de la 0 la real value cu easing cubic în 1.2 s când secțiunea intră în viewport
+- Layout: 2 col mobile, 5 col desktop, gap responsive
+- Numerele în `font-display font-black` cu gradient white→gray-500
+- Eyebrow `text-red-500/80 tracking-[0.3em]`
+
+Restyle card-uri (Artists + Releases) — minim invaziv:
+- **Artists** — numărul de ordine 01/02/03 trecut la `font-display`, mai mare (clamp 4–6rem), opacitate roșu mai prezentă; titlul artistului `font-display uppercase` cu eyebrow „ARTIST" deasupra; hover lift de la `-4px` la `-6px` + border red-800/30 + shadow `var(--sh-card-hover)`
+- **Releases** — adăugat header `Release` eyebrow + titlul (acum afișat — înainte `releases.title` exista în DB dar nu se randa nicăieri!); același hover lift + border + shadow ca la artists
+
+### Tests
+
+`HeroTest` actualizat — `assertSeeText('Snow n Stuff')` → `assertSeeText("Snow 'n' Stuff")` (brand-ul se randează acum cu apostrofuri canonice). Restul testelor neatinse.
+
+```
+Tests:    55 passed (108 assertions)
+Duration: ~22 s (Bunny fonts request adaugă ~10 s la prima rulare; cached după)
+```
+
+`HomePageTest` păstrează intactă constrângerea „nimic nu dispare" — toate cele 11 secțiuni (10 originale + Stats Strip) randează la `/`.
+
+### Verificare Stage E
+
+```
+$ php artisan view:clear && php artisan config:clear
+$ php artisan test --compact
+.......................................................
+Tests:    55 passed (108 assertions)
+
+$ vendor/bin/pint --dirty --format agent
+{"tool":"pint","result":"passed"}
+
+$ npm run build
+public/build/assets/app-DikA6xf4.css   82.69 kB │ gzip: 13.10 kB
+public/build/assets/app-N0MToBtp.js   142.83 kB │ gzip: 43.58 kB
+✓ built in 6.64s
+```
+
+### Reversibilitate
+
+Toate schimbările sunt pe branch separat `design/refresh`. Pentru a reveni instant la designul anterior:
+```
+git checkout main          # design refresh dispare
+```
+Pentru a o adopta:
+```
+git checkout main
+git merge design/refresh
+```
+
 ## Verificare end-to-end
 
 ```
@@ -313,16 +428,19 @@ $ HTTP smoke: GET / → 200, 132 KB; GET /blog → 200, 62 KB
 ## Branch & commits
 
 ```
-$ git log --oneline    # post Stage C
-b1ef728 docs: add IMPLEMENTATION.md summarising Stages A-C
-7ca58c8 test: add Pest coverage for routes, Livewire components, Filament resources (Stage C)
-5b28881 refactor: shared layout, reusable icons/components, a11y, image perf, Filament polish (Stage B)
-8ac3ecc chore: remove dead code and migrate Fancybox to local bundle (Stage A)
+$ git log --oneline --all
+[design/refresh]   <pending>  feat: design refresh — display font, logomark, motion, stats strip (Stage E)
+[main]    e1d010f  chore: gitignore .claude/settings.local.json
+[main]    57ec6b7  featured track (Stage D)
+[main]    b1ef728  docs: add IMPLEMENTATION.md summarising Stages A-C
+[main]    7ca58c8  test: add Pest coverage for routes, Livewire components, Filament resources (Stage C)
+[main]    5b28881  refactor: shared layout, reusable icons/components, a11y, image perf, Filament polish (Stage B)
+[main]    8ac3ecc  chore: remove dead code and migrate Fancybox to local bundle (Stage A)
 ```
 
-Stage D este pe `main`, **uncommitted** la momentul acestei documentații (fișiere noi + edits deja aplicate; tests + pint + build confirmate). Pentru a finaliza, rulați:
+Stage E este pe branch-ul `design/refresh`, gata pentru commit + merge către `main`. Pentru a adopta:
 
 ```
-git add -A
-git commit -m "feat: featured track resource + hero pill (Stage D)"
+git checkout design/refresh && git add -A && git commit -m "feat: design refresh (Stage E)"
+git checkout main && git merge design/refresh
 ```

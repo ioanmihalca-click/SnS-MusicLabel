@@ -56,3 +56,27 @@ const observeReveals = () => {
 
 document.addEventListener('DOMContentLoaded', observeReveals);
 document.addEventListener('livewire:navigated', observeReveals);
+
+/**
+ * Hero background parallax — translates the bg image up as you scroll, ~15% of
+ * the scroll distance. Wrapped in requestAnimationFrame for a smooth ride and
+ * disabled when the user prefers reduced motion. No-op on touch where the
+ * fixed/cover bg already feels different and the perf budget is tighter.
+ */
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isTouch = window.matchMedia('(pointer: coarse)').matches;
+const heroBg = document.querySelector('[data-hero-bg]');
+
+if (heroBg && !reduceMotion && !isTouch) {
+    let ticking = false;
+    const updateParallax = () => {
+        heroBg.style.transform = `translate3d(0, ${window.scrollY * 0.15}px, 0)`;
+        ticking = false;
+    };
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(updateParallax);
+            ticking = true;
+        }
+    }, { passive: true });
+}

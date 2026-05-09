@@ -21,8 +21,13 @@
             <!-- Company Info -->
             <div class="space-y-6">
                 <div>
-                    <h3 class="text-2xl font-bold text-white">Snow n Stuff</h3>
-                    <p class="mt-2 text-sm text-gray-400">
+                    <h3 class="flex items-center gap-3 text-white">
+                        <x-icons.logomark class="w-9 h-9 text-red-500" />
+                        <span class="font-display font-black uppercase tracking-tight text-2xl leading-none">
+                            <x-brand-name uppercase />
+                        </span>
+                    </h3>
+                    <p class="mt-3 text-sm text-gray-400">
                         Electronic Music Management, Label and Production
                     </p>
                 </div>
@@ -71,7 +76,7 @@
         <!-- Copyright -->
         <div class="pt-8 mt-12 border-t border-gray-800">
             <p class="text-base text-center text-gray-400">
-                &copy; {{ date('Y') }} Snow n Stuff. All rights reserved.
+                &copy; {{ date('Y') }} <x-brand-name />. All rights reserved.
             </p>
         </div>
     </div>
