@@ -11,9 +11,9 @@
         <div
             class="max-w-4xl mx-auto overflow-hidden text-center"
             x-data="{
-                stages: { welcome: false, brand: false, subtitle: false, desc: false, buttons: false },
+                stages: { welcome: false, brand: false, subtitle: false, desc: false, buttons: false, featuredTrack: false },
                 init() {
-                    const order = ['welcome', 'brand', 'subtitle', 'desc', 'buttons'];
+                    const order = ['welcome', 'brand', 'subtitle', 'desc', 'buttons', 'featuredTrack'];
                     order.forEach((key, i) => {
                         setTimeout(() => { this.stages[key] = true; }, 200 + i * 220);
                     });
@@ -97,6 +97,14 @@
                                 class="px-6 py-2.5 w-full sm:w-auto text-white font-medium border-2 border-red-800/50 rounded-lg hover:bg-red-800/20 transition-all duration-300 {{ $focusRing }}">
                                 Blog/Latest News
                             </a>
+                        </div>
+
+                        <!-- Featured Track pill -->
+                        <div
+                            class="transform transition-all duration-700 ease-out"
+                            :class="stages.featuredTrack ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
+                        >
+                            <livewire:featured-track />
                         </div>
                     </div>
                 </div>

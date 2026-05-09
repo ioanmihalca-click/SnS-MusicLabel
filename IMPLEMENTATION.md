@@ -1,19 +1,21 @@
-# Implementare — Cleanup, UI Polish & Tests
+# Implementare — Cleanup, UI Polish, Tests & Featured Track
 
-Această implementare a fost executată pe branch-ul `refactor/cleanup-and-polish` și constă din 3 commit-uri stagiate. Niciun conținut, secțiune, link sau imagine din site nu a fost eliminat. Toate cele 10 secțiuni de homepage, paginile blog și cele 5 resurse Filament rămân exact unde erau, doar mai bine structurate, mai accesibile și mai rapide.
+Această implementare s-a desfășurat în 4 stage-uri (A–D). Stage-urile A–C au fost livrate pe branch-ul `refactor/cleanup-and-polish` în 3 commit-uri; Stage D este o iterație ulterioară pe `main` (cerința explicită „featured track în hero + resursă Filament dedicată"). Niciun conținut, secțiune, link sau imagine existentă nu a fost eliminat. Toate cele 10 secțiuni de homepage, paginile blog și cele 5 resurse Filament inițiale rămân exact unde erau; Stage D adaugă o nouă resursă (FeaturedTrack) și un pill condiționat sub CTAs din hero.
 
 ## Sumar executiv
 
-| Metric | Înainte | După |
-|---|---|---|
-| Fișiere șterse | — | 7 dead-code |
-| Componente Blade reutilizabile | 0 | 14 (icons + section-header + back-to-top + 2 partials + 2 layouts) |
-| SVG-uri inline duplicate | ~22 copii | 0 (toate prin componente) |
-| Teste | 0 | 47 (90 assertions) |
-| Eroare runtime în Blade | tag-uri orfane în welcome.blade.php | rezolvat |
-| Răspuns `/` (HTTP 200) | ~116 KB | ~132 KB (focus rings + a11y) |
-| Bundle JS | 141 KB cu CDN extern Fancybox | 142 KB local, 0 CDN extern |
-| Acoperire focus-visible | 0 elemente | toate links/butoane interactive |
+| Metric | Înainte | După Stage C | După Stage D |
+|---|---|---|---|
+| Fișiere șterse | — | 7 dead-code | (idem) |
+| Componente Blade reutilizabile | 0 | 14 | 14 |
+| SVG-uri inline duplicate | ~22 copii | 0 | 0 |
+| Teste | 0 | 47 (90 assertions) | **55 (108 assertions)** |
+| Modele | 5 | 5 | **6** (+ FeaturedTrack) |
+| Resurse Filament | 5 | 5 | **6** (+ FeaturedTrack) |
+| Componente Livewire | 7 | 7 | **8** (+ FeaturedTrack) |
+| Răspuns `/` (HTTP 200) | ~116 KB | ~132 KB | ~133 KB cu pill activ, ~132 KB fără |
+| Bundle JS | 141 KB CDN | 142 KB local | 142 KB local (neschimbat) |
+| Acoperire focus-visible | 0 | toate links/butoane | (idem, plus CTA pill) |
 
 ## Stage A — Cleanup (commit `8ac3ecc`)
 
@@ -173,6 +175,112 @@ Tests:    47 passed (90 assertions)
 Duration: 7.01s
 ```
 
+## Stage D — Featured Track (pe `main`, post Stage C)
+
+Cerința explicită utilizator: *„în hero sus ar trebui să apară cea mai nouă piesă promovată de label și să avem o resursă dedicată în Filament pentru asta."* Documentat în planul comprehensiv ca Section D, implementat acum.
+
+### Decizii confirmate cu utilizatorul
+
+| Decizie | Răspuns |
+|---|---|
+| Plasare în hero | Pill compact sub CTAs (păstrează brand reveal-ul intact) |
+| Input Spotify | URL only — `spotify_track_url`; track ID + embed src derivate cu regex pentru viitor |
+| Strategie active | Single active la un moment dat (`->first()` ordered by `order` ASC apoi `released_at` DESC) |
+| Cover image | FileUpload opțional pe disk-ul `public`, directorul `featured-tracks/` |
+
+### Model & migrare
+
+`database/migrations/2026_05_09_180007_create_featured_tracks_table.php`:
+
+```php
+$table->id();
+$table->string('title');
+$table->string('artist_name');
+$table->string('spotify_track_url');
+$table->string('cover_image')->nullable();
+$table->date('released_at')->nullable();
+$table->unsignedInteger('order')->default(0);
+$table->boolean('is_active')->default(true);
+$table->timestamps();
+$table->index(['is_active', 'order']);
+```
+
+`App\Models\FeaturedTrack`:
+- `casts()` method (Laravel 12 idiom — ca în `Blog`): `released_at => date`, `order => integer`, `is_active => boolean`.
+- Scopes: `scopeActive()` (`where is_active = true`), `scopeOrdered()` (`order ASC, released_at DESC`).
+- Accessors: `getSpotifyTrackIdAttribute()` extrage ID-ul de 22 caractere din URL (regex `#/track/([A-Za-z0-9]+)#`); `getSpotifyEmbedSrcAttribute()` returnează URL-ul de embed derivat — pregătite pentru o eventuală variantă cu inline player fără refactoring.
+
+`database/factories/FeaturedTrackFactory.php` cu `inactive()` state, mirror `PlaylistFactory`.
+
+### Resursa Filament
+
+`app/Filament/Resources/FeaturedTrackResource.php`:
+- `navigationGroup: 'Catalogue'`, `navigationSort: 25` (între Release=20 și Playlist=30), `navigationIcon: 'heroicon-o-star'`, `navigationLabel: 'Featured Track'`.
+- Form, 3 secțiuni: **Track** (title + artist_name, 2 col), **Spotify** (`TextInput` cu `->url()` + helper text), **Display** (FileUpload `cover_image` directory `featured-tracks/`, DatePicker `released_at`, integer `order`, Toggle `is_active`).
+- Tabela: ImageColumn cover (square 60), Text title/artist searchable+sortable, order width(60) sortable, IconColumn `is_active`, released_at date sortable toggleable.
+- `defaultSort('order')`, `reorderable('order')` (drag-drop ca la Playlist), `TernaryFilter::make('is_active')`, BulkActionGroup cu DeleteBulkAction.
+- Pages standard: `ListFeaturedTracks`, `CreateFeaturedTrack`, `EditFeaturedTrack` (cu DeleteAction header).
+
+### Componenta Livewire & view
+
+`app/Livewire/FeaturedTrack.php` — un singur `render()` care folosește scopurile noi:
+
+```php
+$track = FeaturedTrackModel::query()->active()->ordered()->first();
+return view('livewire.featured-track', ['track' => $track]);
+```
+
+`resources/views/livewire/featured-track.blade.php`:
+- Guardrail `@if ($track)` — dacă nu există track activ, randează `<div></div>` gol → hero-ul nu se sparge.
+- Pill: container glass `bg-white/5 backdrop-blur border border-red-800/20` cu cover 64×64 (sau fallback gradient cu inițiala titlului), eyebrow uppercase „Now Spinning" (red-500 tracking-widest), linia titlu — artist, link „Listen on Spotify" cu `<x-icons.spotify />` (reuse Stage B), `target="_blank" rel="noopener noreferrer"`, `aria-label` descriptiv, focus-visible ring identic cu restul site-ului.
+- Imaginea folosește `width/height/loading=lazy/decoding=async` (politică Stage B).
+
+### Integrare în hero
+
+`resources/views/livewire/hero.blade.php`:
+- Array-ul de stages extins de la 5 la 6: `['welcome', 'brand', 'subtitle', 'desc', 'buttons', 'featuredTrack']`. Cu același stagger de 220 ms, pill-ul apare la ~1300 ms după mount — *după* CTAs.
+- `<livewire:featured-track />` injectat într-un wrapper Alpine cu fade-in din `translate-y-4` (mirror exact al stilului existent al butoanelor).
+- Brand reveal (gradientul „Snow n Stuff") rămâne neatins.
+
+### Tests
+
+3 fișiere noi/modificate, **+8 cazuri** (47 → 55 teste, 90 → 108 assertions):
+
+| Fișier | Cazuri |
+|---|---|
+| `tests/Feature/Livewire/FeaturedTrackTest.php` | 5 — render fără record (track=null), render cu titlu+artist, ignore inactive, ordering corect (`order ASC, released_at DESC`), parsing URL → track ID + embed src |
+| `tests/Feature/Filament/FeaturedTrackResourceTest.php` | 3 — index/create/edit smoke (auth via email `contact@snow-n-stuff.com` ca la celelalte resurse) |
+| `tests/Feature/HomePageTest.php` | extins guardrail-ul „nimic nu dispare" cu seed `FeaturedTrack` + asserții pe „Now Spinning", titlu, artist |
+
+### Bug fix colateral — `phpunit.xml`
+
+Stage A a șters `tests/Unit/` complet, dar `phpunit.xml` păstra `<testsuite name="Unit"><directory>tests/Unit</directory></testsuite>` → `php artisan test` eșua cu `Test directory "tests/Unit" not found`. Eliminat referința; suite-ul Pest folosește doar `Feature`.
+
+### Verificare Stage D
+
+```
+$ php artisan migrate --no-interaction
+2026_05_09_180007_create_featured_tracks_table ... 425.81ms DONE
+
+$ php artisan route:list --path=featured-tracks
+GET|HEAD admin/featured-tracks            ListFeaturedTracks
+GET|HEAD admin/featured-tracks/create     CreateFeaturedTrack
+GET|HEAD admin/featured-tracks/{record}/edit  EditFeaturedTrack
+
+$ php artisan test --compact
+.......................................................
+Tests:    55 passed (108 assertions)
+Duration: ~13s
+
+$ vendor/bin/pint --dirty --format agent
+{"tool":"pint","result":"fixed","files":[ ... 2 fișiere reformatate (imports / FQN) ... ]}
+
+$ npm run build
+✓ 4 modules transformed, built in 3.99s
+public/build/assets/app-*.css   25.31 + 77.10 kB
+public/build/assets/app-*.js   142.47 kB
+```
+
 ## Verificare end-to-end
 
 ```
@@ -195,36 +303,26 @@ $ HTTP smoke: GET / → 200, 132 KB; GET /blog → 200, 62 KB
 
 ## Cerințe respectate
 
-- ✅ **Zero conținut pierdut** — toate cele 10 secțiuni homepage + paginile blog + 5 resurse Filament rămân; testul `HomePageTest::it_renders_every_documented_homepage_section` blochează regresiile.
-- ✅ **Zero secțiuni adăugate** — Featured Track e DOAR documentat pentru sesiunea următoare în planul `te-rog-sa-analizezi-hazy-thompson.md`.
-- ✅ **Code cleanup** — 7 fișiere dead șterse, 2 dependențe nefolosite eliminate, 1 dependență mutată corect.
-- ✅ **UI/Design** — design system extras (icons, section-header, layouts), focus-visible peste tot, animații scroll-triggered, optimizare imagini, branding Filament.
-- ✅ **Toate punctele de vedere** — code structure, performance (preload LCP, lazy loading, dimensiuni explicite, bundle local), a11y (focus, aria, role, prefers-reduced-motion), maintainability (componente reutilizabile, layout shared), correctness (bug fix where/orWhere, slug preservation), testing (47 teste, 90 assertions).
-
-## Pentru sesiunea următoare
-
-Conform cererii utilizatorului — în hero, sub CTAs, să apară cea mai nouă piesă promovată de label, cu resursă Filament dedicată.
-
-Pași documentați în `C:\Users\click\.claude\plans\te-rog-sa-analizezi-hazy-thompson.md`, secțiunea D:
-
-1. Migrare `featured_tracks` (title, artist_name, spotify_embed_code/url, cover_image, released_at, order, is_active)
-2. `App\Models\FeaturedTrack` cu `casts()` + scopes
-3. `App\Filament\Resources\FeaturedTrackResource` cu icon `heroicon-o-star`
-4. `App\Livewire\FeaturedTrack` care fetch-uiește `latest('released_at')->where('is_active', true)->first()`
-5. Plasare în hero — recomandare: pill compact sub CTAs (risc minim, păstrează animația de brand reveal)
-
-Întrebări deschise pentru sesiunea următoare:
-- Single featured slot sau queue cu rotație?
-- Auto-detect Spotify track ID din URL sau iframe paste?
-- Plasare sub CTAs (recomandat) vs. înlocuire brand reveal vs. split layout pe desktop?
+- ✅ **Zero conținut pierdut** — toate cele 10 secțiuni homepage + paginile blog + 5 resurse Filament inițiale rămân; testul `HomePageTest::it_renders_every_documented_homepage_section` blochează regresiile (acum verifică și pill-ul Featured Track când există un record activ).
+- ✅ **Cerere utilizator livrată** — Featured Track în hero (sub CTAs) + resursă Filament dedicată cu cover image, URL Spotify, ordering, `is_active`. Stage D este complet, nu mai sunt items deferite.
+- ✅ **Code cleanup** — 7 fișiere dead șterse (Stage A), 2 dependențe nefolosite eliminate, 1 dependență mutată corect, plus reziduul `phpunit.xml` din Stage A reparat în Stage D.
+- ✅ **UI/Design** — design system extras (icons, section-header, layouts), focus-visible peste tot, animații scroll-triggered, optimizare imagini, branding Filament; pill-ul nou reutilizează `<x-icons.spotify>`, focus ring și politica de imagini deja stabilite.
+- ✅ **Graceful degradation** — fără track activ, hero-ul randează identic cu starea pre-D; cu track, pill-ul apare ca o nouă etapă de animație **după** CTAs (gradientul „Snow n Stuff" rămâne signature).
+- ✅ **Toate punctele de vedere** — code structure (scopes + accessors în loc de logică în view), performance (composite index `(is_active, order)`, FileUpload pe disk public, fără iframe extern în pill), a11y (`aria-label` descriptiv pe CTA, alt-text pe cover, focus ring), maintainability (mirror exact al patternului `ReleaseResource`/`PlaylistResource`), correctness (URL parsing testat, ordering testat, bug fix `phpunit.xml`), testing (55 teste, 108 assertions — +8 cazuri în Stage D).
 
 ## Branch & commits
 
 ```
-$ git log --oneline
+$ git log --oneline    # post Stage C
+b1ef728 docs: add IMPLEMENTATION.md summarising Stages A-C
 7ca58c8 test: add Pest coverage for routes, Livewire components, Filament resources (Stage C)
 5b28881 refactor: shared layout, reusable icons/components, a11y, image perf, Filament polish (Stage B)
 8ac3ecc chore: remove dead code and migrate Fancybox to local bundle (Stage A)
 ```
 
-Branch: `refactor/cleanup-and-polish`. Pentru merge, rulați `git checkout main && git merge refactor/cleanup-and-polish` (sau deschideți PR).
+Stage D este pe `main`, **uncommitted** la momentul acestei documentații (fișiere noi + edits deja aplicate; tests + pint + build confirmate). Pentru a finaliza, rulați:
+
+```
+git add -A
+git commit -m "feat: featured track resource + hero pill (Stage D)"
+```
