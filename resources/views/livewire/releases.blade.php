@@ -1,25 +1,16 @@
-<div id="releases" class="py-24 bg-black/95">
+@php
+    $focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 focus-visible:ring-offset-black';
+@endphp
+
+<div id="releases" class="py-24 bg-black/95" data-reveal>
     <div class="container px-4 mx-auto">
-        <!-- Section Header -->
-        <div class="mb-16 text-center">
-            <h2 class="mb-3 text-sm tracking-wider text-gray-400 uppercase">Releases</h2>
-            <p class="text-4xl font-bold text-red-800">Check Our Releases</p>
-        </div>
+        <x-section-header eyebrow="Releases" title="Check Our Releases" />
 
         <!-- Releases Grid -->
         <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-            @foreach($releases as $release)
-                <div 
-                    x-data="{ 
-                        hover: false,
-                        expanded: false,
-                        get shortDescription() {
-                            const fullText = this.$refs.fullDescription.textContent;
-                            return fullText.length > 150 ? fullText.substring(0, 150) + '...' : fullText;
-                        }
-                    }"
-                    @mouseenter="hover = true"
-                    @mouseleave="hover = false"
+            @foreach ($releases as $release)
+                <div
+                    x-data="{ expanded: false }"
                     class="p-6 transition-all duration-300 group rounded-xl bg-gradient-to-b from-gray-900/50 to-black hover:shadow-2xl hover:shadow-red-800/10"
                 >
                     <!-- Spotify Embed -->
@@ -28,19 +19,23 @@
                     </div>
 
                     <!-- Description -->
-                    @if($release->description)
+                    @if ($release->plain_description !== '')
                         <div class="relative overflow-hidden">
-                            <div x-ref="fullDescription" class="hidden">{!! $release->description !!}</div>
-                            
                             <div class="p-4 space-y-2 text-gray-300 border bg-gray-900/50 rounded-xl backdrop-blur-sm border-gray-800/50">
-                                <p x-text="expanded ? $refs.fullDescription.textContent : shortDescription"></p>
-                                
-                                <button 
-                                    @click="expanded = !expanded"
-                                    x-show="$refs.fullDescription.textContent.length > 150"
-                                    class="text-sm font-medium text-red-800 transition-colors duration-300 hover:text-red-600 focus:outline-none"
-                                    x-text="expanded ? 'Read Less' : 'Read More'">
-                                </button>
+                                <p>
+                                    <span x-show="!expanded">{{ $release->short_description }}</span>
+                                    <span x-show="expanded" x-cloak>{{ $release->plain_description }}</span>
+                                </p>
+
+                                @if ($release->is_truncated)
+                                    <button
+                                        type="button"
+                                        @click="expanded = !expanded"
+                                        :aria-expanded="expanded.toString()"
+                                        class="text-sm font-medium text-red-800 transition-colors duration-300 rounded hover:text-red-600 {{ $focusRing }}"
+                                        x-text="expanded ? 'Read Less' : 'Read More'"
+                                    >Read More</button>
+                                @endif
                             </div>
 
                             <!-- Decorative Elements -->

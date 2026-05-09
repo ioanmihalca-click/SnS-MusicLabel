@@ -2,19 +2,14 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
-use App\Models\Blog;
-use Filament\Tables;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\DeleteAction;
-use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\BlogResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\BlogResource\RelationManagers;
-
+use App\Models\Blog;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class BlogResource extends Resource
 {
@@ -22,60 +17,110 @@ class BlogResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
+    protected static ?string $navigationGroup = 'Content';
+
+    protected static ?int $navigationSort = 10;
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('meta_title')
-                    ->maxLength(60)
-                    ->helperText('Optimal length is 50-60 characters'),
-                Forms\Components\RichEditor::make('content')
-                    ->required()
-                    ->columnSpanFull(),
-                    Forms\Components\FileUpload::make('cover_image')
-                    ->image()
-                    ->imageCropAspectRatio('1200:630')
-                    ->imageResizeTargetWidth('1200')
-                    ->imageResizeTargetHeight('630')
-                    ->directory('blog-covers')
-                    ->helperText('Recommended dimensions: 1200x630 pixels'),
-                    Forms\Components\DateTimePicker::make('published_at')
-                    ->label('Publish Date'),
-            
-                Forms\Components\Textarea::make('meta_description')
-                    ->maxLength(160)
-                    ->helperText('Optimal length is 150-160 characters'),
-                Forms\Components\TextInput::make('meta_keywords')
-                    ->helperText('Comma-separated keywords'),
+                Forms\Components\Section::make('Article')
+                    ->schema([
+                        Forms\Components\TextInput::make('title')
+                            ->required()
+                            ->maxLength(255)
+                            ->live(onBlur: true),
+                        Forms\Components\RichEditor::make('content')
+                            ->required()
+                            ->columnSpanFull(),
+                        Forms\Components\FileUpload::make('cover_image')
+                            ->image()
+                            ->imageCropAspectRatio('1200:630')
+                            ->imageResizeTargetWidth('1200')
+                            ->imageResizeTargetHeight('630')
+                            ->directory('blog-covers')
+                            ->imagePreviewHeight('200')
+                            ->helperText('Recommended dimensions: 1200x630 pixels'),
+                        Forms\Components\DateTimePicker::make('published_at')
+                            ->label('Publish Date')
+                            ->seconds(false)
+                            ->helperText('Posts dated in the future are hidden until that date.'),
+                    ]),
+
+                Forms\Components\Section::make('SEO')
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\TextInput::make('meta_title')
+                            ->maxLength(60)
+                            ->helperText('Optimal length is 50-60 characters.'),
+                        Forms\Components\Textarea::make('meta_description')
+                            ->maxLength(160)
+                            ->rows(2)
+                            ->helperText('Optimal length is 150-160 characters.'),
+                        Forms\Components\TextInput::make('meta_keywords')
+                            ->helperText('Comma-separated keywords.'),
+                    ]),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-        ->columns([
-            Tables\Columns\ImageColumn::make('cover_image')
-                ->width(50)
-                ->height(50),
-            Tables\Columns\TextColumn::make('title'),
-            Tables\Columns\TextColumn::make('published_at')
-                ->dateTime(),
-        ])
-        ->actions([
-            EditAction::make(),
-            DeleteAction::make(),
-        ])
-        ->defaultSort('published_at', 'desc');
-}
+            ->columns([
+                Tables\Columns\ImageColumn::make('cover_image')
+                    ->label('')
+                    ->square()
+                    ->width(60)
+                    ->height(60),
+                Tables\Columns\TextColumn::make('title')
+                    ->searchable()
+                    ->sortable()
+                    ->limit(50),
+                Tables\Columns\IconColumn::make('is_published')
+                    ->label('Live')
+                    ->state(fn (Blog $record) => $record->published_at !== null && $record->published_at->isPast())
+                    ->boolean(),
+                Tables\Columns\TextColumn::make('published_at')
+                    ->label('Published')
+                    ->dateTime('M j, Y H:i')
+                    ->sortable(),
+            ])
+            ->filters([
+                Tables\Filters\Filter::make('published')
+                    ->label('Published only')
+                    ->query(fn (Builder $q) => $q->whereNotNull('published_at')->where('published_at', '<=', now())),
+                Tables\Filters\Filter::make('scheduled')
+                    ->label('Scheduled')
+                    ->query(fn (Builder $q) => $q->whereNotNull('published_at')->where('published_at', '>', now())),
+                Tables\Filters\Filter::make('draft')
+                    ->label('Drafts')
+                    ->query(fn (Builder $q) => $q->whereNull('published_at')),
+            ])
+            ->defaultSort('published_at', 'desc')
+            ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('publishNow')
+                        ->label('Publish now')
+                        ->icon('heroicon-o-rocket-launch')
+                        ->action(fn ($records) => $records->each->update(['published_at' => now()])),
+                    Tables\Actions\BulkAction::make('unpublish')
+                        ->label('Unpublish')
+                        ->icon('heroicon-o-eye-slash')
+                        ->requiresConfirmation()
+                        ->action(fn ($records) => $records->each->update(['published_at' => null])),
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

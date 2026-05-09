@@ -1,27 +1,27 @@
-<div id="gallery" class="py-24 bg-black">
+<div id="gallery" class="py-24 bg-black" data-reveal>
     <div class="container px-4 mx-auto">
-        <!-- Section Header -->
-        <div class="mb-16 text-center">
-            <h2 class="mb-3 text-sm tracking-wider text-gray-400 uppercase">Photos</h2>
-            <p class="text-4xl font-bold text-red-800">Some photos of Our Artists</p>
-        </div>
+        <x-section-header eyebrow="Photos" title="Some photos of Our Artists" />
 
-        <!-- Photo Grid -->
-        <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4" id="gallery">
+        <!-- Photo Grid (the outer section already carries id="gallery" so Fancybox binds correctly) -->
+        <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             @foreach($photos as $photo)
                 <div class="relative overflow-hidden aspect-square group rounded-xl">
-                    <a 
+                    <a
                         data-fancybox="gallery"
                         data-src="{{ asset('storage/' . $photo->image_path) }}"
-                        class="block w-full h-full"
+                        aria-label="Open {{ $photo->title }} in lightbox"
+                        class="block w-full h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                     >
-                        <img 
-                            src="{{ asset('storage/' . $photo->image_path) }}" 
+                        <img
+                            src="{{ asset('storage/' . $photo->image_path) }}"
                             alt="{{ $photo->title }}"
+                            width="600"
+                            height="600"
                             loading="lazy"
+                            decoding="async"
                             class="object-cover w-full h-full transition-transform duration-500 transform group-hover:scale-110"
                         >
-                        
+
                         <!-- Overlay -->
                         <div class="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent group-hover:opacity-100">
                             <div class="absolute bottom-0 left-0 right-0 p-4">

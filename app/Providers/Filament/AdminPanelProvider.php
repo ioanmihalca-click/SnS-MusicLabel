@@ -27,6 +27,10 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->brandName("Snow 'n' Stuff Admin")
+            ->favicon(asset('assets/favicon/favicon.ico'))
+            ->darkMode(true)
+            ->sidebarCollapsibleOnDesktop()
             ->colors([
                 'primary' => Color::Red,
             ])

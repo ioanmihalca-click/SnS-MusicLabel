@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -21,13 +22,24 @@ class Blog extends Model
         'cover_image',
     ];
 
-    protected $casts = [
-        'published_at' => 'datetime',
-    ];
-
-    public function setTitleAttribute($value)
+    protected function casts(): array
     {
-        $this->attributes['title'] = $value;
-        $this->attributes['slug'] = Str::slug($value);
+        return [
+            'published_at' => 'datetime',
+        ];
+    }
+
+    /**
+     * Auto-derive the slug from the title only when no slug exists yet.
+     * Preserves existing public URLs across title edits.
+     */
+    protected function title(): Attribute
+    {
+        return Attribute::set(function (string $value, array $attributes): array {
+            $attributes['title'] = $value;
+            $attributes['slug'] = $attributes['slug'] ?? Str::slug($value);
+
+            return $attributes;
+        });
     }
 }
