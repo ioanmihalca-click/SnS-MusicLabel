@@ -36,8 +36,6 @@
     <link rel="manifest" href="/assets/favicon/site.webmanifest" />
 
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.28/dist/fancybox/fancybox.css" />
-
     @verbatim
     <script type="application/ld+json">
     {
@@ -140,23 +138,6 @@
 
     <livewire:hero />
 
-
-
-    <!-- Latest Articles -->
-    {{-- <div class="max-w-3xl mx-auto mt-24">
-            <div class="mb-12 text-center">
-                <h2 class="text-sm tracking-wider text-gray-400 uppercase">Latest Updates</h2>
-                <p class="mt-2 text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-800 to-red-500">
-                    Recent News
-                </p>
-            </div>
-            <div class="relative overflow-hidden rounded-lg shadow-2xl shadow-red-900/20">
-                <livewire:latest-articles />
-            </div>
-        </div> --}}
-    </div>
-    </section>
-
     <!-- Content Sections -->
     <x-about />
     <livewire:artists />
@@ -169,8 +150,6 @@
     <x-footer />
 
     @livewireScripts
-
-    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.28/dist/fancybox/fancybox.umd.js"></script>
 </body>
 
 </html>

@@ -1,4 +1,5 @@
-import './bootstrap';
+import { Fancybox } from '@fancyapps/ui';
+import '@fancyapps/ui/dist/fancybox/fancybox.css';
 
 const fancyboxOptions = {
     compact: false,
@@ -14,23 +15,17 @@ const fancyboxOptions = {
         display: {
             left: [],
             middle: ['prev', 'next'],
-            right: ['close']
-        }
+            right: ['close'],
+        },
     },
     Carousel: {
         transition: false,
         friction: 0,
-    }
+    },
 };
 
-document.addEventListener('DOMContentLoaded', function() {
-    Fancybox.bind('#gallery [data-fancybox]', fancyboxOptions);
-});
+const bindFancybox = () => Fancybox.bind('#gallery [data-fancybox]', fancyboxOptions);
 
-document.addEventListener('livewire:navigated', () => {
-    Fancybox.bind('#gallery [data-fancybox]', fancyboxOptions);
-});
-
-window.addEventListener('photo-added', event => {
-    Fancybox.bind('#gallery [data-fancybox]', fancyboxOptions);
-});
+document.addEventListener('DOMContentLoaded', bindFancybox);
+document.addEventListener('livewire:navigated', bindFancybox);
+window.addEventListener('photo-added', bindFancybox);
