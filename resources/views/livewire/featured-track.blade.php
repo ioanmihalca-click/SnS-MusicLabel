@@ -25,7 +25,14 @@
             @endif
 
             <div class="flex-1 text-left min-w-0">
-                <p class="text-xs font-semibold tracking-widest text-red-500 uppercase">Now Spinning</p>
+                <p class="flex items-center gap-2 text-xs font-semibold tracking-widest text-red-500 uppercase">
+                    <span class="flex items-end gap-0.5 h-3" aria-hidden="true">
+                        <span class="eq-bar eq-bar-1 w-0.5 bg-red-500"></span>
+                        <span class="eq-bar eq-bar-2 w-0.5 bg-red-500"></span>
+                        <span class="eq-bar eq-bar-3 w-0.5 bg-red-500"></span>
+                    </span>
+                    Now Spinning
+                </p>
                 <p class="mt-0.5 font-medium text-white truncate">
                     <span class="block sm:inline">{{ $track->title }}</span>
                     <span class="hidden sm:inline text-gray-500"> &mdash; </span>

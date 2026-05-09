@@ -52,8 +52,12 @@
             <nav class="flex items-center justify-between py-4">
                 <!-- Logo -->
                 <a href="/"
-                    class="text-2xl font-bold tracking-tight text-white transition-colors duration-300 rounded hover:text-red-800 {{ $focusRing }}">
-                    Snow n Stuff
+                    aria-label="Snow 'n' Stuff homepage"
+                    class="group inline-flex items-center gap-2.5 text-white transition-colors duration-300 rounded hover:text-red-500 {{ $focusRing }}">
+                    <x-icons.logomark class="w-7 h-7 text-red-500 transition-transform duration-500 group-hover:rotate-180" />
+                    <span class="font-display font-black tracking-tight uppercase text-xl leading-none">
+                        <x-brand-name uppercase />
+                    </span>
                 </a>
 
                 <!-- Desktop Navigation -->

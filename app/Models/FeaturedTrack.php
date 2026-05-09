@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Database\Factories\FeaturedTrackFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,6 +21,14 @@ class FeaturedTrack extends Model
         'released_at',
         'order',
         'is_active',
+    ];
+
+    /**
+     * Mirror the migration defaults so unsaved instances behave consistently.
+     */
+    protected $attributes = [
+        'order' => 0,
+        'is_active' => true,
     ];
 
     protected function casts(): array
@@ -50,24 +59,27 @@ class FeaturedTrack extends Model
     /**
      * Best-effort extraction of the 22-char Spotify track ID from the canonical URL.
      */
-    public function getSpotifyTrackIdAttribute(): ?string
+    protected function spotifyTrackId(): Attribute
     {
-        if (! $this->spotify_track_url) {
-            return null;
-        }
+        return Attribute::get(function (): ?string {
+            if (! $this->spotify_track_url) {
+                return null;
+            }
 
-        preg_match('#/track/([A-Za-z0-9]+)#', $this->spotify_track_url, $matches);
+            preg_match('#/track/([A-Za-z0-9]+)#', $this->spotify_track_url, $matches);
 
-        return $matches[1] ?? null;
+            return $matches[1] ?? null;
+        });
     }
 
     /**
      * Embed src derived from the track ID, ready for any future inline-player option.
      */
-    public function getSpotifyEmbedSrcAttribute(): ?string
+    protected function spotifyEmbedSrc(): Attribute
     {
-        return $this->spotify_track_id
+        return Attribute::get(fn (): ?string => $this->spotify_track_id
             ? "https://open.spotify.com/embed/track/{$this->spotify_track_id}"
-            : null;
+            : null
+        );
     }
 }
