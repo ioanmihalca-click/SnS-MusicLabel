@@ -65,3 +65,18 @@ it('ignores a thumbnail that is not an https URL', function () {
 
     expect(app(SpotifyThumbnail::class)->urlFor(SpotifyUrl::parse('https://open.spotify.com/track/5LoRtT4HMphu4n2OyJn4Cr')))->toBeNull();
 });
+
+it('reads a cached thumbnail without ever calling Spotify', function () {
+    Http::fake([
+        'open.spotify.com/oembed*' => Http::response(['thumbnail_url' => 'https://image-cdn-ak.spotifycdn.com/image/cover']),
+    ]);
+    $cached = SpotifyUrl::parse('https://open.spotify.com/album/3zifCl5R2DaZGEmrPNUM1N');
+    $unknown = SpotifyUrl::parse('https://open.spotify.com/album/7kRBMHJQEsklIRTNH0qRfp');
+    $thumbnail = app(SpotifyThumbnail::class);
+
+    $thumbnail->urlFor($cached);
+
+    expect($thumbnail->cachedUrlFor($cached))->toBe('https://image-cdn-ak.spotifycdn.com/image/cover')
+        ->and($thumbnail->cachedUrlFor($unknown))->toBeNull();
+    Http::assertSentCount(1);
+});

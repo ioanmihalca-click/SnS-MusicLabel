@@ -4,7 +4,7 @@
 ])
 
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth theme-legacy">
 
 <x-partials.head :seo="$seo" :preload-image="$preloadImage" />
 

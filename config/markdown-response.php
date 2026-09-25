@@ -1,5 +1,6 @@
 <?php
 
+use App\Support\Seo\DecodeHtmlEntitiesPostprocessor;
 use App\Support\Seo\MainContentPreprocessor;
 use Spatie\MarkdownResponse\Actions\DetectsMarkdownRequest;
 use Spatie\MarkdownResponse\Actions\GeneratesCacheKey;
@@ -72,9 +73,13 @@ return [
     /*
      * Postprocessors are run on the markdown after conversion.
      * Each class must implement the Postprocessor interface.
+     *
+     * The converter leaves text HTML-escaped ("G&amp;S"); entities are
+     * decoded once the tags are gone.
      */
     'postprocessors' => [
         RemoveHtmlTagsPostprocessor::class,
+        DecodeHtmlEntitiesPostprocessor::class,
         CollapseBlankLinesPostprocessor::class,
     ],
 

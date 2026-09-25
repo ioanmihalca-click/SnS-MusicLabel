@@ -1,7 +1,11 @@
 <?php
 
+use App\Models\Artist;
 use App\Models\Blog;
+use App\Models\Photo;
+use App\Models\Playlist;
 use App\Models\Release;
+use App\Models\Track;
 use App\Support\Seo\IndexNow;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
@@ -30,7 +34,7 @@ it('submits every changed URL in one request once the response is sent', functio
     Http::fake([IndexNow::ENDPOINT => Http::response(null, 202)]);
 
     Blog::factory()->published()->create(['slug' => 'speak-to-me']);
-    Release::factory()->create();
+    Release::factory()->create(['title' => 'Speak To Me']);
 
     Http::assertNothingSent();
 
@@ -46,8 +50,55 @@ it('submits every changed URL in one request once the response is sent', functio
             'https://snow-n-stuff.com/blog',
             'https://snow-n-stuff.com/blog/speak-to-me',
             'https://snow-n-stuff.com/',
+            'https://snow-n-stuff.com/releases',
+            'https://snow-n-stuff.com/releases/speak-to-me',
         ]);
 });
+
+it('submits the pages that show a catalogue item', function (Closure $change, array $urls) {
+    $artist = Artist::factory()->create(['name' => 'G&S']);
+    $release = Release::factory()->create(['title' => 'Back to Black']);
+    $release->artists()->attach($artist);
+    config(['services.indexnow.enabled' => true]);
+    Http::fake([IndexNow::ENDPOINT => Http::response(null, 202)]);
+
+    $change($release, $artist);
+    defer()->invoke();
+
+    Http::assertSent(fn (Request $request): bool => $request['urlList'] === $urls);
+})->with([
+    'release edited' => [
+        fn (Release $release) => $release->update(['genre' => 'house']),
+        [
+            'https://snow-n-stuff.com/',
+            'https://snow-n-stuff.com/releases',
+            'https://snow-n-stuff.com/releases/back-to-black',
+            'https://snow-n-stuff.com/artists/g-and-s',
+        ],
+    ],
+    'artist slug changed' => [
+        fn (Release $release, Artist $artist) => $artist->update(['slug' => 'gs']),
+        [
+            'https://snow-n-stuff.com/',
+            'https://snow-n-stuff.com/artists',
+            'https://snow-n-stuff.com/artists/gs',
+            'https://snow-n-stuff.com/artists/g-and-s',
+            'https://snow-n-stuff.com/releases',
+        ],
+    ],
+    'track edited' => [
+        fn (Release $release) => Track::factory()->for($release)->create(),
+        ['https://snow-n-stuff.com/releases/back-to-black'],
+    ],
+    'playlist edited' => [
+        fn () => Playlist::factory()->create(),
+        ['https://snow-n-stuff.com/', 'https://snow-n-stuff.com/playlists'],
+    ],
+    'photo added' => [
+        fn () => Photo::factory()->create(),
+        ['https://snow-n-stuff.com/', 'https://snow-n-stuff.com/about'],
+    ],
+]);
 
 it('submits both the old and the new URL when a post slug changes', function () {
     $post = Blog::factory()->published()->create(['slug' => 'old-slug']);

@@ -7,11 +7,11 @@
         ['key' => 'linkedin', 'href' => 'https://www.linkedin.com/in/glenn-forrestgate-457228a9', 'aria' => 'Connect on LinkedIn'],
     ];
     $quickLinks = [
-        ['href' => '/#artists', 'label' => 'Our Artists'],
-        ['href' => '/#releases', 'label' => 'Latest Releases'],
-        ['href' => '/#playlists', 'label' => 'Playlists'],
-        ['href' => '/blog', 'label' => 'Blog'],
-        ['href' => '/#contact', 'label' => 'Contact'],
+        ['href' => route('artists.index'), 'label' => 'Our Artists'],
+        ['href' => route('releases.index'), 'label' => 'Latest Releases'],
+        ['href' => route('playlists.index'), 'label' => 'Playlists'],
+        ['href' => route('blog.index'), 'label' => 'Blog'],
+        ['href' => route('about').'#contact', 'label' => 'Contact'],
     ];
 @endphp
 

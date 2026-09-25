@@ -25,7 +25,7 @@ class Releases extends Component
             ->limit(self::RELEASES_LIMIT)
             ->get()
             ->each(function (Release $release): void {
-                $plain = trim(strip_tags((string) $release->description));
+                $plain = trim(html_entity_decode(strip_tags((string) $release->description), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
                 $release->setAttribute('plain_description', $plain);
                 $release->setAttribute(
                     'short_description',

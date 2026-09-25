@@ -24,9 +24,7 @@ class SpotifyThumbnail
 
     public function urlFor(SpotifyUrl $spotifyUrl): ?string
     {
-        $cacheKey = "spotify.thumbnail.{$spotifyUrl->type}.{$spotifyUrl->id}";
-
-        $cached = Cache::get($cacheKey);
+        $cached = Cache::get($this->cacheKey($spotifyUrl));
 
         if (is_array($cached) && array_key_exists('url', $cached)) {
             return $cached['url'];
@@ -35,12 +33,28 @@ class SpotifyThumbnail
         $thumbnailUrl = $this->fetch($spotifyUrl);
 
         Cache::put(
-            $cacheKey,
+            $this->cacheKey($spotifyUrl),
             ['url' => $thumbnailUrl],
             $thumbnailUrl === null ? self::FAILURE_TTL_SECONDS : self::SUCCESS_TTL_SECONDS,
         );
 
         return $thumbnailUrl;
+    }
+
+    /**
+     * The thumbnail only if an earlier lookup already cached it: never calls
+     * Spotify, so generated documents such as sitemap.xml stay fast.
+     */
+    public function cachedUrlFor(SpotifyUrl $spotifyUrl): ?string
+    {
+        $cached = Cache::get($this->cacheKey($spotifyUrl));
+
+        return is_array($cached) && is_string($cached['url'] ?? null) ? $cached['url'] : null;
+    }
+
+    private function cacheKey(SpotifyUrl $spotifyUrl): string
+    {
+        return "spotify.thumbnail.{$spotifyUrl->type}.{$spotifyUrl->id}";
     }
 
     private function fetch(SpotifyUrl $spotifyUrl): ?string

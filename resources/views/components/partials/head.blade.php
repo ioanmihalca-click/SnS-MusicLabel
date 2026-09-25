@@ -1,6 +1,7 @@
 @props([
     'seo' => new \App\Support\Seo\SeoData(path: request()->getPathInfo()),
     'preloadImage' => null,
+    'fonts' => 'big-shoulders-display:900|inter:400,500,600,700',
 ])
 
 <head>
@@ -25,7 +26,7 @@
     <link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
     <link
         rel="stylesheet"
-        href="https://fonts.bunny.net/css?family=big-shoulders-display:900|inter:400,500,600,700&display=swap"
+        href="https://fonts.bunny.net/css?family={{ $fonts }}&display=swap"
     />
 
     {{ $slot }}

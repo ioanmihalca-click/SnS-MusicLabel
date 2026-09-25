@@ -95,3 +95,47 @@ it('has no cover without an upload or a Spotify link', function () {
     expect($release->coverUrl())->toBeNull();
     Http::assertNothingSent();
 });
+
+it('listens through the smartlink, or else Spotify', function (?string $smartlink, ?string $spotify, ?string $listenUrl) {
+    $release = Release::factory()->make(['smartlink_url' => $smartlink, 'spotify_url' => $spotify]);
+
+    expect($release->listenUrl())->toBe($listenUrl);
+})->with([
+    'smartlink' => ['https://ditto.fm/fuego', 'https://open.spotify.com/album/7kRBMHJQEsklIRTNH0qRfp', 'https://ditto.fm/fuego'],
+    'Spotify only' => [null, 'https://open.spotify.com/album/7kRBMHJQEsklIRTNH0qRfp', 'https://open.spotify.com/album/7kRBMHJQEsklIRTNH0qRfp'],
+    'neither' => [null, null, null],
+]);
+
+it('splits the credit so that roster artists can be linked', function (?string $display, array $parts) {
+    $release = Release::factory()->create(['artist_display' => $display]);
+    $release->artists()->attach([
+        Artist::factory()->create(['name' => 'G&S', 'order' => 1])->id,
+        Artist::factory()->create(['name' => 'THK', 'order' => 2])->id,
+    ]);
+
+    $actual = collect($release->fresh()->creditParts())
+        ->map(fn (array $part): array => [$part['text'], $part['artist']?->name])
+        ->all();
+
+    expect($actual)->toBe($parts);
+})->with([
+    'linked artists only' => [null, [['G&S', 'G&S'], [' & ', null], ['THK', 'THK']]],
+    'typed credit with a guest' => ['THK & Pacha Man', [['THK', 'THK'], [' & ', null], ['Pacha Man', null]]],
+    'ampersand inside a name' => ['G&S, Nika Marula', [['G&S', 'G&S'], [', ', null], ['Nika Marula', null]]],
+]);
+
+it('summarises the description as plain text, or the facts without one', function () {
+    $described = Release::factory()->make(['description' => '<p>Big news from G&amp;S.</p><p>Out now.</p>']);
+    $legacy = Release::factory()->legacy()->make(['title' => 'Warrior', 'artist_display' => 'THK & Pacha Man', 'description' => null]);
+    $single = Release::factory()->make([
+        'title' => 'Fuego',
+        'artist_display' => 'Snow N Stuff',
+        'description' => null,
+        'format' => 'single',
+        'released_at' => '2025-10-17',
+    ]);
+
+    expect($described->summary())->toBe('Big news from G&S. Out now.')
+        ->and($legacy->summary())->toBe("Warrior: Release by THK & Pacha Man on Snow 'n' Stuff.")
+        ->and($single->summary())->toBe("Fuego: Single by Snow N Stuff on Snow 'n' Stuff, released 17 October 2025.");
+});

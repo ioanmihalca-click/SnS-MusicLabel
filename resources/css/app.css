@@ -55,9 +55,12 @@
 | "noise" — they'll just feel a tactile, less plastic surface).
 | Suppressed for users with prefers-reduced-motion.
 |
+| Legacy layouts only (<html class="theme-legacy">): the redesigned pages
+| (components.layouts.site) have a flat, cold ground.
+|
 */
 
-body::before {
+.theme-legacy body::before {
     content: "";
     position: fixed;
     inset: 0;
@@ -69,37 +72,67 @@ body::before {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    body::before {
+    .theme-legacy body::before {
         display: none;
     }
 }
 
 /*
 | ---------------------------------------------------------------------------
-| Scrollbar (WebKit + Firefox), brand-tinted.
+| Scrollbar (WebKit + Firefox), brand-tinted. Legacy layouts only.
 | ---------------------------------------------------------------------------
 */
 
-::-webkit-scrollbar {
+.theme-legacy::-webkit-scrollbar,
+.theme-legacy ::-webkit-scrollbar {
     width: 12px;
 }
 
-::-webkit-scrollbar-track {
+.theme-legacy::-webkit-scrollbar-track,
+.theme-legacy ::-webkit-scrollbar-track {
     background: rgb(var(--color-red-900) / 0.1);
 }
 
-::-webkit-scrollbar-thumb {
+.theme-legacy::-webkit-scrollbar-thumb,
+.theme-legacy ::-webkit-scrollbar-thumb {
     background: rgb(var(--color-red-900));
     border-radius: 6px;
 }
 
-::-webkit-scrollbar-thumb:hover {
+.theme-legacy::-webkit-scrollbar-thumb:hover,
+.theme-legacy ::-webkit-scrollbar-thumb:hover {
     background: rgb(var(--color-red-800));
 }
 
-* {
+.theme-legacy,
+.theme-legacy * {
     scrollbar-width: thin;
     scrollbar-color: rgb(var(--color-red-900)) rgb(var(--color-red-900) / 0.1);
+}
+
+/*
+| ---------------------------------------------------------------------------
+| Redesigned pages (<html class="theme-site">, components.layouts.site).
+| ---------------------------------------------------------------------------
+|
+| Everything else is Tailwind utilities built on the colour and font tokens
+| in tailwind.config.js (ink, slab, rule, frost, mist, dim, signal; body,
+| meta, display).
+|
+*/
+
+.theme-site {
+    color-scheme: dark;
+    overflow-x: clip;
+}
+
+.theme-site :focus-visible {
+    outline: 2px solid theme('colors.frost');
+    outline-offset: 3px;
+}
+
+.theme-site :is(h1, h2, h3) {
+    text-wrap: balance;
 }
 
 /*
@@ -185,4 +218,11 @@ body::before {
 
 @media (prefers-reduced-motion: reduce) {
     .animate-brand-pulse, .animate-brand-orbit { animation: none; }
+}
+
+@layer components {
+    /* The page column of the redesigned pages: 1320px wide, fluid 16-48px gutters. */
+    .site-wrap {
+        @apply mx-auto w-full max-w-site px-[clamp(16px,4vw,48px)];
+    }
 }

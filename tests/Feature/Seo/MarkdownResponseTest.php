@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Artist;
 use App\Models\Blog;
 
 it('serves the homepage as Markdown to clients that accept it', function (string $uri, array $headers) {
@@ -63,4 +64,27 @@ it('reflects an edited post straight away', function () {
 
 it('returns 404 for the Markdown version of a missing page', function () {
     $this->get('/blog/nonexistent-slug.md')->assertNotFound();
+});
+
+it('decodes HTML entities, so "G&S" does not read "G&amp;S"', function () {
+    fakeSpotifyThumbnails();
+    Artist::factory()->create(['name' => 'G&S', 'description' => '<p>G&amp;S is back with Back to Black.</p>']);
+
+    $markdown = $this->get('/index.md')->assertOk()->getContent();
+
+    expect($markdown)
+        ->toContain('THK · G&S')
+        ->toContain('G&S is back with Back to Black.')
+        ->toContain('Artists and Repertoire (A&R)')
+        ->not->toContain('&amp;')
+        ->not->toContain('&#039;');
+});
+
+it('writes definition lists and links without stray whitespace', function () {
+    $markdown = $this->get('/about.md')->assertOk()->getContent();
+
+    expect($markdown)
+        ->toContain('Demo: demo@1namm.com')
+        ->toContain('[LinkedIn ↗](https://www.linkedin.com/in/glenn-forrestgate-457228a9)')
+        ->toContain("# About\n");
 });

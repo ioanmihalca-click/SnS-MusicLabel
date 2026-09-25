@@ -16,7 +16,7 @@ class Artists extends Component
             ->orderBy('order')
             ->get()
             ->each(function (Artist $artist): void {
-                $plain = trim(strip_tags((string) $artist->description));
+                $plain = trim(html_entity_decode(strip_tags((string) $artist->description), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
                 $artist->setAttribute('plain_description', $plain);
                 $artist->setAttribute(
                     'short_description',

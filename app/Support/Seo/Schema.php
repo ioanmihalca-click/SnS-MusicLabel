@@ -2,7 +2,13 @@
 
 namespace App\Support\Seo;
 
+use App\Enums\ReleaseFormat;
+use App\Models\Artist;
 use App\Models\Blog;
+use App\Models\Playlist;
+use App\Models\Release;
+use App\Models\Track;
+use App\Support\PlainText;
 
 /**
  * schema.org JSON-LD nodes. Every page prints a single `@graph`: the label and
@@ -136,6 +142,101 @@ final class Schema
     }
 
     /**
+     * A release, with its tracklist and its digital release on the label.
+     * Expects the `artists` and `tracks` relations to be loaded.
+     *
+     * @return array<string, mixed>
+     */
+    public static function musicAlbum(Release $release): array
+    {
+        $url = self::releaseUrl($release);
+
+        return self::withoutBlanks([
+            '@type' => 'MusicAlbum',
+            '@id' => $url.'#album',
+            'name' => $release->title,
+            'url' => $url,
+            'description' => PlainText::fromHtml($release->description) ?: $release->summary(),
+            'image' => $release->coverUrl(),
+            'datePublished' => $release->released_at?->toDateString(),
+            'genre' => $release->genre?->getLabel(),
+            'albumReleaseType' => match ($release->format) {
+                ReleaseFormat::Single => 'https://schema.org/SingleRelease',
+                ReleaseFormat::Ep => 'https://schema.org/EPRelease',
+                ReleaseFormat::Album, ReleaseFormat::Compilation => 'https://schema.org/AlbumRelease',
+                null => null,
+            },
+            'albumProductionType' => $release->format === ReleaseFormat::Compilation
+                ? 'https://schema.org/CompilationAlbum'
+                : null,
+            'byArtist' => self::releaseArtists($release),
+            'numTracks' => $release->tracks->count() ?: null,
+            'track' => $release->tracks
+                ->map(fn (Track $track): array => self::musicRecording($track, $url.'#album'))
+                ->all(),
+            'albumRelease' => [
+                self::withoutBlanks([
+                    '@type' => 'MusicRelease',
+                    '@id' => $url.'#release',
+                    'name' => $release->title,
+                    'url' => $url,
+                    'datePublished' => $release->released_at?->toDateString(),
+                    'musicReleaseFormat' => 'https://schema.org/DigitalFormat',
+                    'recordLabel' => ['@id' => self::organizationId()],
+                ]),
+            ],
+        ]);
+    }
+
+    /**
+     * An artist of the roster, linked to their own profiles (never to the label's).
+     * Expects the `releases` relation to be loaded.
+     *
+     * @return array<string, mixed>
+     */
+    public static function musicGroup(Artist $artist): array
+    {
+        return self::withoutBlanks([
+            ...self::artistReference($artist),
+            'description' => PlainText::fromHtml($artist->description) ?: $artist->summary(),
+            'image' => $artist->photoUrl(),
+            'sameAs' => array_values($artist->profileUrls()),
+            'genre' => $artist->releases
+                ->map(fn (Release $release): ?string => $release->genre?->getLabel())
+                ->filter()
+                ->unique()
+                ->values()
+                ->all(),
+            'album' => $artist->releases
+                ->map(fn (Release $release): array => [
+                    '@type' => 'MusicAlbum',
+                    '@id' => self::releaseUrl($release).'#album',
+                    'name' => $release->title,
+                    'url' => self::releaseUrl($release),
+                ])
+                ->all(),
+        ]);
+    }
+
+    /**
+     * A Spotify playlist curated by the label.
+     *
+     * @return array<string, mixed>
+     */
+    public static function musicPlaylist(Playlist $playlist): array
+    {
+        return self::withoutBlanks([
+            '@type' => 'MusicPlaylist',
+            '@id' => PublicUrl::to(route('playlists.index', absolute: false)).'#playlist-'.$playlist->id,
+            'name' => $playlist->displayTitle(),
+            'description' => $playlist->description,
+            'url' => $playlist->spotify_url,
+            'image' => $playlist->coverUrl(),
+            'author' => ['@id' => self::organizationId()],
+        ]);
+    }
+
+    /**
      * The page's JSON-LD document: the label, the website, then the given nodes.
      *
      * @param  list<array<string, mixed>>  $nodes
@@ -146,5 +247,67 @@ final class Schema
             '@context' => 'https://schema.org',
             '@graph' => [self::organization(), self::website(), ...$nodes],
         ], self::JSON_FLAGS);
+    }
+
+    private static function releaseUrl(Release $release): string
+    {
+        return PublicUrl::to(route('releases.show', $release->slug, absolute: false));
+    }
+
+    /**
+     * The artist as referenced from other nodes; the artist page adds the details.
+     *
+     * @return array{'@type': string, '@id': string, name: string, url: string}
+     */
+    private static function artistReference(Artist $artist): array
+    {
+        $url = PublicUrl::to(route('artists.show', $artist->slug, absolute: false));
+
+        return [
+            '@type' => 'MusicGroup',
+            '@id' => $url.'#artist',
+            'name' => $artist->name,
+            'url' => $url,
+        ];
+    }
+
+    /**
+     * The roster artists linked to the release, or its typed credit when none is linked.
+     *
+     * @return list<array<string, string>>
+     */
+    private static function releaseArtists(Release $release): array
+    {
+        if ($release->artists->isNotEmpty()) {
+            return $release->artists->map(fn (Artist $artist): array => self::artistReference($artist))->values()->all();
+        }
+
+        return filled($release->credit) ? [['@type' => 'MusicGroup', 'name' => $release->credit]] : [];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function musicRecording(Track $track, string $albumId): array
+    {
+        return self::withoutBlanks([
+            '@type' => 'MusicRecording',
+            'name' => $track->fullTitle(),
+            'position' => $track->position,
+            'duration' => $track->isoDuration(),
+            'isrcCode' => $track->isrc,
+            'inAlbum' => ['@id' => $albumId],
+        ]);
+    }
+
+    /**
+     * Drop the properties without a value (null, empty strings and empty lists).
+     *
+     * @param  array<string, mixed>  $node
+     * @return array<string, mixed>
+     */
+    private static function withoutBlanks(array $node): array
+    {
+        return array_filter($node, fn (mixed $value): bool => filled($value));
     }
 }

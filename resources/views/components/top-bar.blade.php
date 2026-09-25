@@ -1,14 +1,14 @@
 @php
     $focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 focus-visible:ring-offset-black';
     $navLinks = [
-        ['href' => '/', 'label' => 'Home'],
-        ['href' => '/#about', 'label' => 'About'],
-        ['href' => '/#artists', 'label' => 'Artists'],
-        ['href' => '/#releases', 'label' => 'Releases'],
-        ['href' => '/#playlists', 'label' => 'Playlists'],
-        ['href' => '/#gallery', 'label' => 'Gallery'],
-        ['href' => '/blog', 'label' => 'Blog'],
-        ['href' => '/#contact', 'label' => 'Contact'],
+        ['href' => route('home'), 'label' => 'Home'],
+        ['href' => route('about'), 'label' => 'About'],
+        ['href' => route('artists.index'), 'label' => 'Artists'],
+        ['href' => route('releases.index'), 'label' => 'Releases'],
+        ['href' => route('playlists.index'), 'label' => 'Playlists'],
+        ['href' => route('about').'#gallery', 'label' => 'Gallery'],
+        ['href' => route('blog.index'), 'label' => 'Blog'],
+        ['href' => route('about').'#contact', 'label' => 'Contact'],
     ];
 @endphp
 

@@ -47,10 +47,65 @@ final class MainContentPreprocessor implements Preprocessor
             $element->remove();
         }
 
+        // Comments (e.g. Livewire's `<!--[if BLOCK]>` markers) and removals leave neighbouring
+        // text nodes apart; merged, their whitespace can be trimmed as one.
+        foreach (iterator_to_array((new XPath($document))->query('.//comment()', $content), false) as $comment) {
+            $comment->remove();
+        }
+
+        $content->normalize();
+
         $this->unwrapEmailLinks($content);
         $this->trimWhitespaceAroundBlocks($document, $content);
+        $this->trimWhitespaceInsideLinks($document, $content);
+        $this->separateTermsFromDescriptions($content);
 
         return $content->innerHTML;
+    }
+
+    /**
+     * The converter has no definition lists: "Released" and "04.04.2025" would
+     * run together, so each term ends with a colon.
+     */
+    private function separateTermsFromDescriptions(Element $content): void
+    {
+        foreach ($content->querySelectorAll('dt') as $term) {
+            $term->append(str_ends_with(rtrim($term->textContent), ':') ? ' ' : ': ');
+        }
+    }
+
+    /**
+     * "[Listen now](...)" rather than "[ Listen now ](...)": the template
+     * whitespace around a link's text (often next to a removed icon) goes.
+     */
+    private function trimWhitespaceInsideLinks(HTMLDocument $document, Element $content): void
+    {
+        $xpath = new XPath($document);
+
+        foreach ($content->querySelectorAll('a') as $link) {
+            /** @var list<Text> $textNodes */
+            $textNodes = iterator_to_array($xpath->query('.//text()', $link), false);
+
+            $this->trimEdge($textNodes, fn (Text $text): string => ltrim($text->data));
+            $this->trimEdge(array_reverse($textNodes), fn (Text $text): string => rtrim($text->data));
+        }
+    }
+
+    /**
+     * Trim the first text nodes of the list until one keeps some text.
+     *
+     * @param  list<Text>  $textNodes
+     * @param  callable(Text): string  $trim
+     */
+    private function trimEdge(array $textNodes, callable $trim): void
+    {
+        foreach ($textNodes as $text) {
+            $text->data = $trim($text);
+
+            if ($text->data !== '') {
+                return;
+            }
+        }
     }
 
     /**

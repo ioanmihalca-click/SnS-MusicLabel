@@ -2,12 +2,17 @@
 
 namespace App\Support\Seo;
 
+use App\Http\Controllers\AboutController;
+use App\Http\Controllers\ArtistController;
+use App\Http\Controllers\PlaylistsController;
 use App\Livewire\BlogIndex;
+use App\Livewire\ReleaseCatalogue;
 use App\Models\Artist;
 use App\Models\Blog;
 use App\Models\Photo;
 use App\Models\Playlist;
 use App\Models\Release;
+use App\Models\Track;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -21,6 +26,10 @@ final class PublicPages
 {
     public const SECTION_PAGES = 'Pages';
 
+    public const SECTION_RELEASES = 'Releases';
+
+    public const SECTION_ARTISTS = 'Artists';
+
     public const SECTION_BLOG = 'Blog';
 
     /**
@@ -30,9 +39,22 @@ final class PublicPages
      */
     public function all(): Collection
     {
+        $releases = Release::query()->with('artists')->newestFirst()->get();
+        $artists = Artist::query()->with('releases')->inRosterOrder()->get();
+        $playlists = Playlist::query()->active()->get();
+        $photos = Photo::query()->get();
         $posts = Blog::query()->published()->latest('published_at')->get();
 
-        return collect([$this->home(), $this->blogIndex($posts)])
+        return collect([
+            $this->home(),
+            $this->about($photos),
+            $this->playlists($playlists),
+            $this->releaseCatalogue($releases),
+        ])
+            ->concat($releases->map(fn (Release $release): PublicPage => $this->release($release)))
+            ->push($this->artistIndex($artists))
+            ->concat($artists->map(fn (Artist $artist): PublicPage => $this->artist($artist)))
+            ->push($this->blogIndex($posts))
             ->concat($posts->map(fn (Blog $post): PublicPage => $this->blogPost($post)));
     }
 
@@ -46,7 +68,21 @@ final class PublicPages
     {
         $paths = match (true) {
             $model instanceof Blog => $this->blogPaths($model),
-            $model instanceof Release, $model instanceof Artist, $model instanceof Playlist, $model instanceof Photo => ['/'],
+            $model instanceof Release => [
+                '/',
+                route('releases.index', absolute: false),
+                ...$this->slugPaths($model, 'releases.show'),
+                ...$model->artists()->pluck('slug')->map(fn (string $slug): string => route('artists.show', $slug, absolute: false)),
+            ],
+            $model instanceof Track => $model->release === null ? [] : $this->slugPaths($model->release, 'releases.show'),
+            $model instanceof Artist => [
+                '/',
+                route('artists.index', absolute: false),
+                ...$this->slugPaths($model, 'artists.show'),
+                route('releases.index', absolute: false),
+            ],
+            $model instanceof Playlist => ['/', route('playlists.index', absolute: false)],
+            $model instanceof Photo => ['/', route('about', absolute: false)],
             default => [],
         };
 
@@ -55,18 +91,94 @@ final class PublicPages
 
     private function home(): PublicPage
     {
-        $lastModifiedAt = collect([Release::class, Artist::class, Playlist::class, Photo::class])
-            ->map(fn (string $model): mixed => $model::query()->max('updated_at'))
-            ->filter()
-            ->map(fn (mixed $updatedAt): CarbonInterface => Carbon::parse($updatedAt))
-            ->max();
-
         return new PublicPage(
             path: '/',
             title: 'Home',
             description: SeoData::DEFAULT_DESCRIPTION,
             section: self::SECTION_PAGES,
-            lastModifiedAt: $lastModifiedAt,
+            lastModifiedAt: $this->lastUpdatedAt(Release::class, Artist::class, Playlist::class, Photo::class),
+        );
+    }
+
+    /**
+     * @param  Collection<int, Photo>  $photos
+     */
+    private function about(Collection $photos): PublicPage
+    {
+        return new PublicPage(
+            path: route('about', absolute: false),
+            title: 'About',
+            description: AboutController::DESCRIPTION,
+            section: self::SECTION_PAGES,
+            lastModifiedAt: $this->latest($photos),
+            images: $photos->map(fn (Photo $photo): string => $photo->imageUrl())->all(),
+        );
+    }
+
+    /**
+     * @param  Collection<int, Playlist>  $playlists
+     */
+    private function playlists(Collection $playlists): PublicPage
+    {
+        return new PublicPage(
+            path: route('playlists.index', absolute: false),
+            title: 'Playlists',
+            description: PlaylistsController::DESCRIPTION,
+            section: self::SECTION_PAGES,
+            lastModifiedAt: $this->latest($playlists),
+            images: $playlists->map(fn (Playlist $playlist): ?string => $playlist->cachedArtworkUrl())->filter()->values()->all(),
+        );
+    }
+
+    /**
+     * @param  Collection<int, Release>  $releases
+     */
+    private function releaseCatalogue(Collection $releases): PublicPage
+    {
+        return new PublicPage(
+            path: route('releases.index', absolute: false),
+            title: 'Releases',
+            description: ReleaseCatalogue::DESCRIPTION,
+            section: self::SECTION_RELEASES,
+            lastModifiedAt: $this->latest($releases),
+        );
+    }
+
+    private function release(Release $release): PublicPage
+    {
+        return new PublicPage(
+            path: route('releases.show', $release->slug, absolute: false),
+            title: filled($release->credit) ? "{$release->title} by {$release->credit}" : $release->title,
+            description: $release->summary(),
+            section: self::SECTION_RELEASES,
+            lastModifiedAt: $release->updated_at,
+            images: array_values(array_filter([$release->cachedArtworkUrl()])),
+        );
+    }
+
+    /**
+     * @param  Collection<int, Artist>  $artists
+     */
+    private function artistIndex(Collection $artists): PublicPage
+    {
+        return new PublicPage(
+            path: route('artists.index', absolute: false),
+            title: 'Artists',
+            description: ArtistController::DESCRIPTION,
+            section: self::SECTION_ARTISTS,
+            lastModifiedAt: $this->latest($artists),
+        );
+    }
+
+    private function artist(Artist $artist): PublicPage
+    {
+        return new PublicPage(
+            path: route('artists.show', $artist->slug, absolute: false),
+            title: $artist->name,
+            description: $artist->summary(),
+            section: self::SECTION_ARTISTS,
+            lastModifiedAt: $this->latest(collect([$artist])->concat($artist->releases)),
+            images: array_values(array_filter([$artist->cachedArtworkUrl()])),
         );
     }
 
@@ -94,6 +206,42 @@ final class PublicPages
             lastModifiedAt: $post->lastModifiedAt(),
             images: array_values(array_filter([$post->coverUrl()])),
         );
+    }
+
+    /**
+     * The most recent `updated_at` of the given models.
+     *
+     * @param  Collection<int, Model>  $models
+     */
+    private function latest(Collection $models): ?CarbonInterface
+    {
+        return $models->map(fn (Model $model): ?CarbonInterface => $model->updated_at)->filter()->max();
+    }
+
+    /**
+     * The most recent `updated_at` across whole tables.
+     *
+     * @param  class-string<Model>  ...$models
+     */
+    private function lastUpdatedAt(string ...$models): ?CarbonInterface
+    {
+        return collect($models)
+            ->map(fn (string $model): mixed => $model::query()->max('updated_at'))
+            ->filter()
+            ->map(fn (mixed $updatedAt): CarbonInterface => Carbon::parse($updatedAt))
+            ->max();
+    }
+
+    /**
+     * The model's page, plus its previous URL when the slug changed.
+     *
+     * @return list<string>
+     */
+    private function slugPaths(Release|Artist $model, string $routeName): array
+    {
+        $slugs = array_unique(array_filter([$model->slug, $model->getOriginal('slug')]));
+
+        return array_values(array_map(fn (string $slug): string => route($routeName, $slug, absolute: false), $slugs));
     }
 
     /**

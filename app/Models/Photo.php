@@ -16,4 +16,9 @@ class Photo extends Model
         'title',
         'image_path',
     ];
+
+    public function imageUrl(): string
+    {
+        return asset('storage/'.$this->image_path);
+    }
 }
