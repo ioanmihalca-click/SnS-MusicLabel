@@ -25,7 +25,7 @@
 
                     <!-- Spotify Embed -->
                     <div class="relative mb-6 overflow-hidden rounded-lg">
-                        {!! $release->spotify_embed_code !!}
+                        <x-spotify-embed :url="$release->spotify_url" />
                     </div>
 
                     <!-- Description -->

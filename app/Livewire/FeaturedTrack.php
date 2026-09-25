@@ -2,20 +2,19 @@
 
 namespace App\Livewire;
 
-use App\Models\FeaturedTrack as FeaturedTrackModel;
+use App\Models\Release;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 class FeaturedTrack extends Component
 {
-    public function render()
+    public function render(): View
     {
-        $track = FeaturedTrackModel::query()
-            ->active()
-            ->ordered()
-            ->first();
+        $release = Release::featured()->with('artists')->first();
 
         return view('livewire.featured-track', [
-            'track' => $track,
+            'release' => $release,
+            'coverUrl' => $release?->coverUrl(),
         ]);
     }
 }

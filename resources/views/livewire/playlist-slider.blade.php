@@ -32,7 +32,7 @@
                         @if ($currentIndex !== $index) aria-hidden="true" @endif
                     >
                         <div class="w-full h-full [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:rounded-lg">
-                            {!! $playlist->spotify_embed_url !!}
+                            <x-spotify-embed :url="$playlist->spotify_url" />
                         </div>
                     </div>
                 @endforeach

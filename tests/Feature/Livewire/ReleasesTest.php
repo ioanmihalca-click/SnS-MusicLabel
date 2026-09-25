@@ -36,3 +36,13 @@ it('exposes server-side truncation attributes on releases', function () {
     expect($release->is_truncated)->toBeTrue();
     expect($release->plain_description)->not->toContain('<p>');
 });
+
+it('renders a Spotify player only for releases with a Spotify link', function () {
+    Release::factory()->create(['spotify_url' => 'https://open.spotify.com/track/3kxXDXxBbNYcwoKJasfW8X']);
+    Release::factory()->create(['spotify_url' => null, 'smartlink_url' => 'https://distrokid.com/hyperfollow/snownstuff/soon']);
+
+    $html = Livewire::test(Releases::class)->html();
+
+    expect($html)->toContain('src="https://open.spotify.com/embed/track/3kxXDXxBbNYcwoKJasfW8X"')
+        ->and(substr_count($html, '<iframe'))->toBe(1);
+});

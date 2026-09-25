@@ -1,0 +1,660 @@
+{
+    "_about": "Curated catalogue data for the one-off `php artisan catalog:backfill` (stage 1 of the redesign). Sources: snow-n-stuff.com (titles, descriptions, credits, DJ support, charts) and public Spotify pages (release dates, tracklists, durations). Genres for some releases are inferred from their descriptions; review in the admin.",
+    "releases": {
+        "4ZyLmBV36fgNyo3IAM8xc3": {
+            "type": "track",
+            "legacy_title": "Snow N Stuff - I know",
+            "title": "I Know",
+            "artist_display": null,
+            "artists": [
+                "snow-n-stuff"
+            ],
+            "released_at": "2026-07-17",
+            "format": "single",
+            "genre": "deep-house",
+            "smartlink_url": null,
+            "support": [],
+            "chart_position": null,
+            "chart_name": null,
+            "description": "<p>Dim lights in an Ibiza club... just her silhouette moving with the groove. I lean in and say, 'Let me talk to you, you look really fine.' She turns and hits me with that confident 'I know'... ? That's the playful spark on 'I Know' by Snow N Stuff - smooth flirty conversation drifting over warm, laid-back deep house beats, sunny basslines, and that effortless happy energy. Sexy yet totally relaxed, like a perfect sunset-to-night island vibe. Pure feel-good seduction for the dancefloor.'</p>",
+            "tracks": [
+                {
+                    "title": "I Know",
+                    "version": "Edit",
+                    "duration": "3:15",
+                    "isrc": null
+                }
+            ]
+        },
+        "3kxXDXxBbNYcwoKJasfW8X": {
+            "type": "track",
+            "legacy_title": "Snow N Stuff - °The Change°",
+            "title": "The Change",
+            "artist_display": null,
+            "artists": [
+                "snow-n-stuff"
+            ],
+            "released_at": "2026-05-08",
+            "format": "single",
+            "genre": "techno",
+            "smartlink_url": null,
+            "support": [
+                "Paul van Dyk"
+            ],
+            "chart_position": null,
+            "chart_name": null,
+            "description": "<p>We’re absolutely fired up to drop our new single THE CHANGE.This one is pure rave energy — a straight-up call to lose yourself on the dancefloor, forget your problems, and ride the moment like the old-school raves used to do it. Phones away, hands up, fully alive.Big thanks to the legend Paul van Dyk for premiering it on VONYC Sessions 1016 — we’re still buzzing from that honor.Go check it out now.Snow N Stuff – THE CHANGE</p>",
+            "tracks": [
+                {
+                    "title": "The Change",
+                    "version": null,
+                    "duration": "4:40",
+                    "isrc": null
+                }
+            ]
+        },
+        "7kRBMHJQEsklIRTNH0qRfp": {
+            "type": "album",
+            "legacy_title": "Snow N Stuff - Fuego",
+            "title": "Fuego",
+            "artist_display": null,
+            "artists": [
+                "snow-n-stuff"
+            ],
+            "released_at": "2025-10-17",
+            "format": "single",
+            "genre": "melodic-techno",
+            "smartlink_url": null,
+            "support": [],
+            "chart_position": null,
+            "chart_name": null,
+            "description": "<p>“Fuego” was born under Ibiza nights, where Latin rhythms lit the air and techno shook the ground. From those moments grew a sound—wild, soulful, untamed. Countless hours in the studio shaped it into form: a lone Latin voice soaring over heavy bass and shimmering synths. Not polished pop, but raw energy—made for the rave, alive in both worlds. Snow N Stuff has garnered support from major names in the industry. Their ability to straddle genre boundaries while maintaining a distinct sound has made them one of the most exciting acts in melodic techno today.</p>",
+            "tracks": [
+                {
+                    "title": "Fuego",
+                    "version": "Edit",
+                    "duration": "3:09",
+                    "isrc": null
+                },
+                {
+                    "title": "Fuego",
+                    "version": null,
+                    "duration": "4:33",
+                    "isrc": null
+                }
+            ]
+        },
+        "0h3VFLUBNtmIVtg3vHtoFn": {
+            "type": "album",
+            "legacy_title": "Snow N Stuff - Galaxy",
+            "title": "Galaxy",
+            "artist_display": null,
+            "artists": [
+                "snow-n-stuff"
+            ],
+            "released_at": "2025-08-22",
+            "format": "single",
+            "genre": "melodic-techno",
+            "smartlink_url": null,
+            "support": [],
+            "chart_position": null,
+            "chart_name": null,
+            "description": "<p>Enjoy a trip through a melodic techno Galaxy!</p>",
+            "tracks": [
+                {
+                    "title": "Galaxy",
+                    "version": "Edit",
+                    "duration": "3:26",
+                    "isrc": null
+                },
+                {
+                    "title": "Galaxy",
+                    "version": null,
+                    "duration": "5:06",
+                    "isrc": null
+                }
+            ]
+        },
+        "1kWeVvSfldcUBFeYwVSNOF": {
+            "type": "album",
+            "legacy_title": "Frozen in Time: The Snow N Stuff Years (2019-2024) (Compilation)",
+            "title": "Frozen in Time: The Snow N Stuff Years (2019–2024)",
+            "artist_display": null,
+            "artists": [
+                "snow-n-stuff"
+            ],
+            "released_at": "2025-06-27",
+            "format": "compilation",
+            "genre": "techno",
+            "smartlink_url": null,
+            "support": [],
+            "chart_position": null,
+            "chart_name": null,
+            "description": "<p>Snow N Stuff is a boundary-pushing techno project born in the icy underground of Northern Europe. Since 2019, the act has carved out a unique sonic identity—blending glacial textures, pulsating rhythms, and nostalgic rave energy into a sound that feels both timeless and futuristic. Over the first five years (2019–2024), Snow N Stuff has gained momentum across the global electronic scene, earning support from top-tier DJs and airplay on major stations like BBC Radio and NRJ France. Known for emotionally charged live sets and meticulously crafted productions, Snow N Stuff has become a name synonymous with deep, atmospheric techno that resonates on dancefloors and headphones alike. Whether it’s a sunrise set at a remote festival or a late-night radio takeover, Snow N Stuff continues to echo through the scene—one pulse at a time.</p>",
+            "tracks": [
+                {
+                    "title": "OnE",
+                    "version": "Edit",
+                    "duration": "3:33",
+                    "isrc": null
+                },
+                {
+                    "title": "Heating Plates",
+                    "version": "Edit",
+                    "duration": "3:30",
+                    "isrc": null
+                },
+                {
+                    "title": "3 Fat Pigs on Acid",
+                    "version": "Edit",
+                    "duration": "3:32",
+                    "isrc": null
+                },
+                {
+                    "title": "The Light",
+                    "version": "Edit",
+                    "duration": "3:11",
+                    "isrc": null
+                },
+                {
+                    "title": "Mystic",
+                    "version": "Edit",
+                    "duration": "4:07",
+                    "isrc": null
+                },
+                {
+                    "title": "Matrix Glitch",
+                    "version": "Edit",
+                    "duration": "4:09",
+                    "isrc": null
+                }
+            ]
+        },
+        "4gXoCN8EgRwx5zyiKZnpfM": {
+            "type": "album",
+            "legacy_title": "Snow N Stuff - °White Lotus°",
+            "title": "White Lotus",
+            "artist_display": null,
+            "artists": [
+                "snow-n-stuff"
+            ],
+            "released_at": "2025-05-16",
+            "format": "single",
+            "genre": "melodic-techno",
+            "smartlink_url": null,
+            "support": [],
+            "chart_position": null,
+            "chart_name": null,
+            "description": "<p>White Lotus is a progressive melodic techno track released by Snow n Stuff on their own imprint, Snow 'n' Stuff Records. The track weaves hypnotic rhythms with atmospheric textures, creating a deep, immersive listening experience.   While White Lotus hasn't charted on Beatport’s HYPE Top 100, it stands out in the underground scene for its lush sound design and emotional resonance. Its calming, introspective mood makes it ideal for sunset sets, afterhours, or personal chill sessions.</p>",
+            "tracks": [
+                {
+                    "title": "White Lotus",
+                    "version": "Edit",
+                    "duration": "3:27",
+                    "isrc": null
+                },
+                {
+                    "title": "White Lotus",
+                    "version": null,
+                    "duration": "5:25",
+                    "isrc": null
+                },
+                {
+                    "title": "White Lotus",
+                    "version": "Instrumental",
+                    "duration": "5:25",
+                    "isrc": null
+                }
+            ]
+        },
+        "3zifCl5R2DaZGEmrPNUM1N": {
+            "type": "album",
+            "legacy_title": "Snow N Stuff - Speak to me",
+            "title": "Speak To Me",
+            "artist_display": null,
+            "artists": [
+                "snow-n-stuff"
+            ],
+            "released_at": "2025-04-04",
+            "format": "single",
+            "genre": "melodic-techno",
+            "smartlink_url": null,
+            "support": [
+                "Gareth Emery",
+                "Joseph Capriati",
+                "Paco Osuna",
+                "Oliver Heldens",
+                "Richie Hawtin",
+                "Don Diablo"
+            ],
+            "chart_position": "#59",
+            "chart_name": "Beatport Hype",
+            "description": "<p>🚨 Big News! 🚨 Our latest release \"Speak to Me\" is out now, and it's already making waves—charting at #59 on Beatport HYPE! 🎧🔥 This track is all about deep vibes, hypnotic melodies, and driving basslines. \"Speak to Me\" is making waves with huge DJ support from Gareth Emery, Joseph Capriati, Paco Osuna, Oliver Heldens, Richie Hawtin, and Don Diablo! 🔥 With legends like these backing the track, the hype is only getting bigger!   Big thanks to everyone supporting—let’s keep this momentum rolling! 🙌🎶</p>",
+            "tracks": [
+                {
+                    "title": "Speak To Me",
+                    "version": "Edit",
+                    "duration": "3:45",
+                    "isrc": null
+                },
+                {
+                    "title": "Speak To Me",
+                    "version": null,
+                    "duration": "6:44",
+                    "isrc": null
+                }
+            ]
+        },
+        "4zXfAKSP8QWHVAmSICOax3": {
+            "type": "album",
+            "legacy_title": "Snow N Stuff - °Rude Boy°",
+            "title": "Rude Boy",
+            "artist_display": null,
+            "artists": [
+                "snow-n-stuff"
+            ],
+            "released_at": "2025-02-21",
+            "format": "single",
+            "genre": "techno",
+            "smartlink_url": null,
+            "support": [],
+            "chart_position": null,
+            "chart_name": null,
+            "description": "<p>\"Rudeboy\" by Snow n Stuff draws inspiration from the vibrant energy of peak-time club scenes. The track aims to capture the essence of those electrifying moments on the dance floor, where the music and atmosphere create an unforgettable experience. The playful synth work and infectious energy reflect a renewed focus on creative exploration, pushing the boundaries of their sound to deliver something fresh and exciting.</p>",
+            "tracks": [
+                {
+                    "title": "Rude Boy",
+                    "version": "Edit",
+                    "duration": "3:10",
+                    "isrc": null
+                },
+                {
+                    "title": "Rude Boy",
+                    "version": null,
+                    "duration": "5:08",
+                    "isrc": null
+                }
+            ]
+        },
+        "7CFIxXJQ64nWqnMBFOZkyD": {
+            "type": "album",
+            "legacy_title": "Snow N Stuff - °Northern Lights°",
+            "title": "Northern Lights",
+            "artist_display": null,
+            "artists": [
+                "snow-n-stuff"
+            ],
+            "released_at": "2025-01-03",
+            "format": "single",
+            "genre": "melodic-techno",
+            "smartlink_url": null,
+            "support": [],
+            "chart_position": null,
+            "chart_name": null,
+            "description": "<p>Enter the magnetic pull of Northern Lights, Snow N Stuff's latest release, where melodic techno becomes an immersive journey. A fusion of rich soundscapes, fluid grooves, and intricate sound design, this track captivates from the first beat, drawing listeners into a dynamic flow that's as intoxicating as it is energizing. Crafted with precision to ignite the senses, Northern Lights guides you into the core of rhythm and pulse, inviting you to lose yourself in the essence of rave.</p>",
+            "tracks": [
+                {
+                    "title": "Northern Lights",
+                    "version": "Edit",
+                    "duration": "3:16",
+                    "isrc": null
+                },
+                {
+                    "title": "Northern Lights",
+                    "version": null,
+                    "duration": "5:14",
+                    "isrc": null
+                }
+            ]
+        },
+        "2wEx9wuYdNls5vwC5SReRb": {
+            "type": "track",
+            "legacy_title": "Snow N Stuff - Vision",
+            "title": "Vision",
+            "artist_display": null,
+            "artists": [
+                "snow-n-stuff"
+            ],
+            "released_at": "2024-11-29",
+            "format": "single",
+            "genre": "melodic-techno",
+            "smartlink_url": null,
+            "support": [],
+            "chart_position": null,
+            "chart_name": null,
+            "description": "<p>Snow N Stuff's Vision, is a standout melodic techno track characterized by its epic synths and progressive arrangement. Known for creating immersive, emotive compositions, Snow N Stuff brings a unique energy to the electronic music scene. Don't miss this captivating new release.</p>",
+            "tracks": [
+                {
+                    "title": "Vision",
+                    "version": "Edit",
+                    "duration": "3:26",
+                    "isrc": null
+                }
+            ]
+        },
+        "0Co9icwI2q3fAKlJUXu8Si": {
+            "type": "track",
+            "legacy_title": "Snow N Stuff - °Get out of my Head°",
+            "title": "Get Out Of My Head",
+            "artist_display": null,
+            "artists": [
+                "snow-n-stuff"
+            ],
+            "released_at": "2024-10-25",
+            "format": "single",
+            "genre": "melodic-techno",
+            "smartlink_url": null,
+            "support": [
+                "Armin van Buuren",
+                "Don Diablo"
+            ],
+            "chart_position": null,
+            "chart_name": null,
+            "description": "<p>Snow N Stuff's new single Get Out of My Head, Get Out of My Head is a melodic techno hit with haunting vocals, supported by top DJs like Armin Van Buuren and Don Diablo. Dive into this hypnotic track!</p>",
+            "tracks": [
+                {
+                    "title": "Get Out Of My Head",
+                    "version": "Edit",
+                    "duration": "2:26",
+                    "isrc": null
+                }
+            ]
+        },
+        "49lM54YZ1ByuQYRpzQFcre": {
+            "type": "track",
+            "legacy_title": "Nubian Heat",
+            "title": "Nubian Heat",
+            "artist_display": null,
+            "artists": [
+                "g-and-s"
+            ],
+            "released_at": "2024-10-11",
+            "format": "single",
+            "genre": "afro-house",
+            "smartlink_url": null,
+            "support": [],
+            "chart_position": "#15",
+            "chart_name": "UK Upfront Chart",
+            "description": "<p>\"Nubian Heat\" by G&amp;S is a afro/tribal house gem with an irresistibly vibey groove that resonates on the dance floor. Peaking at #15 on the UK upfront chart, its fusion of smooth melodies and pulsating rhythms creates an atmosphere that invites movement and reflection. Perfect for those late-night sessions where the beat transcends and the music speaks directly to the soul.</p>",
+            "tracks": [
+                {
+                    "title": "Nubian Heat",
+                    "version": null,
+                    "duration": "2:50",
+                    "isrc": null
+                }
+            ]
+        },
+        "26DQmzjVIHaKpZKfVv54l6": {
+            "type": "track",
+            "legacy_title": "Snow n Stuff - Mystic - Edit",
+            "title": "Mystic",
+            "artist_display": null,
+            "artists": [
+                "snow-n-stuff"
+            ],
+            "released_at": "2024-04-05",
+            "format": "single",
+            "genre": "melodic-techno",
+            "smartlink_url": null,
+            "support": [],
+            "chart_position": null,
+            "chart_name": null,
+            "description": "<p>\"Mystic - Edit\" by Snow N Stuff: This edited version of \"Mystic\" offers a refined take on Snow N Stuff's original production. The track likely features enchanting melodies and hypnotic beats, creating an otherworldly vibe that stays true to the label's reputation for quality house and techno releases.</p>",
+            "tracks": [
+                {
+                    "title": "Mystic",
+                    "version": "Edit",
+                    "duration": "4:07",
+                    "isrc": null
+                }
+            ]
+        },
+        "6xl7BbDBYIkWXcys8Shu4H": {
+            "type": "track",
+            "legacy_title": "G&S - Back to Black",
+            "title": "Back to Black",
+            "artist_display": null,
+            "artists": [
+                "g-and-s"
+            ],
+            "released_at": "2024-03-08",
+            "format": "single",
+            "genre": "deep-house",
+            "smartlink_url": null,
+            "support": [],
+            "chart_position": "#15",
+            "chart_name": "Music Week Upfront (UK)",
+            "description": "<p>G&amp;S's track \"Back to Black\" reached an impressive #15 on the prestigious Music Week Upfront chart in the UK. This remarkable achievement highlights the overwhelming support the track received, with a staggering 71% of industry insiders and tastemakers backing its success.</p>",
+            "tracks": [
+                {
+                    "title": "Back to Black",
+                    "version": null,
+                    "duration": "3:26",
+                    "isrc": null
+                }
+            ]
+        },
+        "6zxJmiH2nAmqzY377URnJX": {
+            "type": "track",
+            "legacy_title": "THK, Pacha Man - Lost in The Crowd",
+            "title": "Lost In The Crowd",
+            "artist_display": "THK & Pacha Man",
+            "artists": [
+                "thk"
+            ],
+            "released_at": "2024-05-24",
+            "format": "single",
+            "genre": "house",
+            "smartlink_url": null,
+            "support": [],
+            "chart_position": null,
+            "chart_name": null,
+            "description": "<p>\"Lost In The Crowd\" by Pacha Man and THK: A dynamic collaboration that captures the essence of losing oneself in the music. Pacha Man and THK create a immersive soundscape that reflects the euphoria of being surrounded by fellow dancers, combining catchy hooks with pulsating rhythms.</p>",
+            "tracks": [
+                {
+                    "title": "Lost In The Crowd",
+                    "version": null,
+                    "duration": "3:09",
+                    "isrc": null
+                }
+            ]
+        },
+        "0hrjLt8ZiMHzb6THZELH2n": {
+            "type": "track",
+            "legacy_title": "G&S - In my mind",
+            "title": "In My Mind",
+            "artist_display": "G&S, Nika Marula",
+            "artists": [
+                "g-and-s"
+            ],
+            "released_at": "2020-08-27",
+            "format": "single",
+            "genre": "tech-house",
+            "smartlink_url": null,
+            "support": [],
+            "chart_position": null,
+            "chart_name": null,
+            "description": "<p>\"In My Mind\" is a captivating Tech House track that blends pulsating beats with hypnotic melodies. G&amp;S and Nika Marula deliver a groove-laden production perfect for both the dancefloor and deep listening sessions. Released on Snow 'n' Stuff, this track showcases the label's commitment to quality electronic music across genres like Tech House, Deep House, and Techno.</p>",
+            "tracks": [
+                {
+                    "title": "In My Mind",
+                    "version": null,
+                    "duration": "2:23",
+                    "isrc": null
+                }
+            ]
+        },
+        "6tWjyrs1LLVVdIYIwRUQWB": {
+            "type": "track",
+            "legacy_title": "THK, Pacha Man - Warrior",
+            "title": "Warrior",
+            "artist_display": "THK & Pacha Man",
+            "artists": [
+                "thk"
+            ],
+            "released_at": "2019-09-13",
+            "format": "single",
+            "genre": "house",
+            "smartlink_url": null,
+            "support": [],
+            "chart_position": null,
+            "chart_name": null,
+            "description": "<p>\"Warrior\" by THK &amp; Pacha Man: A powerful and energetic track that combines driving beats with inspiring vocals. \"Warrior\" showcases Pacha Man and THK's ability to create an uplifting dance anthem that motivates listeners to push through challenges.</p>",
+            "tracks": [
+                {
+                    "title": "Warrior",
+                    "version": null,
+                    "duration": "2:50",
+                    "isrc": null
+                }
+            ]
+        },
+        "51R9KqdvmKMPUkReMs7aH3": {
+            "type": "track",
+            "legacy_title": "The Unknown",
+            "title": "The Unknown",
+            "artist_display": null,
+            "artists": [
+                "snow-n-stuff"
+            ],
+            "released_at": "2020-10-23",
+            "format": "single",
+            "genre": "techno",
+            "smartlink_url": null,
+            "support": [],
+            "chart_position": null,
+            "chart_name": null,
+            "description": "<p>\"The Unknown\" by Snow N Stuff: An intriguing journey into mysterious sonic landscapes, \"The Unknown\" exemplifies Snow N Stuff's talent for crafting atmospheric electronic music. This track blends deep, ethereal elements with a solid groove, perfect for late-night dance floors or introspective listening.</p>",
+            "tracks": [
+                {
+                    "title": "The Unknown",
+                    "version": null,
+                    "duration": "3:06",
+                    "isrc": null
+                }
+            ]
+        },
+        "5LoRtT4HMphu4n2OyJn4Cr": {
+            "type": "track",
+            "legacy_title": "Human made",
+            "title": "Human Made",
+            "artist_display": null,
+            "artists": [
+                "snow-n-stuff"
+            ],
+            "released_at": "2026-02-27",
+            "format": "single",
+            "genre": "melodic-techno",
+            "smartlink_url": null,
+            "support": [],
+            "chart_position": null,
+            "chart_name": null,
+            "description": null,
+            "tracks": [
+                {
+                    "title": "Human Made",
+                    "version": "Edit",
+                    "duration": "3:06",
+                    "isrc": null
+                }
+            ]
+        }
+    },
+    "artists": {
+        "Snow N Stuff": {
+            "legacy_name": "Snow n Stuff",
+            "order": 0,
+            "spotify_url": "https://open.spotify.com/artist/6wIX9hW2uQAVv190xXV9mA",
+            "description": "<p>Step into the enchanting world of Snow N Stuff, where melodic techno transforms into an immersive underground experience.   A blend of rich soundscapes, fluid grooves, and intricate sound design, this journey captivates from the first beat, drawing listeners into a dynamic flow that's as mesmerizing as a snowfall.     Crafted with precision to ignite the senses, it guides you into the heart of rhythm and pulse, inviting you to lose yourself in the essence of rave.</p>",
+            "role": "Melodic techno project",
+            "origin": "Northern Europe · since 2019",
+            "highlights": [
+                "The Change premiered by Paul van Dyk on VONYC Sessions 1016",
+                "Speak To Me reached #59 on Beatport Hype",
+                "Support from Armin van Buuren, Richie Hawtin and Don Diablo",
+                "Airplay on BBC Radio and NRJ France"
+            ],
+            "instagram_url": null,
+            "soundcloud_url": null,
+            "beatport_url": null
+        },
+        "G&S": {
+            "legacy_name": "G&S",
+            "order": 1,
+            "spotify_url": "https://open.spotify.com/artist/1ZMBY94RIDI1PLHrxY4iax",
+            "description": "<p>G&amp;S, an electronic music act, is a collaboration between DJ Glenn Forrestgate from Sweden and producer Style Da Kid from Romania. Their sound is a captivating blend of Deep House, Tech House, and Techno.   After gaining significant DJ support for their recently releases, G&amp;S is back with their latest track, Deep house remake of Amy Winehouse Back to black. 71% of the tastemakers Djs supporting it so far in the UK.   Their music has the versatility to resonate with both underground BBC shows and mainstream dance radios like Italy’s Discoradio. With their unique style and authenticity, G&amp;S showcases a fresh perspective on what House music can truly be.</p>",
+            "role": "DJ / producer duo",
+            "origin": "Glenn Forrestgate (SE) × Style da Kid (RO)",
+            "highlights": [
+                "Back to Black reached #15 on Music Week Upfront (UK)",
+                "Nubian Heat reached #15 on the UK upfront chart",
+                "Backed by 71% of UK tastemaker DJs",
+                "Played on BBC shows and Discoradio (IT)"
+            ],
+            "instagram_url": null,
+            "soundcloud_url": null,
+            "beatport_url": null
+        },
+        "Style da Kid": {
+            "legacy_name": "Style da Kid",
+            "order": 1,
+            "spotify_url": "https://open.spotify.com/artist/1JpJWfPLvsbrrVgVjxVwKO",
+            "description": "<p>Style da Kid is a Romanian record producer, songwriter, and sound designer known for his revolutionary, genre-blending productions that are reshaping contemporary music.His tracks have landed on major labels including Ultra Music, Sony Music, Columbia, and Warner, accumulating over a billion streams worldwide, extensive airplay, and licensing in more than 50 countries.A highly accomplished sound designer, his music is in constant demand for film, TV, and streaming. It has been regularly licensed for major TV networks across the USA, Europe, and Asia, as well as on platforms like Netflix, Amazon, and most leading movie streaming services.As one of the founders of Snow N Stuff Records, he also serves as a skilled mixing and mastering engineer, bringing precision and creative vision to every release.Innovative, versatile, and forward-thinking — Style da Kid is a rising global force in the music industry.</p>",
+            "role": "Producer · songwriter · sound designer",
+            "origin": "Romania",
+            "highlights": [
+                "More than 1 billion streams across his catalogue",
+                "Releases on Ultra, Sony, Columbia and Warner",
+                "Sync licensing in 50+ countries",
+                "Placements on Netflix and Amazon"
+            ],
+            "instagram_url": null,
+            "soundcloud_url": null,
+            "beatport_url": null
+        },
+        "THK": {
+            "legacy_name": "THK",
+            "order": 2,
+            "spotify_url": "https://open.spotify.com/artist/6YOmRPkzjX9bbTl6Qi2WPy",
+            "description": "<p>THK, a dynamic duo formed by Glenn Forrestgate and Style da Kid in Ibiza 2018, has made waves in the electronic music scene.   Let’s dive into their journey and notable releases: These talented artists are carving their path in the music industry, and their genre-blending sound is captivating audiences across borders.   Chop of a Brick (feat. Vic Rippa): Their debut release on Sony Germany showcased their originality and fresh approach. The track caught the attention of electronic music enthusiasts worldwide.   Warrior: Their second single became a sensation in Russia and neighboring countries. With over 600,000 radio spins, it continues to resonate with listeners.   Three Little Birds: Released on Ultra Music, this single blends their signature style with elements of Trap and House. Featuring Pacha Man, it adds a reggae vibe to the track, creating a unique fusion.</p>",
+            "role": "Duo",
+            "origin": "Glenn Forrestgate × Style da Kid · Ibiza, 2018",
+            "highlights": [
+                "Debut single on Sony Germany",
+                "Warrior passed 600,000 radio spins",
+                "Collaborations with Pacha Man"
+            ],
+            "instagram_url": null,
+            "soundcloud_url": null,
+            "beatport_url": null
+        }
+    },
+    "playlists": {
+        "28I7hCUFTyqblhgu5yGkOO": {
+            "order": 1,
+            "title": "Vocal Deep House 2026",
+            "description": "Melodic Techno · Ibiza · Afro House · Lounge"
+        },
+        "6XKjwYHx4wkYwhMUwkkSp5": {
+            "order": 2,
+            "title": "Ibiza 2026",
+            "description": "Melodic Techno · Tech House · House · DC10 · Amnesia · Hi Ibiza"
+        },
+        "5nhly2lw8Yksm9wOgWSkDf": {
+            "order": 3,
+            "title": "Vocal Drum & Bass",
+            "description": "Jungle · Jump Up · Liquid DnB · AWOL · Fantazia · Dreamscape"
+        },
+        "4iUlW57rtLgYwq9MGd7y0y": {
+            "order": 4,
+            "title": "Old School & New Rave",
+            "description": "The Prodigy · Rat Pack"
+        },
+        "4SFqIi6db3fdDAIWwHgPSp": {
+            "order": 5,
+            "title": "Chill Ibiza",
+            "description": "Reggae Beach · Beach Bar · Dinner Lounge · Positive Vibes"
+        }
+    }
+}
