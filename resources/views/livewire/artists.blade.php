@@ -32,7 +32,7 @@
                             <!-- Artist Description -->
                             <div class="space-y-2">
                                 <p class="text-gray-400 transition-colors duration-300 group-hover:text-gray-300">
-                                    <span x-show="!expanded">{{ $artist->short_description }}</span>
+                                    <span x-show="!expanded" data-markdown-ignore>{{ $artist->short_description }}</span>
                                     <span x-show="expanded" x-cloak>{{ $artist->plain_description }}</span>
                                 </p>
 

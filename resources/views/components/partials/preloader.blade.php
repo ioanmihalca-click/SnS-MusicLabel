@@ -8,6 +8,7 @@
     the pulse / orbit / equalizer via CSS, so users get a still composition.
 --}}
 <div
+    data-markdown-ignore
     x-data="{ loading: true }"
     x-init="setTimeout(() => loading = false, 1000)"
     x-show="loading"

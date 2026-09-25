@@ -34,7 +34,7 @@
         </div>
 
         <!-- Pagination -->
-        <div class="mt-12">
+        <div class="mt-12" data-markdown-ignore>
             {{ $photos->links('vendor.livewire.tailwind') }}
         </div>
     </div>

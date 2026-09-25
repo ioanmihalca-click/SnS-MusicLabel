@@ -1,4 +1,4 @@
-<x-layouts.app>
+<x-layouts.app :seo="$seo">
     <livewire:hero />
     <livewire:stats-strip />
 

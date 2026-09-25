@@ -16,7 +16,7 @@ it('returns the oEmbed thumbnail of the canonical Spotify URL', function () {
     Http::assertSent(fn (Request $request): bool => $request['url'] === 'https://open.spotify.com/track/5LoRtT4HMphu4n2OyJn4Cr');
 });
 
-it('caches a thumbnail for 24 hours', function () {
+it('caches a thumbnail for 30 days', function () {
     Http::fake([
         'open.spotify.com/oembed*' => Http::response(['thumbnail_url' => 'https://image-cdn-ak.spotifycdn.com/image/cover']),
     ]);
@@ -24,11 +24,11 @@ it('caches a thumbnail for 24 hours', function () {
     $thumbnail = app(SpotifyThumbnail::class);
 
     $thumbnail->urlFor($spotifyUrl);
-    $this->travel(23)->hours();
+    $this->travel(29)->days();
     $thumbnail->urlFor($spotifyUrl);
     Http::assertSentCount(1);
 
-    $this->travel(2)->hours();
+    $this->travel(2)->days();
     $thumbnail->urlFor($spotifyUrl);
     Http::assertSentCount(2);
 });

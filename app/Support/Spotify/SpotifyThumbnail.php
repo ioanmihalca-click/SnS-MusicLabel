@@ -9,15 +9,16 @@ use Illuminate\Support\Str;
 
 /**
  * Looks up Spotify's own cover thumbnail (300px) through the public oEmbed
- * endpoint. Only the URL is cached, and only temporarily: 24h after a
- * successful lookup, 1h after a failed one. The cached value is wrapped in an
- * array so that failures (null) are remembered too.
+ * endpoint. Only the URL is cached, and only temporarily: 30 days after a
+ * successful lookup (catalogue pages list many releases, so they should not
+ * call Spotify on every visit), 1h after a failed one. The cached value is
+ * wrapped in an array so that failures (null) are remembered too.
  */
 class SpotifyThumbnail
 {
     public const ENDPOINT = 'https://open.spotify.com/oembed';
 
-    private const SUCCESS_TTL_SECONDS = 86400;
+    private const SUCCESS_TTL_SECONDS = 30 * 86400;
 
     private const FAILURE_TTL_SECONDS = 3600;
 

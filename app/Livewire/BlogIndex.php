@@ -3,17 +3,20 @@
 namespace App\Livewire;
 
 use App\Models\Blog;
+use App\Support\Seo\Schema;
+use App\Support\Seo\SeoData;
+use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 #[Layout('components.layouts.blog')]
-#[Title('Our Blog - Latest Posts')]
 class BlogIndex extends Component
 {
     use WithPagination;
+
+    public const DESCRIPTION = "News and insights from the Snow 'n' Stuff label: releases, artists, music production and the electronic music industry.";
 
     #[Url(except: '')]
     public string $search = '';
@@ -25,10 +28,10 @@ class BlogIndex extends Component
         $this->resetPage();
     }
 
-    public function render()
+    public function render(): View
     {
         $blogs = Blog::query()
-            ->where('published_at', '<=', now())
+            ->published()
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('title', 'like', '%'.$this->search.'%')
@@ -41,9 +44,25 @@ class BlogIndex extends Component
         return view('livewire.blog-index', [
             'blogs' => $blogs,
         ])->layoutData([
-            'meta_title' => 'Our Blog - Latest Posts',
-            'meta_description' => 'Read our latest blog posts on various topics.',
-            'meta_keywords' => 'blog, articles, news',
+            'seo' => $this->seo(),
         ]);
+    }
+
+    /**
+     * Search results are kept out of the index; the listing itself is canonical at /blog.
+     */
+    private function seo(): SeoData
+    {
+        $path = route('blog.index', absolute: false);
+
+        return new SeoData(
+            title: "Blog - Snow 'n' Stuff",
+            description: self::DESCRIPTION,
+            path: $path,
+            noindex: $this->search !== '',
+            schema: [
+                Schema::breadcrumbs(['/' => 'Home', $path => 'Blog']),
+            ],
+        );
     }
 }

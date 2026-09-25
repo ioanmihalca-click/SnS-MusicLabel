@@ -81,7 +81,7 @@
                                 </a>
                             </h3>
 
-                            <p class="text-gray-400 line-clamp-2">
+                            <p class="text-gray-400 line-clamp-2" data-markdown-ignore>
                                 {!! strip_tags($article->content) !!}
                             </p>
 
@@ -109,7 +109,7 @@
     </div>
 
     <!-- Social Share Buttons -->
-    <div class="fixed flex flex-col space-y-4 bottom-8 left-8">
+    <div class="fixed flex flex-col space-y-4 bottom-8 left-8" data-markdown-ignore>
         <button x-data type="button"
             @click="window.open('https://twitter.com/intent/tweet?url=' + encodeURIComponent(window.location.href) + '&text={{ urlencode($blog->title) }}', '_blank')"
             class="p-3 text-gray-400 transition-colors duration-300 rounded-full bg-black/70 backdrop-blur-sm hover:text-red-800 {{ $focusRing }}"

@@ -99,7 +99,7 @@
 
     <!-- Pagination -->
     @if($blogs->hasPages())
-        <div class="mt-12">
+        <div class="mt-12" data-markdown-ignore>
             {{ $blogs->links() }}
         </div>
     @endif
@@ -107,6 +107,7 @@
     <!-- Loading State -->
     <div
         wire:loading.delay
+        data-markdown-ignore
         class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
         role="status"
         aria-live="polite"

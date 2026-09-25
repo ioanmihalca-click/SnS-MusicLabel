@@ -90,6 +90,17 @@ return [
             'driver' => 'octane',
         ],
 
+        /*
+         * Generated public documents (sitemap.xml, llms.txt, Markdown
+         * versions of pages). Kept apart from the default store because
+         * it is flushed whenever public content changes.
+         */
+        'pages' => [
+            'driver' => env('PAGES_CACHE_DRIVER', 'file'),
+            'path' => storage_path('framework/cache/pages'),
+            'lock_path' => storage_path('framework/cache/pages'),
+        ],
+
     ],
 
     /*

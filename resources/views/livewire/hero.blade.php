@@ -90,7 +90,7 @@
     </div>
 
     {{-- Scroll indicator --}}
-    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 text-gray-500">
+    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 text-gray-500" data-markdown-ignore>
         <span class="text-[0.6rem] uppercase tracking-[0.4em]">Scroll</span>
         <span class="block h-10 w-px bg-gradient-to-b from-red-700/60 to-transparent" aria-hidden="true"></span>
     </div>

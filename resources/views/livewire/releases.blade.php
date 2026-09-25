@@ -33,7 +33,7 @@
                         <div class="relative overflow-hidden">
                             <div class="p-4 space-y-2 text-gray-300 border bg-gray-900/50 rounded-xl backdrop-blur-sm border-gray-800/50">
                                 <p>
-                                    <span x-show="!expanded">{{ $release->short_description }}</span>
+                                    <span x-show="!expanded" data-markdown-ignore>{{ $release->short_description }}</span>
                                     <span x-show="expanded" x-cloak>{{ $release->plain_description }}</span>
                                 </p>
 

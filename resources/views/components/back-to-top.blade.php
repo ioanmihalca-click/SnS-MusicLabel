@@ -1,4 +1,5 @@
 <button
+    data-markdown-ignore
     x-cloak
     x-data="{ show: false }"
     x-init="window.addEventListener('scroll', () => { show = window.pageYOffset > 500 })"

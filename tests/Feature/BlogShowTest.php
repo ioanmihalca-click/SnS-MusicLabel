@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Blog;
+use Illuminate\Support\Str;
 
 it('renders a published post by slug', function () {
     $post = Blog::factory()->published()->create([
@@ -32,6 +33,9 @@ it('does not list the current article in related articles', function () {
         ->assertSeeText('Current Article')
         ->assertSeeText('Sibling Article');
 
-    // The current article's title appears in <h1>; ensure related grid does not duplicate it.
-    expect(substr_count($response->getContent(), 'Current Article'))->toBe(1);
+    // The title also appears in the <head> and the JSON-LD, so only the related grid is searched.
+    $relatedArticles = Str::after($response->getContent(), 'Related <span class="text-red-800">Articles</span>');
+
+    expect($relatedArticles)->toContain('Sibling Article')
+        ->not->toContain('Current Article');
 });

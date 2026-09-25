@@ -4,9 +4,11 @@ namespace App\Models;
 
 use App\Enums\Genre;
 use App\Enums\ReleaseFormat;
+use App\Observers\PublicContentObserver;
 use App\Support\Slug;
 use App\Support\Spotify\SpotifyThumbnail;
 use App\Support\Spotify\SpotifyUrl;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -15,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+#[ObservedBy(PublicContentObserver::class)]
 class Release extends Model
 {
     use HasFactory;

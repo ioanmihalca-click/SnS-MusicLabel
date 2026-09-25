@@ -5,7 +5,6 @@ use App\Models\Photo;
 use App\Models\Playlist;
 use App\Models\Release;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 
 beforeEach(function () {
     // Stats Strip caches aggregate counts; clear so each test sees fresh seeds.
@@ -17,9 +16,7 @@ it('responds 200 for the homepage', function () {
 });
 
 it('renders every documented homepage section so nothing silently disappears', function () {
-    Http::fake([
-        'open.spotify.com/oembed*' => Http::response(['thumbnail_url' => 'https://image-cdn-ak.spotifycdn.com/image/featured-one']),
-    ]);
+    fakeSpotifyThumbnails('https://image-cdn-ak.spotifycdn.com/image/featured-one');
     Artist::factory()->create(['name' => 'Test Artist', 'order' => 1]);
     Release::factory()->create([
         'title' => 'Test Release',
@@ -85,7 +82,8 @@ it('renders every documented homepage section so nothing silently disappears', f
 });
 
 it('exposes the JSON-LD organization schema', function () {
-    $this->get('/')
-        ->assertSeeText('"@type": "Organization"', escape: false)
-        ->assertSeeText('"foundingDate": "2020"', escape: false);
+    $organization = collect(jsonLd($this->get('/'))['@graph'])->firstWhere('@type', 'Organization');
+
+    expect($organization)->not->toBeNull()
+        ->and($organization['foundingDate'])->toBe('2020');
 });
