@@ -1,7 +1,6 @@
 @props([
     'seo' => new \App\Support\Seo\SeoData(path: request()->getPathInfo()),
-    'preloadImage' => null,
-    'fonts' => 'big-shoulders-display:900|inter:400,500,600,700',
+    'fonts' => 'big-shoulders-display:700,800,900|schibsted-grotesk:400,400i,500,600,700|martian-mono:400,500',
 ])
 
 <head>
@@ -17,10 +16,6 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="SnS" />
     <link rel="manifest" href="/assets/favicon/site.webmanifest" />
-
-    @if ($preloadImage)
-        <link rel="preload" as="image" href="{{ $preloadImage }}" fetchpriority="high" />
-    @endif
 
     {{-- Bunny Fonts (GDPR-safe Google Fonts proxy) --}}
     <link rel="preconnect" href="https://fonts.bunny.net" crossorigin />

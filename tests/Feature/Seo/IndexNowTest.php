@@ -47,9 +47,9 @@ it('submits every changed URL in one request once the response is sent', functio
         && $request['key'] === IndexNow::key()
         && $request['keyLocation'] === 'https://snow-n-stuff.com/'.IndexNow::key().'.txt'
         && $request['urlList'] === [
+            'https://snow-n-stuff.com/',
             'https://snow-n-stuff.com/blog',
             'https://snow-n-stuff.com/blog/speak-to-me',
-            'https://snow-n-stuff.com/',
             'https://snow-n-stuff.com/releases',
             'https://snow-n-stuff.com/releases/speak-to-me',
         ]);
@@ -109,6 +109,7 @@ it('submits both the old and the new URL when a post slug changes', function () 
     defer()->invoke();
 
     Http::assertSent(fn (Request $request): bool => $request['urlList'] === [
+        'https://snow-n-stuff.com/',
         'https://snow-n-stuff.com/blog',
         'https://snow-n-stuff.com/blog/new-slug',
         'https://snow-n-stuff.com/blog/old-slug',

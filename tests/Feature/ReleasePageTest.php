@@ -62,6 +62,14 @@ it('leads "Listen now" to the smartlink when there is one', function () {
         ->assertSeeInOrder(['href="https://ditto.fm/speak-to-me"', 'Listen now', 'href="https://open.spotify.com/album/3zifCl5R2DaZGEmrPNUM1N"', 'Spotify'], escape: false);
 });
 
+it('shows no separate Spotify button when "Listen now" already leads to Spotify', function () {
+    speakToMe();
+
+    $content = $this->get('/releases/speak-to-me')->assertOk()->getContent();
+
+    expect(substr_count($content, 'href="https://open.spotify.com/album/3zifCl5R2DaZGEmrPNUM1N"'))->toBe(1);
+});
+
 it('links the roster artists inside a typed credit', function () {
     $thk = Artist::factory()->create(['name' => 'THK']);
     $release = Release::factory()->create(['title' => 'Warrior', 'artist_display' => 'THK & Pacha Man']);

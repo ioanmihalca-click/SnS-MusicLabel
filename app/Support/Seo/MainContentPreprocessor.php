@@ -55,12 +55,27 @@ final class MainContentPreprocessor implements Preprocessor
 
         $content->normalize();
 
+        $this->turnFiguresIntoDivs($document, $content);
         $this->unwrapEmailLinks($content);
         $this->trimWhitespaceAroundBlocks($document, $content);
         $this->trimWhitespaceInsideLinks($document, $content);
         $this->separateTermsFromDescriptions($content);
 
         return $content->innerHTML;
+    }
+
+    /**
+     * The converter only starts a new line around the blocks it knows, and
+     * `<figure>` is not one of them: a player's caption in a blog post would
+     * run into the next paragraph.
+     */
+    private function turnFiguresIntoDivs(HTMLDocument $document, Element $content): void
+    {
+        foreach (iterator_to_array($content->querySelectorAll('figure, figcaption'), false) as $figure) {
+            $div = $document->createElement('div');
+            $div->append(...iterator_to_array($figure->childNodes, false));
+            $figure->replaceWith($div);
+        }
     }
 
     /**

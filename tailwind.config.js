@@ -11,7 +11,7 @@ export default {
     theme: {
         extend: {
             colors: {
-                // Redesign tokens (components.layouts.site): a cold, neutral frame; colour comes from the artwork.
+                // A cold, neutral frame; colour comes from the artwork.
                 ink: '#0A0C0F',
                 slab: '#11151A',
                 slab2: '#181D23',
@@ -23,8 +23,8 @@ export default {
                 signal: '#E5383B',
             },
             fontFamily: {
-                sans: ['Inter', 'Figtree', ...defaultTheme.fontFamily.sans],
-                display: ['"Big Shoulders Display"', 'Inter', ...defaultTheme.fontFamily.sans],
+                sans: ['"Schibsted Grotesk"', '"Helvetica Neue"', 'Arial', ...defaultTheme.fontFamily.sans],
+                display: ['"Big Shoulders Display"', '"Arial Narrow"', 'Impact', ...defaultTheme.fontFamily.sans],
                 body: ['"Schibsted Grotesk"', '"Helvetica Neue"', 'Arial', ...defaultTheme.fontFamily.sans],
                 meta: ['"Martian Mono"', ...defaultTheme.fontFamily.mono],
             },

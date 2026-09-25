@@ -50,7 +50,7 @@
     <section id="gallery" class="site-wrap scroll-mt-24 pt-[clamp(64px,9vw,120px)]">
         <x-section-heading title="Photos" subtitle="Some photos of Our Artists" />
 
-        <livewire:photo-gallery :variant="\App\Livewire\PhotoGallery::VARIANT_SITE" />
+        <livewire:photo-gallery />
     </section>
 
     <section id="contact" class="site-wrap scroll-mt-24 pt-[clamp(64px,9vw,120px)]">

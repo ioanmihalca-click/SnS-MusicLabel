@@ -45,10 +45,11 @@ it('gives every public page one <h1>, one <main> and one valid JSON-LD graph', f
     }
 });
 
-it('gives the redesigned pages a header with the main navigation and a footer', function (string $uri) {
+it('gives every page the site header with the main navigation and the footer', function (string $uri) {
     fakeSpotifyThumbnails();
     Release::factory()->create(['title' => 'Back to Black']);
     Artist::factory()->create(['name' => 'G&S']);
+    Blog::factory()->published()->create(['title' => 'Back to Black Is Out', 'slug' => 'back-to-black-is-out']);
 
     $response = $this->get($uri);
 
@@ -57,11 +58,14 @@ it('gives the redesigned pages a header with the main navigation and a footer', 
         ->and(countElements($response, 'body > footer'))->toBe(1)
         ->and(countElements($response, 'h1'))->toBe(1);
 })->with([
+    '/',
     '/releases',
     '/releases/back-to-black',
     '/artists',
     '/artists/g-and-s',
     '/playlists',
     '/about',
+    '/blog',
+    '/blog/back-to-black-is-out',
     'not found' => '/releases/nope',
 ]);

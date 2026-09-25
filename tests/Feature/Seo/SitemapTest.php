@@ -98,3 +98,19 @@ it('picks up a scheduled post within an hour of it going live', function () {
 
     expect(sitemapLocations($this->get('/sitemap.xml')))->toContain(config('app.url').'/blog/scheduled-post');
 });
+
+it('dates the homepage by its newest content, published posts included', function () {
+    config(['app.url' => 'https://snow-n-stuff.com']);
+    $this->travelTo('2025-01-10 12:00:00');
+    Release::factory()->create();
+    $this->travelTo('2025-03-01 12:00:00');
+    Blog::factory()->published()->create();
+    $this->travelTo('2025-04-01 12:00:00');
+    Blog::factory()->draft()->create();
+    Blog::factory()->scheduled()->create();
+
+    $xml = simplexml_load_string($this->get('/sitemap.xml')->assertOk()->getContent());
+    $home = $xml->xpath('/*[local-name()="urlset"]/*[local-name()="url"][*[local-name()="loc"]="https://snow-n-stuff.com/"]/*[local-name()="lastmod"]');
+
+    expect((string) $home[0])->toStartWith('2025-03-01T12:00:00');
+});

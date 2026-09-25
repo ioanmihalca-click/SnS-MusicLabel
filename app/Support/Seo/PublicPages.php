@@ -46,7 +46,7 @@ final class PublicPages
         $posts = Blog::query()->published()->latest('published_at')->get();
 
         return collect([
-            $this->home(),
+            $this->home($posts),
             $this->about($photos),
             $this->playlists($playlists),
             $this->releaseCatalogue($releases),
@@ -89,14 +89,22 @@ final class PublicPages
         return array_values(array_unique(array_map(PublicUrl::to(...), $paths)));
     }
 
-    private function home(): PublicPage
+    /**
+     * The homepage shows the whole catalogue and the latest published posts.
+     *
+     * @param  Collection<int, Blog>  $posts  The published posts.
+     */
+    private function home(Collection $posts): PublicPage
     {
         return new PublicPage(
             path: '/',
             title: 'Home',
             description: SeoData::DEFAULT_DESCRIPTION,
             section: self::SECTION_PAGES,
-            lastModifiedAt: $this->lastUpdatedAt(Release::class, Artist::class, Playlist::class, Photo::class),
+            lastModifiedAt: collect([
+                $this->lastUpdatedAt(Release::class, Artist::class, Playlist::class, Photo::class),
+                $posts->map(fn (Blog $post): CarbonInterface => $post->lastModifiedAt())->max(),
+            ])->filter()->max(),
         );
     }
 
@@ -245,8 +253,8 @@ final class PublicPages
     }
 
     /**
-     * The blog listing and the post's URL, plus its previous URL when the slug
-     * changed, as long as the post is or was public.
+     * The homepage (its news), the blog listing and the post's URL, plus its
+     * previous URL when the slug changed, as long as the post is or was public.
      *
      * @return list<string>
      */
@@ -262,6 +270,7 @@ final class PublicPages
         $slugs = array_unique(array_filter([$post->slug, $post->getOriginal('slug')]));
 
         return [
+            '/',
             route('blog.index', absolute: false),
             ...array_map(fn (string $slug): string => route('blog.show', $slug, absolute: false), $slugs),
         ];

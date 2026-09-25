@@ -3,18 +3,32 @@
 namespace App\Livewire;
 
 use App\Models\Blog;
+use App\Support\ArticleHtml;
+use App\Support\Seo\PublicUrl;
 use App\Support\Seo\Schema;
 use App\Support\Seo\SeoData;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Collection;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
+/**
+ * A published post: its cleaned body (App\Support\ArticleHtml), share links
+ * and the three newest other posts.
+ */
+#[Layout('components.layouts.site')]
 class BlogShow extends Component
 {
-    public $blog;
+    public const RELATED_POSTS = 3;
 
-    public $relatedArticles;
+    public Blog $blog;
 
-    public function mount($slug)
+    /**
+     * @var Collection<int, Blog>
+     */
+    public Collection $relatedArticles;
+
+    public function mount(string $slug): void
     {
         $this->blog = Blog::query()
             ->published()
@@ -24,36 +38,50 @@ class BlogShow extends Component
         $this->relatedArticles = Blog::query()
             ->published()
             ->whereKeyNot($this->blog->id)
-            ->inRandomOrder()
-            ->limit(3)
+            ->latest('published_at')
+            ->latest('id')
+            ->limit(self::RELATED_POSTS)
             ->get();
     }
 
     public function render(): View
     {
-        return view('livewire.blog-show')
-            ->layout('components.layouts.blog')
-            ->layoutData([
-                'seo' => $this->seo(),
-            ]);
+        return view('livewire.blog-show', [
+            'body' => ArticleHtml::render($this->blog->content),
+            'trail' => $this->trail(),
+            'shareUrl' => PublicUrl::to($this->path()),
+        ])->layoutData([
+            'seo' => $this->seo(),
+        ]);
+    }
+
+    private function path(): string
+    {
+        return route('blog.show', $this->blog->slug, absolute: false);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function trail(): array
+    {
+        return [
+            '/' => 'Home',
+            route('blog.index', absolute: false) => 'News',
+            $this->path() => $this->blog->title,
+        ];
     }
 
     private function seo(): SeoData
     {
-        $path = route('blog.show', $this->blog->slug, absolute: false);
-
         return new SeoData(
             title: $this->blog->meta_title ?: $this->blog->title,
             description: $this->blog->summary(),
-            path: $path,
+            path: $this->path(),
             image: $this->blog->coverUrl(),
             type: 'article',
             schema: [
-                Schema::breadcrumbs([
-                    '/' => 'Home',
-                    route('blog.index', absolute: false) => 'Blog',
-                    $path => $this->blog->title,
-                ]),
+                Schema::breadcrumbs($this->trail()),
                 Schema::blogPosting($this->blog),
             ],
         );

@@ -11,12 +11,13 @@ it('serves the homepage as Markdown to clients that accept it', function (string
         ->assertHeader('X-Robots-Tag', 'noindex')
         ->assertHeader('Content-Signal', 'search=yes, ai-input=yes, ai-train=no');
     expect($response->getContent())
-        ->toContain("# Snow 'n' Stuff")
-        ->toContain('glenn@1namm.com')
+        ->toStartWith("# Snow 'n' Stuff\n")
+        ->and(substr_count($response->getContent(), "# Snow 'n' Stuff"))->toBe(1)
+        ->and($response->getContent())
+        ->toContain('glenn@1namm.com', 'info@1namm.com', 'demo@1namm.com')
         ->not->toContain('<')
-        ->not->toContain('/#artists')
-        ->not->toContain('Quick Links')
-        ->not->toContain('All rights reserved');
+        ->not->toContain('All rights reserved')
+        ->not->toContain('Web application by Click Studios Digital');
 })->with([
     'Accept header' => ['/', ['Accept' => 'text/markdown']],
     '.md suffix' => ['/index.md', []],
@@ -70,14 +71,31 @@ it('decodes HTML entities, so "G&S" does not read "G&amp;S"', function () {
     fakeSpotifyThumbnails();
     Artist::factory()->create(['name' => 'G&S', 'description' => '<p>G&amp;S is back with Back to Black.</p>']);
 
-    $markdown = $this->get('/index.md')->assertOk()->getContent();
-
-    expect($markdown)
-        ->toContain('THK · G&S')
+    expect($this->get('/artists/g-and-s.md')->assertOk()->getContent())
+        ->toContain('# G&S')
         ->toContain('G&S is back with Back to Black.')
-        ->toContain('Artists and Repertoire (A&R)')
+        ->not->toContain('&amp;');
+
+    expect($this->get('/index.md')->assertOk()->getContent())
+        ->toContain("Management for THK · G&S · Snow 'n' Stuff · Style da Kid")
+        ->toContain('A&R')
         ->not->toContain('&amp;')
         ->not->toContain('&#039;');
+});
+
+it('keeps the players of a post as links in its Markdown version', function () {
+    $post = Blog::factory()->published()->create([
+        'title' => 'Speak To Me Is Out',
+        'content' => '<p>Out now.</p><p><iframe style="border-radius: 12px;" src="https://open.spotify.com/embed/album/3zifCl5R2DaZGEmrPNUM1N?utm_source=generator" width="100%" height="352"></iframe></p>'
+            .'<p><iframe src="https://embed.beatport.com/?id=20186693&amp;type=track" width="100%" height="162"></iframe></p>'
+            .'<p>Written by Glenn Forrestgate</p>',
+    ]);
+
+    expect($this->get("/blog/{$post->slug}.md")->assertOk()->getContent())
+        ->toContain("Out now.\n\n[Listen on Spotify](https://open.spotify.com/album/3zifCl5R2DaZGEmrPNUM1N)\n")
+        ->toContain("\nWritten by Glenn Forrestgate")
+        ->toContain('[Listen on Beatport](https://embed.beatport.com/?id=20186693&type=track)')
+        ->not->toContain('<');
 });
 
 it('writes definition lists and links without stray whitespace', function () {

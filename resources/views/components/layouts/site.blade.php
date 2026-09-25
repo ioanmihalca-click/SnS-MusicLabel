@@ -1,8 +1,6 @@
 {{--
-    The redesigned site (stage 2 onwards): cold near-black ground, Big Shoulders
-    Display headings, Schibsted Grotesk text and Martian Mono metadata. Used by
-    the catalogue pages, /about and the 404 page; the homepage and the blog
-    keep components.layouts.app / .blog until stage 3.
+    The site's layout: cold near-black ground, Big Shoulders Display headings,
+    Schibsted Grotesk text and Martian Mono metadata. Used by every public page.
 --}}
 @props([
     'seo',
@@ -11,10 +9,7 @@
 <!DOCTYPE html>
 <html lang="en" class="theme-site bg-ink">
 
-<x-partials.head
-    :seo="$seo"
-    fonts="big-shoulders-display:700,800,900|schibsted-grotesk:400,400i,500,600,700|martian-mono:400,500"
-/>
+<x-partials.head :seo="$seo" />
 
 <body class="flex min-h-screen flex-col bg-ink font-body text-base leading-[1.55] text-frost antialiased">
     <a

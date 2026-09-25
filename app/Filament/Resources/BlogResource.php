@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class BlogResource extends Resource
 {
+    public const EMBEDS_WARNING = 'The editor cannot keep embedded players: saving this post removes them. Use plain Spotify links instead; a Spotify link alone in a paragraph becomes a player on the site.';
+
     protected static ?string $model = Blog::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
@@ -25,6 +27,17 @@ class BlogResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Section::make('Embedded players')
+                    ->icon('heroicon-o-exclamation-triangle')
+                    ->iconColor('warning')
+                    ->compact()
+                    ->visible(fn (?Blog $record): bool => $record !== null && self::hasEmbeds($record))
+                    ->schema([
+                        Forms\Components\Placeholder::make('embeds_warning')
+                            ->hiddenLabel()
+                            ->content(self::EMBEDS_WARNING),
+                    ]),
+
                 Forms\Components\Section::make('Article')
                     ->schema([
                         Forms\Components\TextInput::make('title')
@@ -116,6 +129,15 @@ class BlogResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    /**
+     * Whether the stored post has iframes (players pasted on the old site),
+     * which Filament's rich editor strips on save.
+     */
+    public static function hasEmbeds(Blog $blog): bool
+    {
+        return str_contains(strtolower((string) $blog->content), '<iframe');
     }
 
     public static function getRelations(): array

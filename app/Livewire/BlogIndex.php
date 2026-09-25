@@ -6,12 +6,18 @@ use App\Models\Blog;
 use App\Support\Seo\Schema;
 use App\Support\Seo\SeoData;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-#[Layout('components.layouts.blog')]
+/**
+ * The News listing at /blog: published posts only, newest first, the first
+ * one shown large. The search field is hidden for now, but ?search= still
+ * filters (and keeps the results out of the index).
+ */
+#[Layout('components.layouts.site')]
 class BlogIndex extends Component
 {
     use WithPagination;
@@ -32,20 +38,30 @@ class BlogIndex extends Component
     {
         $blogs = Blog::query()
             ->published()
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('title', 'like', '%'.$this->search.'%')
+            ->when($this->search, function (Builder $query): void {
+                $query->where(function (Builder $query): void {
+                    $query->where('title', 'like', '%'.$this->search.'%')
                         ->orWhere('content', 'like', '%'.$this->search.'%');
                 });
             })
-            ->orderBy('published_at', 'desc')
+            ->latest('published_at')
+            ->latest('id')
             ->paginate($this->postsPerPage);
 
         return view('livewire.blog-index', [
             'blogs' => $blogs,
+            'trail' => $this->trail(),
         ])->layoutData([
             'seo' => $this->seo(),
         ]);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function trail(): array
+    {
+        return ['/' => 'Home', route('blog.index', absolute: false) => 'News'];
     }
 
     /**
@@ -53,15 +69,13 @@ class BlogIndex extends Component
      */
     private function seo(): SeoData
     {
-        $path = route('blog.index', absolute: false);
-
         return new SeoData(
-            title: "Blog - Snow 'n' Stuff",
+            title: 'News - '.SeoData::SITE_NAME,
             description: self::DESCRIPTION,
-            path: $path,
+            path: route('blog.index', absolute: false),
             noindex: $this->search !== '',
             schema: [
-                Schema::breadcrumbs(['/' => 'Home', $path => 'Blog']),
+                Schema::breadcrumbs($this->trail()),
             ],
         );
     }

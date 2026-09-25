@@ -23,18 +23,16 @@ it('orders photos newest first', function () {
     expect($photos->first()->title)->toBe('Newer');
 });
 
-it('renders the redesigned grid on the about page', function () {
+it('renders the grid with the lightbox links', function () {
     Photo::factory()->create(['title' => 'In the studio', 'image_path' => 'photos/studio.jpg']);
 
-    Livewire::test(PhotoGallery::class, ['variant' => PhotoGallery::VARIANT_SITE])
-        ->assertViewIs('livewire.photo-gallery-site')
-        ->assertSee('alt="In the studio"', escape: false)
-        ->assertSee('data-fancybox="gallery"', escape: false)
-        ->assertDontSee('Some photos of Our Artists');
-});
-
-it('keeps the legacy look on the homepage', function () {
     Livewire::test(PhotoGallery::class)
         ->assertViewIs('livewire.photo-gallery')
-        ->assertSee('Some photos of Our Artists');
+        ->assertSee('alt="In the studio"', escape: false)
+        ->assertSee('data-fancybox="gallery"', escape: false)
+        ->assertSee('href="'.asset('storage/photos/studio.jpg').'"', escape: false);
+});
+
+it('says so when there are no photos', function () {
+    Livewire::test(PhotoGallery::class)->assertSee('Photos are on the way.');
 });

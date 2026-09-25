@@ -46,17 +46,7 @@
 
                 <h1 class="m-0 font-display text-[clamp(3.2rem,8vw,7.4rem)] font-black uppercase leading-[.82] [overflow-wrap:anywhere]">{{ $release->title }}</h1>
 
-                @if (filled($release->credit))
-                    {{-- Built in one piece: whitespace between the parts would show before the commas --}}
-                    @php
-                        $creditHtml = collect($release->creditParts())
-                            ->map(fn (array $part): string => $part['artist']
-                                ? '<a href="'.e(route('artists.show', $part['artist']->slug)).'" class="border-b border-rule2 transition-colors hover:border-frost">'.e($part['text']).'</a>'
-                                : e($part['text']))
-                            ->implode('');
-                    @endphp
-                    <p class="m-0 text-xl font-medium">{!! $creditHtml !!}</p>
-                @endif
+                <x-release-credit :release="$release" class="m-0 text-xl font-medium" />
 
                 <x-listen-links :release="$release" />
 
