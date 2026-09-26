@@ -3,8 +3,9 @@
     The button carries what the player loads and shows: the Spotify URI, the
     title, the credit and the page it links back to. Renders nothing without
     a URI. Without a `label` it is a round icon button; with one, a pill like
-    x-site.button. The player keeps aria-pressed and data-state
-    ("playing" / "paused") in sync while its URI is loaded.
+    x-site.button whose visible label switches to "Pause" while it plays. The
+    player keeps aria-pressed and data-state ("playing" / "paused") in sync
+    while its URI is loaded.
 --}}
 @props([
     'uri',
@@ -44,7 +45,10 @@
         <svg class="block group-data-[state=playing]/play:hidden" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
         <svg class="hidden group-data-[state=playing]/play:block" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg>
         @if ($label !== null)
-            <span>{{ $label }}<span class="sr-only">{{ $hiddenText }}</span></span>
+            {{-- The visible label switches to "Pause" while playing; the accessible name stays constant and aria-pressed carries the state (WAI-ARIA toggle button). --}}
+            <span aria-hidden="true" class="group-data-[state=playing]/play:hidden">{{ $label }}</span>
+            <span aria-hidden="true" class="hidden group-data-[state=playing]/play:inline">Pause</span>
+            <span class="sr-only">{{ $label }}{{ $hiddenText }}</span>
         @else
             <span class="sr-only">{{ $hiddenText }}</span>
         @endif

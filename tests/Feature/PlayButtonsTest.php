@@ -16,6 +16,20 @@ beforeEach(function () {
 });
 
 /**
+ * The button's text as assistive technology reads it: aria-hidden parts removed.
+ */
+function accessibleText(Element $button): string
+{
+    $clone = $button->cloneNode(true);
+
+    foreach (iterator_to_array($clone->querySelectorAll('[aria-hidden="true"]'), false) as $hidden) {
+        $hidden->remove();
+    }
+
+    return trim(preg_replace('/\s+/', ' ', $clone->textContent));
+}
+
+/**
  * The Play buttons matching the selector: what they load and what they read out.
  *
  * @return list<array{uri: ?string, title: ?string, credit: ?string, url: ?string, pressed: ?string, text: string}>
@@ -28,7 +42,7 @@ function playButtons(TestResponse|string $html, string $selector = 'main [data-p
         'credit' => $button->getAttribute('data-play-credit'),
         'url' => $button->getAttribute('data-play-url'),
         'pressed' => $button->getAttribute('aria-pressed'),
-        'text' => trim(preg_replace('/\s+/', ' ', $button->textContent)),
+        'text' => accessibleText($button),
     ], iterator_to_array(htmlDocument($html)->querySelectorAll($selector), false));
 }
 
@@ -118,7 +132,7 @@ it('leads the homepage hero with Play and marks its record for the spin', functi
         'text' => 'Play Human Made by Snow N Stuff',
     ]])
         ->and(htmlDocument($response)->querySelector("{$hero} [data-play-vinyl]")?->getAttribute('data-play-vinyl'))->toBe('spotify:track:5LoRtT4HMphu4n2OyJn4Cr');
-    $response->assertSeeInOrder(['Play<span class="sr-only"> Human Made by Snow N Stuff', 'Listen now'], escape: false);
+    $response->assertSeeInOrder(['<span class="sr-only">Play Human Made by Snow N Stuff</span>', 'Listen now'], escape: false);
 });
 
 it('keeps Listen now as the only way to listen when Spotify cannot play the release', function () {

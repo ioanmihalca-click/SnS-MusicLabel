@@ -19,6 +19,16 @@ trait HasSpotifyArtwork
     }
 
     /**
+     * The Spotify link whose thumbnail stands in for the artwork: null once an
+     * image is uploaded, or without a usable Spotify link. Pages look these up
+     * all at once before rendering, with SpotifyThumbnail::warmArtwork().
+     */
+    public function artworkSpotifyUrl(): ?SpotifyUrl
+    {
+        return $this->hasUploadedArtwork() ? null : SpotifyUrl::parse($this->spotify_url);
+    }
+
+    /**
      * The uploaded image, or the Spotify thumbnail (looked up and cached on first use).
      */
     public function artworkUrl(): ?string
@@ -27,7 +37,7 @@ trait HasSpotifyArtwork
             return asset('storage/'.$this->uploadedArtworkPath());
         }
 
-        $spotifyUrl = SpotifyUrl::parse($this->spotify_url);
+        $spotifyUrl = $this->artworkSpotifyUrl();
 
         return $spotifyUrl === null ? null : app(SpotifyThumbnail::class)->urlFor($spotifyUrl);
     }
@@ -42,7 +52,7 @@ trait HasSpotifyArtwork
             return asset('storage/'.$this->uploadedArtworkPath());
         }
 
-        $spotifyUrl = SpotifyUrl::parse($this->spotify_url);
+        $spotifyUrl = $this->artworkSpotifyUrl();
 
         return $spotifyUrl === null ? null : app(SpotifyThumbnail::class)->cachedUrlFor($spotifyUrl);
     }

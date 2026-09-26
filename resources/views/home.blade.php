@@ -32,7 +32,7 @@
                                 href="{{ route('releases.index', ['artist' => $artist->slug]) }}"
                                 wire:navigate
                                 class="inline-flex items-center rounded-full border border-rule2 px-3.5 py-[9px] text-[13px] font-medium leading-none text-mist transition-colors hover:border-mist hover:text-frost"
-                            >{{ $artist->name }}<span class="ml-1.5 font-meta text-[10px] opacity-70">{{ $artist->releases_count }}</span></a>
+                            >{{ $artist->name }}<span class="ml-1.5 font-meta text-[10px] text-dim">{{ $artist->releases_count }}</span></a>
                         @endforeach
                     </nav>
                 @endif

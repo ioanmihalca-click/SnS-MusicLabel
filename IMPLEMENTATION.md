@@ -1,5 +1,7 @@
 # Implementare — Cleanup, UI Polish, Tests, Featured Track & Design Refresh
 
+> **Starea actuală a proiectului:** vezi secțiunea [„Redesign 2026 (etapele 1–7)”](#redesign-2026-etapele-17) de la finalul documentului, cu runbook-ul de producție. Secțiunile Stage A–E de mai jos descriu iterațiile anterioare și rămân ca istoric; o parte din ce descriu (hero-ul animat, stats strip, FeaturedTrack, `<x-layouts.app>` etc.) a fost înlocuită în redesign.
+
 Această implementare s-a desfășurat în 5 stage-uri (A–E). Stage-urile A–C au fost livrate pe branch-ul `refactor/cleanup-and-polish` în 3 commit-uri; Stage D este o iterație ulterioară pe `main` („featured track în hero + resursă Filament dedicată"); Stage E este un design refresh pe branch-ul `design/refresh` (display font, logomark, motion, stats strip, card restyle). Niciun conținut, secțiune, link sau imagine existentă nu a fost eliminat. Toate cele 10 secțiuni de homepage, paginile blog și cele 5 resurse Filament inițiale rămân exact unde erau; Stage D adaugă o nouă resursă (FeaturedTrack) și un pill condiționat sub CTAs; Stage E adaugă o secțiune de stats strip și transformă vibe-ul vizual fără să modifice copy-ul.
 
 ## Sumar executiv
@@ -444,3 +446,114 @@ Stage E este pe branch-ul `design/refresh`, gata pentru commit + merge către `m
 git checkout design/refresh && git add -A && git commit -m "feat: design refresh (Stage E)"
 git checkout main && git merge design/refresh
 ```
+
+## Redesign 2026 (etapele 1–7)
+
+Site-ul public a fost refăcut complet pe branch-ul `redesign`, pornit din `main` la `fb3dd9d`: catalog structurat, pagini noi, SEO și infrastructură pentru agenți AI, player persistent, formular de demo și consimțământ pentru cookie-uri. Merge-ul în `main` și deploy-ul se fac separat, după runbook-ul de mai jos (`deploy.sh` face `git pull origin main`).
+
+### Etape și commit-uri
+
+| Etapa | Commit | Pe scurt | Teste |
+|---|---|---|---|
+| — | `dc76605` | Ghidurile Laravel Boost și skill-urile regenerate de `boost:update` | — |
+| 1 | `622450d` | Model de date pentru catalog, admin refăcut, migrarea datelor vechi | 147 |
+| 2a | `4e8667f` | SEO și infrastructură pentru agenți AI | 179 |
+| 2b | `c9cdc69` | Layout nou și paginile de catalog | 260 |
+| 3 | `3b868c8` | Homepage nou, blog restilizat, designul vechi eliminat | 289 |
+| 4 | `1397397` | Player persistent în bara de jos (embed Spotify) | 324 |
+| 5 | `b697e72` | Formular de demo, consimțământ pentru cookie-uri, pagina de confidențialitate | 390 |
+| 6 | (necomisă la scrierea acestei secțiuni) | Performanță, curățenie, pregătire de lansare | 406 |
+| 7 | — | Raportul PDF pentru client (în engleză): modificările, capturi înainte/după, măsurătorile din etapa 6, ghidul adminului și lista de după lansare. Merge-ul în `main` și deploy-ul le face echipa, după runbook | — |
+
+### Etapa 1 — Catalog structurat, admin și migrarea datelor vechi (`622450d`)
+
+- **Lansări:** slug, dată de lansare, format și gen (enum-uri), credit afișat (`artist_display`), link Spotify, smartlink, copertă, `is_featured`, suport DJ și poziții în topuri. Tabel nou `tracks` și pivot `artist_release`.
+- **Artiști:** slug, fotografie, rol, origine, profiluri sociale, highlights, press kit.
+- **Date vechi:** codul de embed Spotify lipit în admin devine un `spotify_url` canonic (lansări, playlisturi); `featured_tracks` se mută în `releases.is_featured`; coloanele vechi se șterg doar după conversie, iar rollback-ul reconstruiește iframe-urile. Resursa FeaturedTrack a dispărut.
+- **Filament:** formulare noi pentru Release/Artist/Playlist (repeater de piese, durate m:ss, validarea linkurilor Spotify).
+- **`catalog:backfill`** completează cele 19 lansări existente din `database/data/catalog.json` (doar câmpurile goale; titlurile doar cât timp sunt neschimbate). **`SnapshotSeeder`** recreează local site-ul public (doar în afara producției).
+
+### Etapa 2a — SEO și infrastructură pentru agenți AI (`4e8667f`)
+
+- `SeoData` + `<x-seo>`: titlu, descriere, canonical din `APP_URL`, Open Graph/Twitter, link către versiunea Markdown și `llms.txt`, verificare Google/Bing opțională.
+- JSON-LD `@graph` (`App\Support\Seo\Schema`): Organization, WebSite, BreadcrumbList, BlogPosting.
+- `robots.txt`, `sitemap.xml` și `llms.txt` dinamice, în cache-ul separat `pages`, golit de `PublicContentObserver`. `robots.txt` permite boții de căutare și de răspuns, blochează crawlerele de antrenare și **blochează tot în afara producției**.
+- `spatie/laravel-markdown-response` pe grupul `web`: orice pagină publică are o versiune `.md` (și prin `Accept: text/markdown`).
+- IndexNow: cheie derivată din `APP_KEY`, trimiteri grupate, doar în producție.
+- Au dispărut `robots.txt` static și comanda `sitemap:generate`; `deploy.sh` șterge `public/sitemap.xml` rămas și golește cache-ul `pages`.
+
+### Etapa 2b — Layout nou și paginile de catalog (`c9cdc69`)
+
+- Layout în designul aprobat: tokenuri reci, închise (`tailwind.config.js`), fonturile Schibsted Grotesk, Martian Mono și Big Shoulders Display (Bunny Fonts), structură semantică header/nav/main/footer.
+- Pagini: `/releases` (catalog Livewire cu filtre după artist, format, gen și an), `/releases/{slug}`, `/artists`, `/artists/{slug}`, `/playlists`, `/about` și un 404 în layoutul nou.
+- JSON-LD MusicAlbum/MusicRelease/MusicRecording, MusicGroup, MusicPlaylist; sitemap, `llms.txt` și IndexNow acoperă paginile noi.
+- Tailwind nu mai scanează view-urile compilate, deci build-ul e determinist.
+
+### Etapa 3 — Homepage nou, blog restilizat, designul vechi eliminat (`3b868c8`)
+
+- Homepage: hero cu lansarea promovată (vinil la hover), cele mai noi 8 lansări, „Supported & played by” din câmpurile de suport și topuri, artiști, playlisturi, about scurt cu fotografii, noutăți (lansări și postări), linkuri de urmărire. Fără iframe-uri, un singur `<h1>`.
+- Blog (News) pe layoutul nou; HTML-ul postărilor e curățat la randare (`App\Support\ArticleHtml`).
+- Au fost șterse layouturile vechi, preloader-ul, back-to-top, top bar-ul, stats strip, secțiunile și componentele vechi de homepage, CSS/JS-ul vechi și imaginile nefolosite.
+
+### Etapa 4 — Player persistent în bara de jos (`1397397`)
+
+- Navigare SPA cu `wire:navigate` pe linkurile interne, ca muzica să nu se oprească între pagini.
+- Embedul Spotify real, vizibil (iFrame API, 152 px), cu titlul piesei, coadă anterior/următor și închidere; butoane Play pe cardurile de lansări, playlisturi și noutăți, în hero-uri și pe paginile de artist.
+- La primul Play se cere acordul (Spotify setează cookie-uri); până atunci nu se încarcă nimic de la Spotify.
+
+### Etapa 5 — Demo, consimțământ, confidențialitate (`b697e72`)
+
+- `/demos`: formular Livewire (link privat SoundCloud/Dropbox/Drive, gen, țară, mesaj, confirmarea drepturilor) cu honeypot, timp minim de completare și rate limiting; notificare pe e-mail la `DEMO_NOTIFY_EMAIL`.
+- Filament `DemoSubmissionResource`: statusuri (new/listened/accepted/declined), notițe, filtre, badge în meniu. Demo-urile neacceptate se șterg după 12 luni (`model:prune`, programat zilnic).
+- Banner de consimțământ: Accept all / Reject all / Customize, categoriile analytics și media externă, alegerea ține 6 luni, „Cookie settings” în footer. Google Analytics se încarcă doar în producție și doar după acord (basic consent mode). Playerele din postări sunt placeholder-e până la acord.
+- `/privacy`: draft GDPR (art. 13), în engleză, cu tabelul de cookie-uri; avizul de draft apare doar în afara producției.
+
+### Etapa 6 — Performanță, curățenie, pregătire de lansare
+
+- **Coperțile Spotify în paralel:** `SpotifyThumbnail::warm()` cere într-o singură rundă `Http::pool` (toate deodată, `connectTimeout(2)`, `timeout(3)`) doar thumbnail-urile care nu sunt încă în cache, apoi `urlFor()` doar citește cache-ul. `warmArtwork()` primește modelele unei pagini și le trimite doar pe cele fără imagine urcată (`HasSpotifyArtwork::artworkSpotifyUrl()`). Se apelează înainte de randare în `HomeController` (hero, cele 8 lansări, noutăți, artiști, playlisturi), `ReleaseCatalogue`, `ReleaseController@show`, `ArtistController` (index și show) și `PlaylistsController`. `AboutController` nu afișează coperți. Sitemap-ul rămâne doar pe cache (`cachedUrlFor`).
+- **Expirare eșalonată:** un thumbnail găsit rămâne în cache 30 de zile plus 0–5 zile aleatoriu, ca să nu expire toate în aceeași zi. Fiecare succes se păstrează și ca „ultimul URL bun” (maximum 180 de zile, limita pentru cache temporar din termenii Spotify). La un eșec (eroare, timeout, conexiune), dacă există un URL bun anterior, acesta se folosește încă o zi; altfel eșecul rămâne în cache 10 minute.
+- **Header-e de securitate** (`App\Http\Middleware\SecurityHeaders`, pe grupul `web`, înaintea răspunsurilor Markdown, și pe panoul Filament): `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `X-Frame-Options: SAMEORIGIN`, `Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()`. **Fără CSP** deocamdată: ar rupe iframe-urile Spotify și Beatport, Livewire și Alpine fără o configurare atentă.
+- **Curățenie:** listener-ul `photo-added` din `resources/js/app.js` (evenimentul nu mai era emis nicăieri); importuri nefolosite în paginile Filament `Create*` și formatare în `User` (Pint trece acum pe tot `app/`); `config/livewire.php` indica layoutul șters `components.layouts.app`, acum `components.layouts.site`.
+- **Accesibilitate (din Lighthouse):** tokenul `dim` trece de la `#626D78` la `#7D8894` (contrast 5,4:1 pe `ink`, peste 4,7:1 pe `slab2`, față de 3,7:1 înainte); numărul de lansări din chip-urile de artist nu mai e estompat cu `opacity-70`.
+
+**Măsurători (26.09.2026):**
+
+| | Înainte | După |
+|---|---|---|
+| Homepage cu cache-ul de thumbnail-uri gol (16 cereri oEmbed, local) | 4,4–5,1 s | median 0,8 s (0,5–1,4 s; ~1 din 5 încărcări 2–3 s, când un răspuns Spotify întârzie) |
+| Homepage cu cache-ul cald | 0,04–0,06 s | 0,04–0,06 s |
+| Lighthouse mobil, homepage (Perf / A11y / LCP / TBT) | 63 / 94 / 6,5 s / 240 ms | 80 / 100 / 4,2 s / 120 ms |
+| Lighthouse mobil, /blog (Perf / A11y / LCP) | 62 / 96 / 33,5 s | 85 / 100 / 4,0 s |
+| Lighthouse desktop, homepage (Perf / A11y / greutate / cereri) | 92 / 94 / 1,86 MB / 227 | 96 / 100 / 0,91 MB / 34 |
+
+„Înainte” e site-ul vechi, live; „după” e branch-ul `redesign` servit local de Herd (HTTP simplu, config cu `APP_DEBUG=false`). Local, Best Practices (79) pică doar pe HTTPS, iar SEO (66–69) doar pe `robots.txt`, care blochează tot în afara producției; în producție ambele ar trebui să fie 100. Rămân de făcut, ca optimizări: imaginile de copertă ale postărilor (~13 MB pe /blog, încărcate la dimensiunea originală), fonturile servite local în loc de Bunny Fonts (CSS care blochează randarea), Fancybox încărcat doar pe /about.
+
+### Decizii importante
+
+- **Fără Spotify Web API.** API-ul cere credențiale, token-uri și are limite. Datele catalogului sunt îngrijite în `database/data/catalog.json` și în admin; coperta e cea urcată în admin sau thumbnail-ul public oEmbed (300 px, fără cheie), ținut în cache. Pentru o copertă mai mare pe pagina lansării, se urcă imaginea în admin.
+- **Playerul stă în afara `<body>`.** Livewire 3.8 cu `@persist` mută elementul la navigare, dar reîncarcă iframe-ul, deci muzica s-ar opri. `resources/js/player.js` creează bara după `<body>`, pe care `wire:navigate` nu o înlocuiește, și șterge copiile din snapshot-urile back/forward.
+- **Consimțământ înainte de orice terț.** Nimic din ce cere acord (Google Analytics, embedurile Spotify/Beatport/nfan.link) nu se încarcă înainte de alegere. Alegerea stă în `localStorage` 6 luni și se schimbă din „Cookie settings”. GA doar în producție.
+- **Indexarea depinde de `APP_ENV`.** În afara producției `robots.txt` blochează tot, iar canonical-urile vin din `APP_URL`.
+- **`public/build` e comis.** Serverul nu are Node; după orice schimbare de CSS/JS se rulează `npm run build` și se comite rezultatul.
+
+### Runbook de producție
+
+1. **Backup:** baza de date și `storage/app/public` (migrările din etapa 1 convertesc și apoi șterg coloanele vechi de embed).
+2. **Pe server:** `git status` (fără modificări locale neașteptate) și `crontab -l` (se scoate vechiul `sitemap:generate`; comanda nu mai există).
+3. **`.env`:**
+   - `APP_ENV=production` (altfel `robots.txt` blochează indexarea);
+   - `APP_URL=https://snow-n-stuff.com` (fără `www`);
+   - `MAIL_*` funcțional, pentru notificările de demo;
+   - opțional: `DEMO_NOTIFY_EMAIL`, `GOOGLE_ANALYTICS_ID`, `PRIVACY_CONTROLLER_NAME` / `PRIVACY_CONTROLLER_ADDRESS` / `PRIVACY_CONTACT_EMAIL`, `GOOGLE_SITE_VERIFICATION` / `BING_SITE_VERIFICATION`.
+4. **Deploy** cu `deploy.sh`, după merge-ul în `main`: `git pull`, șterge `public/sitemap.xml` rămas de la vechiul generator, `composer install --no-dev`, `migrate --force`, `config:cache`, golește cache-ul `pages`, `route:cache`, `view:cache`.
+5. **Catalogul:** `php artisan catalog:backfill --dry-run`, se verifică lista, apoi `php artisan catalog:backfill`.
+6. **Opțional, cron:** `* * * * * cd ~/domains/snow-n-stuff.com/public_html && /opt/alt/php84/usr/bin/php artisan schedule:run >> /dev/null 2>&1`, pentru `model:prune` (demo-urile neacceptate, după 12 luni).
+7. **Verificări cu `curl`:**
+   - `curl -s https://snow-n-stuff.com/robots.txt` (fără `Disallow: /` general);
+   - `curl -s https://snow-n-stuff.com/sitemap.xml | head`;
+   - `curl -s https://snow-n-stuff.com/llms.txt | head`;
+   - o pagină Markdown: `curl -s https://snow-n-stuff.com/releases/speak-to-me.md | head`;
+   - fișierul cheii IndexNow: adresa o dă `php artisan tinker --execute 'echo App\Support\Seo\IndexNow::keyLocation();'`, apoi `curl -s <adresa>`;
+   - header-ele de securitate: `curl -sI https://snow-n-stuff.com/`.
+8. **Search Console și Bing Webmaster Tools:** se retrimite `https://snow-n-stuff.com/sitemap.xml`.
+9. **Rich Results Test** (Google) pe o lansare, un artist și o postare.

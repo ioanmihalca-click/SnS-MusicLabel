@@ -139,3 +139,27 @@ it('loads the artist page with a fixed number of queries', function () {
 it('returns 404 for an unknown artist', function () {
     $this->get('/artists/nobody')->assertNotFound();
 });
+
+it('looks up the roster\'s Spotify pictures in one round of parallel requests', function () {
+    $lookups = recordSpotifyLookups();
+    Artist::factory()->count(2)->create();
+    Artist::factory()->create(['photo' => 'artist-photos/uploaded.jpg']);
+
+    $this->get('/artists')->assertOk();
+
+    expect($lookups->getArrayCopy())->toBe(oneParallelRound(2));
+});
+
+it('looks up the Spotify thumbnails of the artist page in one round of parallel requests', function () {
+    $lookups = recordSpotifyLookups();
+    $artist = gAndS();
+    $artist->releases()->attach(Release::factory()->count(2)->create());
+    $artist->releases()->attach(Release::factory()->create(['cover_image' => 'release-covers/uploaded.jpg']));
+    Artist::factory()->create();
+    Artist::factory()->create(['photo' => 'artist-photos/uploaded.jpg']);
+
+    $this->get('/artists/g-and-s')->assertOk();
+
+    // The artist, two releases of the discography and one artist of the rest of the roster.
+    expect($lookups->getArrayCopy())->toBe(oneParallelRound(4));
+});

@@ -6,6 +6,7 @@ use App\Models\Artist;
 use App\Models\Release;
 use App\Support\Seo\Schema;
 use App\Support\Seo\SeoData;
+use App\Support\Spotify\SpotifyThumbnail;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -16,13 +17,16 @@ class ArtistController extends Controller
     /**
      * The roster.
      */
-    public function index(): View
+    public function index(SpotifyThumbnail $thumbnails): View
     {
         $path = route('artists.index', absolute: false);
         $trail = ['/' => 'Home', $path => 'Artists'];
+        $artists = Artist::query()->inRosterOrder()->get();
+
+        $thumbnails->warmArtwork($artists);
 
         return view('artists.index', [
-            'artists' => Artist::query()->inRosterOrder()->get(),
+            'artists' => $artists,
             'trail' => $trail,
             'seo' => new SeoData(
                 title: 'Artists - '.SeoData::SITE_NAME,
@@ -37,9 +41,12 @@ class ArtistController extends Controller
      * An artist page: portrait, bio, highlights, discography and the rest of the
      * roster. "Play latest" loads the newest release Spotify can play.
      */
-    public function show(Artist $artist): View
+    public function show(Artist $artist, SpotifyThumbnail $thumbnails): View
     {
         $artist->load(['releases' => fn (BelongsToMany $query) => $query->with('artists')->newestFirst()]);
+        $otherArtists = Artist::query()->whereKeyNot($artist->getKey())->inRosterOrder()->get();
+
+        $thumbnails->warmArtwork([$artist, ...$artist->releases, ...$otherArtists]);
 
         $path = route('artists.show', $artist->slug, absolute: false);
         $trail = [
@@ -53,7 +60,7 @@ class ArtistController extends Controller
             'photoUrl' => $artist->photoUrl(),
             'latestPlayableRelease' => $artist->releases->first(fn (Release $release): bool => $release->playUri() !== null),
             'trail' => $trail,
-            'otherArtists' => Artist::query()->whereKeyNot($artist->getKey())->inRosterOrder()->get(),
+            'otherArtists' => $otherArtists,
             'seo' => new SeoData(
                 title: $artist->name.' - '.SeoData::SITE_NAME,
                 description: $artist->summary(),

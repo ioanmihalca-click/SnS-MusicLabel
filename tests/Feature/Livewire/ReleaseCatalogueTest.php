@@ -103,3 +103,11 @@ it('is the /releases page, in the new layout', function () {
         ->assertSee('<html lang="en" class="theme-site bg-ink">', escape: false)
         ->assertSeeText('Speak To Me');
 });
+
+it('looks up the Spotify covers in one round of parallel requests, only once', function () {
+    $lookups = recordSpotifyLookups();
+
+    Livewire::test(ReleaseCatalogue::class)->set('year', '2025');
+
+    expect($lookups->getArrayCopy())->toBe(oneParallelRound(4));
+});

@@ -71,6 +71,14 @@ final class NewsItem
     }
 
     /**
+     * A release that is out (expects the `artists` relation to be loaded), or a post.
+     */
+    public static function from(Release|Blog $entry): self
+    {
+        return $entry instanceof Release ? self::fromRelease($entry) : self::fromPost($entry);
+    }
+
+    /**
      * The homepage feed: up to half releases already out and half published
      * posts; when one kind runs short, the other fills the free places. Newest
      * first, the most recently added first on the same date.
@@ -79,32 +87,51 @@ final class NewsItem
      */
     public static function latest(int $limit = 4): Collection
     {
+        return self::latestEntries($limit)->map(self::from(...));
+    }
+
+    /**
+     * The releases and posts of latest(), before they become news items, so
+     * that the homepage can look up the releases' artwork first, together with
+     * the rest of the page (SpotifyThumbnail::warmArtwork()).
+     *
+     * @return Collection<int, Release|Blog>
+     */
+    public static function latestEntries(int $limit = 4): Collection
+    {
         $releases = Release::query()
             ->with('artists')
             ->whereDate('released_at', '<=', today())
             ->newestFirst()
             ->limit($limit)
-            ->get()
-            ->map(fn (Release $release): self => self::fromRelease($release));
+            ->get();
 
         $posts = Blog::query()
             ->published()
             ->latest('published_at')
             ->latest('id')
             ->limit($limit)
-            ->get()
-            ->map(fn (Blog $post): self => self::fromPost($post));
+            ->get();
 
         $releaseCount = min($releases->count(), max(intdiv($limit, 2), $limit - $posts->count()));
         $postCount = min($posts->count(), $limit - $releaseCount);
 
         return $releases->take($releaseCount)
+            ->toBase()
             ->concat($posts->take($postCount))
             ->sortBy([
-                fn (self $a, self $b): int => $b->date->getTimestamp() <=> $a->date->getTimestamp(),
-                fn (self $a, self $b): int => $b->id <=> $a->id,
+                fn (Release|Blog $a, Release|Blog $b): int => self::dateOf($b)->getTimestamp() <=> self::dateOf($a)->getTimestamp(),
+                fn (Release|Blog $a, Release|Blog $b): int => $b->id <=> $a->id,
             ])
             ->values();
+    }
+
+    /**
+     * The date a feed entry is listed under: a release's release date, a post's publication date.
+     */
+    private static function dateOf(Release|Blog $entry): CarbonInterface
+    {
+        return $entry instanceof Release ? $entry->released_at : $entry->published_at;
     }
 
     /**

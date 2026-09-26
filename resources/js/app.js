@@ -32,7 +32,6 @@ const bindFancybox = () => Fancybox.bind('#gallery [data-fancybox]', fancyboxOpt
 if (!window.snsPlayer) {
     // livewire:navigated also fires once on the first page load.
     document.addEventListener('livewire:navigated', bindFancybox);
-    window.addEventListener('photo-added', bindFancybox);
 
     startNavigation();
     // Before the player, which reads the visitor's choice.

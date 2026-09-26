@@ -199,3 +199,14 @@ it('serves the release as Markdown with its title and tracklist', function () {
 it('returns 404 for an unknown release', function () {
     $this->get('/releases/nope')->assertNotFound();
 });
+
+it('looks up the Spotify thumbnails it shows in one round of parallel requests', function () {
+    $lookups = recordSpotifyLookups();
+    ['artist' => $artist] = speakToMe();
+    Release::factory()->count(2)->create()->each(fn (Release $release) => $release->artists()->attach($artist));
+    Release::factory()->create(['cover_image' => 'release-covers/uploaded.jpg'])->artists()->attach($artist);
+
+    $this->get('/releases/speak-to-me')->assertOk();
+
+    expect($lookups->getArrayCopy())->toBe(oneParallelRound(3));
+});

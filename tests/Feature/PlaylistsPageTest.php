@@ -47,3 +47,14 @@ it('describes each playlist as a MusicPlaylist curated by the label', function (
         'author' => ['@id' => 'https://snow-n-stuff.com/#organization'],
     ]);
 });
+
+it('looks up the Spotify covers in one round of parallel requests', function () {
+    $lookups = recordSpotifyLookups();
+    Playlist::factory()->count(2)->create();
+    Playlist::factory()->create(['cover_image' => 'playlist-covers/uploaded.jpg']);
+    Playlist::factory()->inactive()->create();
+
+    $this->get('/playlists')->assertOk();
+
+    expect($lookups->getArrayCopy())->toBe(oneParallelRound(2));
+});

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -12,7 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->web(append: ProvideMarkdownResponse::class);
+        // SecurityHeaders first, so it also covers the Markdown responses built after it.
+        $middleware->web(append: [SecurityHeaders::class, ProvideMarkdownResponse::class]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -1,3 +1,30 @@
+# Snow 'n' Stuff
+
+The website of the Snow 'n' Stuff music label (Laravel 12, Livewire 3, Filament 3, Tailwind CSS 3). The history of the project and the production runbook are in [IMPLEMENTATION.md](IMPLEMENTATION.md).
+
+## Local setup
+
+Requires PHP 8.4, Composer and Node.js 20.19+ (or 22.12+). SQLite is enough locally.
+
+```bash
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+```
+
+In `.env`, keep `APP_ENV=local`, set `APP_URL` to the local address (e.g. `http://sns-music-label.test` with Laravel Herd) and, for SQLite, `DB_CONNECTION=sqlite` (then `touch database/database.sqlite`). Then:
+
+```bash
+php artisan migrate --seed
+php artisan storage:link
+npm run build
+```
+
+- In the `local` environment, `migrate --seed` also runs `SnapshotSeeder`: it recreates the public site's content from `database/data/catalog.json` and `database/data/snapshot.json`, runs `catalog:backfill`, downloads the missing images from the live site when it is reachable, and creates the local admin `contact@snow-n-stuff.com` with the password `password` (`/admin`). It refuses to run in production.
+- `public/build` is committed: the server does not run npm. After any change to `resources/css` or `resources/js`, run `npm run build` and commit the result (the build is deterministic). `npm run dev` gives hot reload while working.
+- Tests: `php artisan test --compact`. Formatting: `vendor/bin/pint`.
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Release;
 use App\Support\Seo\Schema;
 use App\Support\Seo\SeoData;
+use App\Support\Spotify\SpotifyThumbnail;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -17,9 +18,12 @@ class ReleaseController extends Controller
      * A release page: artwork, credit, listen links, tracklist, story, support
      * and more releases by the same artists.
      */
-    public function show(Release $release): View
+    public function show(Release $release, SpotifyThumbnail $thumbnails): View
     {
         $release->load(['artists', 'tracks']);
+        $moreReleases = $this->moreReleasesLike($release);
+
+        $thumbnails->warmArtwork([$release, ...$moreReleases]);
 
         $path = route('releases.show', $release->slug, absolute: false);
         $trail = [
@@ -33,7 +37,7 @@ class ReleaseController extends Controller
             'coverUrl' => $release->coverUrl(),
             'trail' => $trail,
             'mainArtist' => $release->artists->first(),
-            'moreReleases' => $this->moreReleasesLike($release),
+            'moreReleases' => $moreReleases,
             'seo' => new SeoData(
                 title: (filled($release->credit) ? "{$release->title} by {$release->credit}" : $release->title).' - '.SeoData::SITE_NAME,
                 description: $release->summary(),

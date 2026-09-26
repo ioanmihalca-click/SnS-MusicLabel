@@ -19,7 +19,7 @@ export default {
                 rule2: '#323B45',
                 frost: '#E9EEF2',
                 mist: '#8E9AA6',
-                dim: '#626D78',
+                dim: '#7D8894',
                 signal: '#E5383B',
             },
             fontFamily: {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Playlist;
 use App\Support\Seo\Schema;
 use App\Support\Seo\SeoData;
+use App\Support\Spotify\SpotifyThumbnail;
 use Illuminate\Contracts\View\View;
 
 class PlaylistsController extends Controller
@@ -14,11 +15,13 @@ class PlaylistsController extends Controller
     /**
      * The Spotify playlists curated by the label.
      */
-    public function __invoke(): View
+    public function __invoke(SpotifyThumbnail $thumbnails): View
     {
         $path = route('playlists.index', absolute: false);
         $trail = ['/' => 'Home', $path => 'Playlists'];
         $playlists = Playlist::query()->active()->get();
+
+        $thumbnails->warmArtwork($playlists);
 
         return view('playlists.index', [
             'playlists' => $playlists,

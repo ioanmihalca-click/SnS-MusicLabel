@@ -7,6 +7,7 @@ use App\Models\Playlist;
 use App\Models\Release;
 use Dom\Element;
 use Dom\HTMLDocument;
+use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Testing\TestResponse;
 
 beforeEach(function () {
@@ -165,4 +166,20 @@ it('invites artists to send a demo, next to Follow', function () {
         ->and($link)->not->toBeNull()
         ->and($link->hasAttribute('wire:navigate'))->toBeTrue()
         ->and($demo->nextElementSibling->getAttribute('aria-labelledby'))->toBe('follow-title');
+});
+
+it('looks up the Spotify thumbnails it shows in one round of parallel requests', function () {
+    $lookups = recordSpotifyLookups();
+    Release::factory()->count(8)->sequence(fn (Sequence $sequence): array => ['released_at' => now()->addDays($sequence->index + 1)])->create();
+    Release::factory()->create(['title' => 'Only in the news', 'released_at' => now()->subMonth()]);
+    Release::factory()->create(['released_at' => now()->subMonths(2), 'cover_image' => 'release-covers/uploaded.jpg']);
+    Artist::factory()->create();
+    Artist::factory()->create(['photo' => 'artist-photos/uploaded.jpg']);
+    Playlist::factory()->create();
+    Playlist::factory()->inactive()->create();
+
+    $this->get('/')->assertOk()->assertSeeText('Only in the news is out now');
+
+    // The eight upcoming releases, the one only in the news, an artist and a playlist.
+    expect($lookups->getArrayCopy())->toBe(oneParallelRound(11));
 });

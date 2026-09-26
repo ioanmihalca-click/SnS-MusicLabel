@@ -8,6 +8,7 @@ use App\Models\Artist;
 use App\Models\Release;
 use App\Support\Seo\Schema;
 use App\Support\Seo\SeoData;
+use App\Support\Spotify\SpotifyThumbnail;
 use Carbon\CarbonInterface;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
@@ -85,7 +86,7 @@ class ReleaseCatalogue extends Component
         $this->reset(...self::FILTERS);
     }
 
-    public function render(): View
+    public function render(SpotifyThumbnail $thumbnails): View
     {
         $catalogue = Release::query()->with('artists')->newestFirst()->get();
         $artists = $catalogue->pluck('artists')->flatten(1)->unique('id')->sortBy([['order', 'asc'], ['name', 'asc']])->values();
@@ -101,6 +102,8 @@ class ReleaseCatalogue extends Component
                 && ($selectedGenre === null || $release->genre === $selectedGenre)
                 && ($selectedYear === null || $release->released_at?->year === $selectedYear))
             ->values();
+
+        $thumbnails->warmArtwork($releases);
 
         return view('livewire.release-catalogue', [
             'releases' => $releases,
