@@ -15,7 +15,7 @@ final class SeoData
 
     public const DEFAULT_DESCRIPTION = "Snow 'n' Stuff is an innovative music label specializing in Tech House, Deep House, House, and Techno. Discover exceptional artists and immersive live events curated by industry veterans.";
 
-    public const DEFAULT_IMAGE_PATH = 'assets/img/OG-SnownStuff.jpg';
+    public const DEFAULT_IMAGE_PATH = 'assets/img/og-default.jpg';
 
     /**
      * @param  string  $path  The page's path; the canonical is `app.url` plus this path, without a query string.
