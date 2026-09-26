@@ -11,6 +11,10 @@ use Illuminate\Support\Collection;
  * One entry of a news feed: a blog post, or a release that is out. Releases
  * appear in the homepage feed automatically, so it stays current without
  * writing a post for each one; /blog lists posts only.
+ *
+ * `playUri`, `playTitle` and `playCredit` feed the entry's Play button
+ * (x-play-button), shown only with a URI: null for posts and for releases
+ * Spotify cannot play.
  */
 final class NewsItem
 {
@@ -26,6 +30,9 @@ final class NewsItem
         public readonly CarbonInterface $date,
         public readonly ?string $imageUrl = null,
         public readonly ?string $summary = null,
+        public readonly ?string $playUri = null,
+        public readonly ?string $playTitle = null,
+        public readonly ?string $playCredit = null,
     ) {}
 
     /**
@@ -44,6 +51,9 @@ final class NewsItem
             url: route('releases.show', $release->slug),
             date: $release->released_at,
             imageUrl: $release->coverUrl(),
+            playUri: $release->playUri(),
+            playTitle: $release->title,
+            playCredit: filled($release->credit) ? $release->credit : null,
         );
     }
 

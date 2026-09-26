@@ -1,7 +1,7 @@
 {{--
-    A Spotify playlist curated by the label: cover, title, tags and a Follow
-    link. `headingLevel` follows the page's outline (h2 on /playlists, h3 on
-    the homepage).
+    A Spotify playlist curated by the label: cover, title, tags, a Play button
+    (when Spotify can play it) and a Follow link. `headingLevel` follows the
+    page's outline (h2 on /playlists, h3 on the homepage).
 --}}
 @props([
     'playlist',
@@ -38,7 +38,9 @@
     @endif
 
     @if (filled($playlist->spotify_url))
-        <div>
+        <div class="flex items-center gap-2">
+            <x-play-button :uri="$playlist->playUri()" :title="$playlist->displayTitle()" :url="route('playlists.index')" />
+
             <a
                 href="{{ $playlist->spotify_url }}"
                 target="_blank"

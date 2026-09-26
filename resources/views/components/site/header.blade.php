@@ -20,7 +20,7 @@
 >
     <div class="site-wrap">
         <div class="flex min-h-16 items-center gap-6">
-            <a href="{{ route('home') }}" aria-label="Snow 'n' Stuff, home" class="group inline-flex flex-none items-center gap-2.5 text-frost">
+            <a href="{{ route('home') }}" wire:navigate aria-label="Snow 'n' Stuff, home" class="group inline-flex flex-none items-center gap-2.5 text-frost">
                 <x-icons.logomark class="h-[30px] w-[30px] text-signal transition-transform duration-700 ease-[cubic-bezier(.2,.7,.1,1)] group-hover:rotate-180" />
                 <span class="font-display text-[21px] font-black uppercase leading-none tracking-[.01em]">Snow 'n' Stuff</span>
             </a>
@@ -29,6 +29,7 @@
                 @foreach ($navLinks as $link)
                     <a
                         href="{{ $link['href'] }}"
+                        wire:navigate
                         @if ($link['active']) aria-current="page" @endif
                         @class([
                             'border-b py-1.5 text-[15px] font-medium transition-colors hover:border-frost hover:text-frost',
@@ -59,6 +60,7 @@
             @foreach ($navLinks as $link)
                 <a
                     href="{{ $link['href'] }}"
+                    wire:navigate
                     @if ($link['active']) aria-current="page" @endif
                     @class([
                         'block py-1 font-display text-[30px] font-extrabold uppercase leading-tight',

@@ -13,7 +13,7 @@
     @php
         $creditHtml = collect($release->creditParts())
             ->map(fn (array $part): string => $part['artist']
-                ? '<a href="'.e(route('artists.show', $part['artist']->slug)).'" class="border-b border-rule2 transition-colors hover:border-frost">'.e($part['text']).'</a>'
+                ? '<a wire:navigate href="'.e(route('artists.show', $part['artist']->slug)).'" class="border-b border-rule2 transition-colors hover:border-frost">'.e($part['text']).'</a>'
                 : e($part['text']))
             ->implode('');
     @endphp

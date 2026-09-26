@@ -18,7 +18,7 @@
                 @endphp
 
                 <article wire:key="lead-{{ $lead->id }}" class="group mb-[clamp(48px,6vw,80px)] grid items-center gap-[clamp(20px,4vw,56px)] md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
-                    <a href="{{ $leadUrl }}" tabindex="-1" aria-hidden="true" data-markdown-ignore class="block aspect-[1200/630] overflow-hidden bg-slab">
+                    <a href="{{ $leadUrl }}" wire:navigate tabindex="-1" aria-hidden="true" data-markdown-ignore class="block aspect-[1200/630] overflow-hidden bg-slab">
                         @if ($leadCoverUrl)
                             <img
                                 src="{{ $leadCoverUrl }}"
@@ -43,13 +43,13 @@
                         </p>
 
                         <h2 class="m-0 font-display text-[clamp(2.2rem,4.4vw,3.8rem)] font-extrabold uppercase leading-[.9] [overflow-wrap:anywhere]">
-                            <a href="{{ $leadUrl }}" class="decoration-2 underline-offset-4 hover:underline">{{ $lead->title }}</a>
+                            <a href="{{ $leadUrl }}" wire:navigate class="decoration-2 underline-offset-4 hover:underline">{{ $lead->title }}</a>
                         </h2>
 
                         <p class="m-0 line-clamp-4 text-mist">{{ $lead->summary() }}</p>
 
                         <div>
-                            <a href="{{ $leadUrl }}" class="inline-flex items-center gap-2 border-b border-rule2 pb-[3px] font-semibold transition-colors hover:border-frost">Read more<span class="sr-only">: {{ $lead->title }}</span> <span aria-hidden="true">→</span></a>
+                            <a href="{{ $leadUrl }}" wire:navigate class="inline-flex items-center gap-2 border-b border-rule2 pb-[3px] font-semibold transition-colors hover:border-frost">Read more<span class="sr-only">: {{ $lead->title }}</span> <span aria-hidden="true">→</span></a>
                         </div>
                     </div>
                 </article>

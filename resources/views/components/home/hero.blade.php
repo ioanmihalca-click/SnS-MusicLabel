@@ -1,8 +1,10 @@
 {{--
     The homepage hero: the featured release (or else the newest), its blurred
-    artwork as the background and a record sliding out of the sleeve, which
-    spins while the artwork is hovered. Below, the newest other release.
-    Without any release, only the label's line is shown.
+    artwork as the background and a record behind the sleeve. The record
+    slides out while the artwork is hovered, and slides out and spins while
+    the footer player plays this release (data-play-vinyl, kept in sync by
+    resources/js/player.js). Below, the newest other release. Without any
+    release, only the label's line is shown.
     Expects the `artists` relation to be loaded, and `tracks` on the release.
 --}}
 @props([
@@ -12,6 +14,7 @@
 
 @php
     $coverUrl = $release?->coverUrl();
+    $playUri = $release?->playUri();
     $titleLength = mb_strlen((string) $release?->title);
     $titleSize = match (true) {
         $titleLength <= 12 => 'text-[clamp(4.4rem,12.5vw,11rem)]',
@@ -55,7 +58,7 @@
                 </p>
 
                 <h2 id="hero-title" class="m-0 font-display {{ $titleSize }} font-black uppercase leading-[.8] tracking-[-.005em] [overflow-wrap:anywhere]">
-                    <a href="{{ $releaseUrl }}" class="decoration-2 underline-offset-[.08em] hover:underline">{{ $release->title }}</a>
+                    <a href="{{ $releaseUrl }}" wire:navigate class="decoration-2 underline-offset-[.08em] hover:underline">{{ $release->title }}</a>
                 </h2>
 
                 @if (filled($release->credit) || $meta !== [])
@@ -83,7 +86,7 @@
                         @endif
                         <p class="m-0 min-w-0">
                             <span class="font-meta text-[11px] uppercase tracking-[.08em] text-signal">New</span>
-                            <a href="{{ route('releases.show', $next->slug) }}" class="font-semibold hover:underline">{{ $next->title }}</a>
+                            <a href="{{ route('releases.show', $next->slug) }}" wire:navigate class="font-semibold hover:underline">{{ $next->title }}</a>
                             <small class="block text-[13px] text-mist">{{ implode(' · ', array_filter([$next->credit, $nextDate])) }}</small>
                         </p>
                     </div>
@@ -109,7 +112,8 @@
                 <div
                     aria-hidden="true"
                     data-markdown-ignore
-                    class="absolute inset-[2.5%] z-[1] translate-x-[20%] transition-transform duration-[1.1s] ease-[cubic-bezier(.2,.7,.1,1)] group-hover:translate-x-[38%] motion-reduce:transition-none motion-reduce:group-hover:translate-x-[20%]"
+                    @if (filled($playUri)) data-play-vinyl="{{ $playUri }}" @endif
+                    class="absolute inset-[2.5%] z-[1] translate-x-[20%] transition-transform duration-[1.1s] ease-[cubic-bezier(.2,.7,.1,1)] group-hover:translate-x-[38%] data-[state=playing]:translate-x-[38%] motion-reduce:transition-none motion-reduce:group-hover:translate-x-[20%] motion-reduce:data-[state=playing]:translate-x-[20%]"
                 >
                     <div class="vinyl absolute inset-0 rounded-full">
                         <div class="vinyl-label" @if ($coverUrl) style="background-image: url('{{ $coverUrl }}')" @endif></div>

@@ -1,5 +1,6 @@
 <?php
 
+use Dom\HTMLDocument;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Testing\TestResponse;
@@ -44,6 +45,14 @@ function jsonLd(TestResponse $response): array
     expect($matches[1])->toHaveCount(1);
 
     return json_decode($matches[1][0], true, flags: JSON_THROW_ON_ERROR);
+}
+
+/**
+ * The response's HTML as a document, to query with CSS selectors.
+ */
+function htmlDocument(TestResponse|string $html): HTMLDocument
+{
+    return HTMLDocument::createFromString($html instanceof TestResponse ? $html->getContent() : $html, LIBXML_NOERROR);
 }
 
 /**

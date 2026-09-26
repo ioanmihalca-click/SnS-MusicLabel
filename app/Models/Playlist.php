@@ -66,6 +66,17 @@ class Playlist extends Model
     }
 
     /**
+     * The `spotify:` URI the footer player loads, or null when the Spotify link
+     * is missing, a short link or nothing the embed can play.
+     */
+    public function playUri(): ?string
+    {
+        $spotifyUrl = SpotifyUrl::parse($this->spotify_url);
+
+        return $spotifyUrl?->isPlayable() ? $spotifyUrl->uri() : null;
+    }
+
+    /**
      * The uploaded cover, or Spotify's own playlist image until one is uploaded.
      */
     public function coverUrl(): ?string

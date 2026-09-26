@@ -43,6 +43,16 @@ it('stores the canonical Spotify URL whatever shape is pasted', function () {
     expect($release->fresh()->spotify_url)->toBe('https://open.spotify.com/album/3zifCl5R2DaZGEmrPNUM1N');
 });
 
+it('gives the footer player the URI of what Spotify can play', function (?string $spotifyUrl, ?string $playUri) {
+    expect(Release::factory()->make(['spotify_url' => $spotifyUrl])->playUri())->toBe($playUri);
+})->with([
+    'album, pasted with ?si=' => ['https://open.spotify.com/intl-de/album/3zifCl5R2DaZGEmrPNUM1N?si=6e8c4ffed0314a6d', 'spotify:album:3zifCl5R2DaZGEmrPNUM1N'],
+    'track' => ['https://open.spotify.com/track/5LoRtT4HMphu4n2OyJn4Cr', 'spotify:track:5LoRtT4HMphu4n2OyJn4Cr'],
+    'short link' => ['https://spotify.link/aBcD3fGh1j', null],
+    'artist page' => ['https://open.spotify.com/artist/6wIX9hW2uQAVv190xXV9mA', null],
+    'no link' => [null, null],
+]);
+
 it('lists featured releases only, newest first', function () {
     $older = Release::factory()->featured()->create(['released_at' => '2025-01-03']);
     $newest = Release::factory()->featured()->create(['released_at' => '2026-02-27']);

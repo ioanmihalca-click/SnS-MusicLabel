@@ -12,6 +12,7 @@
 
 <a
     href="{{ route('artists.show', $artist->slug) }}"
+    wire:navigate
     {{ $attributes->class('group relative block aspect-[4/5] max-w-full overflow-hidden bg-slab text-frost') }}
 >
     @if ($photoUrl)

@@ -30,6 +30,7 @@
                         @foreach ($artistFilters as $artist)
                             <a
                                 href="{{ route('releases.index', ['artist' => $artist->slug]) }}"
+                                wire:navigate
                                 class="inline-flex items-center rounded-full border border-rule2 px-3.5 py-[9px] text-[13px] font-medium leading-none text-mist transition-colors hover:border-mist hover:text-frost"
                             >{{ $artist->name }}<span class="ml-1.5 font-meta text-[10px] opacity-70">{{ $artist->releases_count }}</span></a>
                         @endforeach
@@ -54,7 +55,7 @@
     @if ($artists->isNotEmpty())
         <section class="{{ $sectionClass }}">
             <x-section-heading title="Artists" :count="$artists->count()" subtitle="Roster and management.">
-                <a href="{{ route('artists.index') }}" class="{{ $moreLinkClass }}">All artists <span aria-hidden="true">→</span></a>
+                <a href="{{ route('artists.index') }}" wire:navigate class="{{ $moreLinkClass }}">All artists <span aria-hidden="true">→</span></a>
             </x-section-heading>
 
             <div class="grid grid-cols-2 gap-3.5 md:grid-cols-4 md:gap-5">
@@ -68,7 +69,7 @@
     @if ($playlists->isNotEmpty())
         <section class="{{ $sectionClass }}">
             <x-section-heading title="Playlists" :count="$playlists->count()">
-                <a href="{{ route('playlists.index') }}" class="{{ $moreLinkClass }}">All playlists <span aria-hidden="true">→</span></a>
+                <a href="{{ route('playlists.index') }}" wire:navigate class="{{ $moreLinkClass }}">All playlists <span aria-hidden="true">→</span></a>
             </x-section-heading>
 
             <p class="-mt-4 mb-8 inline-flex items-center gap-2 text-sm text-mist">
@@ -107,14 +108,14 @@
                 </dl>
 
                 <div>
-                    <a href="{{ route('about') }}" class="{{ $moreLinkClass }}">Read the full story <span aria-hidden="true">→</span></a>
+                    <a href="{{ route('about') }}" wire:navigate class="{{ $moreLinkClass }}">Read the full story <span aria-hidden="true">→</span></a>
                 </div>
             </div>
 
             @if ($photos->isNotEmpty())
                 <div data-markdown-ignore class="grid grid-cols-3 gap-2">
                     @foreach ($photos as $photo)
-                        <a href="{{ route('about') }}#gallery" class="group block aspect-square overflow-hidden bg-slab">
+                        <a href="{{ route('about') }}#gallery" wire:navigate class="group block aspect-square overflow-hidden bg-slab">
                             <img
                                 src="{{ $photo->imageUrl() }}"
                                 alt="{{ $photo->title }}"
@@ -134,7 +135,7 @@
     @if ($news->isNotEmpty())
         <section class="{{ $sectionClass }}">
             <x-section-heading title="News" subtitle="Releases, charts and label updates.">
-                <a href="{{ route('blog.index') }}" class="{{ $moreLinkClass }}">All news <span aria-hidden="true">→</span></a>
+                <a href="{{ route('blog.index') }}" wire:navigate class="{{ $moreLinkClass }}">All news <span aria-hidden="true">→</span></a>
             </x-section-heading>
 
             <div class="grid gap-x-[22px] gap-y-10 sm:grid-cols-2 lg:grid-cols-4">

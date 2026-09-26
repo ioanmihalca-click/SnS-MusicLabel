@@ -85,3 +85,28 @@ it('credits the roster artists and links to the release page', function () {
         ->and($item->date->toDateString())->toBe('2026-07-17')
         ->and($item->label())->toBe('Release');
 });
+
+it('gives a release entry what its Play button loads, and a post none', function () {
+    $artist = Artist::factory()->create(['name' => 'Snow N Stuff']);
+    $release = Release::factory()->create([
+        'title' => 'Speak To Me',
+        'released_at' => now()->subWeek(),
+        'spotify_url' => 'https://open.spotify.com/album/3zifCl5R2DaZGEmrPNUM1N',
+    ]);
+    $release->artists()->attach($artist);
+    Blog::factory()->create(['title' => 'Pre-save all our future releases', 'published_at' => now()->subDay()]);
+
+    [$post, $releaseItem] = NewsItem::latest()->all();
+
+    expect($releaseItem)
+        ->playUri->toBe('spotify:album:3zifCl5R2DaZGEmrPNUM1N')
+        ->playTitle->toBe('Speak To Me')
+        ->playCredit->toBe('Snow N Stuff')
+        ->and($post->playUri)->toBeNull();
+});
+
+it('has no Play button for a release Spotify cannot play', function () {
+    Release::factory()->create(['released_at' => now()->subWeek(), 'spotify_url' => 'https://spotify.link/aBcD3fGh1j']);
+
+    expect(NewsItem::latest()->sole()->playUri)->toBeNull();
+});

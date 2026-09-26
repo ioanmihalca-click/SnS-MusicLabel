@@ -121,7 +121,7 @@
     @if ($moreReleases->isNotEmpty())
         <section class="site-wrap pt-[clamp(64px,9vw,120px)]">
             <x-section-heading :title="'More from '.$mainArtist->name">
-                <a href="{{ route('artists.show', $mainArtist->slug) }}" class="inline-flex items-center gap-2 border-b border-rule2 pb-[3px] font-semibold transition-colors hover:border-frost">Artist profile <span aria-hidden="true">→</span></a>
+                <a href="{{ route('artists.show', $mainArtist->slug) }}" wire:navigate class="inline-flex items-center gap-2 border-b border-rule2 pb-[3px] font-semibold transition-colors hover:border-frost">Artist profile <span aria-hidden="true">→</span></a>
             </x-section-heading>
 
             <div class="{{ $gridClass }}">

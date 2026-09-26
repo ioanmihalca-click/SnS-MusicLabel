@@ -32,7 +32,7 @@
                 <h2 class="{{ $headingClass }}">Label</h2>
                 <ul class="flex flex-col gap-[9px]">
                     @foreach ($labelLinks as $label => $href)
-                        <li><a href="{{ $href }}" class="{{ $linkClass }}">{{ $label }}</a></li>
+                        <li><a href="{{ $href }}" wire:navigate class="{{ $linkClass }}">{{ $label }}</a></li>
                     @endforeach
                 </ul>
             </div>

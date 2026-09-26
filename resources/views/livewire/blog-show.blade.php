@@ -64,6 +64,6 @@
     @endif
 
     <div class="site-wrap pt-12">
-        <a href="{{ route('blog.index') }}" class="inline-flex items-center gap-2 border-b border-rule2 pb-[3px] font-semibold transition-colors hover:border-frost"><span aria-hidden="true">←</span> All news</a>
+        <a href="{{ route('blog.index') }}" wire:navigate class="inline-flex items-center gap-2 border-b border-rule2 pb-[3px] font-semibold transition-colors hover:border-frost"><span aria-hidden="true">←</span> All news</a>
     </div>
 </div>

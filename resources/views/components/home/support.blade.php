@@ -30,7 +30,7 @@
                         @if (filled($release->chart_name))
                             <span class="font-semibold">{{ $release->chart_name }}</span>
                         @endif
-                        <a href="{{ route('releases.show', $release->slug) }}" class="font-meta text-[10px] uppercase tracking-[.08em] text-mist transition-colors hover:text-frost">{{ implode(' · ', array_filter([$release->title, $release->released_at?->year])) }}</a>
+                        <a href="{{ route('releases.show', $release->slug) }}" wire:navigate class="font-meta text-[10px] uppercase tracking-[.08em] text-mist transition-colors hover:text-frost">{{ implode(' · ', array_filter([$release->title, $release->released_at?->year])) }}</a>
                     </li>
                 @endforeach
             </ul>

@@ -28,3 +28,11 @@ it('lists the active playlists in the admin order', function () {
 
     expect(Playlist::query()->active()->pluck('title')->all())->toBe(['First', 'Second']);
 });
+
+it('gives the footer player the playlist URI when Spotify can play it', function (?string $spotifyUrl, ?string $playUri) {
+    expect(Playlist::factory()->make(['spotify_url' => $spotifyUrl])->playUri())->toBe($playUri);
+})->with([
+    'playlist link' => ['https://open.spotify.com/playlist/28I7hCUFTyqblhgu5yGkOO?si=abc', 'spotify:playlist:28I7hCUFTyqblhgu5yGkOO'],
+    'short link' => ['https://spotify.link/aBcD3fGh1j', null],
+    'no link' => [null, null],
+]);

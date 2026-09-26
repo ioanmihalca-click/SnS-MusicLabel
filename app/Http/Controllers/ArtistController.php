@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Artist;
+use App\Models\Release;
 use App\Support\Seo\Schema;
 use App\Support\Seo\SeoData;
 use Illuminate\Contracts\View\View;
@@ -33,7 +34,8 @@ class ArtistController extends Controller
     }
 
     /**
-     * An artist page: portrait, bio, highlights, discography and the rest of the roster.
+     * An artist page: portrait, bio, highlights, discography and the rest of the
+     * roster. "Play latest" loads the newest release Spotify can play.
      */
     public function show(Artist $artist): View
     {
@@ -49,6 +51,7 @@ class ArtistController extends Controller
         return view('artists.show', [
             'artist' => $artist,
             'photoUrl' => $artist->photoUrl(),
+            'latestPlayableRelease' => $artist->releases->first(fn (Release $release): bool => $release->playUri() !== null),
             'trail' => $trail,
             'otherArtists' => Artist::query()->whereKeyNot($artist->getKey())->inRosterOrder()->get(),
             'seo' => new SeoData(

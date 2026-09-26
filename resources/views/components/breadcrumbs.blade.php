@@ -14,7 +14,7 @@
                 @if ($loop->last)
                     <span aria-current="page" class="truncate">{{ $name }}</span>
                 @else
-                    <a href="{{ url($path) }}" class="text-mist transition-colors hover:text-frost">{{ $name }}</a>
+                    <a href="{{ url($path) }}" wire:navigate class="text-mist transition-colors hover:text-frost">{{ $name }}</a>
                     <span aria-hidden="true">/</span>
                 @endif
             </li>

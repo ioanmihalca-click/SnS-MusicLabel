@@ -89,3 +89,14 @@ it('recognises short share links', function (string $value, bool $isShortLink) {
     'spotify.app.link' => ['https://spotify.app.link/aBcD3fGh1j', true],
     'open.spotify.com' => ['https://open.spotify.com/track/5LoRtT4HMphu4n2OyJn4Cr', false],
 ]);
+
+it('plays albums, tracks and playlists in the footer player, nothing else', function (string $value, bool $isPlayable) {
+    expect(SpotifyUrl::parse($value)->isPlayable())->toBe($isPlayable);
+})->with([
+    'album' => ['https://open.spotify.com/album/3zifCl5R2DaZGEmrPNUM1N', true],
+    'track' => ['https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT', true],
+    'playlist' => ['spotify:playlist:28I7hCUFTyqblhgu5yGkOO', true],
+    'artist' => ['https://open.spotify.com/artist/6wIX9hW2uQAVv190xXV9mA', false],
+    'episode' => ['https://open.spotify.com/episode/4rOoJ6Egrf8K2IrywzwOMk', false],
+    'show' => ['https://open.spotify.com/show/2MAi0BvDc6GTFvKFPXnkCL', false],
+]);

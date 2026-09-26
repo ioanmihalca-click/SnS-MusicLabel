@@ -32,13 +32,23 @@
                 <p class="m-0 text-lg text-frost">{{ $artist->origin }}</p>
             @endif
 
-            @if (filled($artist->spotify_url) || filled($artist->pressKitUrl()))
+            @if (filled($artist->spotify_url) || $latestPlayableRelease || filled($artist->pressKitUrl()))
                 <div class="flex flex-wrap items-center gap-3">
                     @if (filled($artist->spotify_url))
                         <x-site.button :href="$artist->spotify_url" primary external>
                             <x-icons.spotify />
                             Follow on Spotify
                         </x-site.button>
+                    @endif
+
+                    @if ($latestPlayableRelease)
+                        <x-play-button
+                            :uri="$latestPlayableRelease->playUri()"
+                            :title="$latestPlayableRelease->title"
+                            :credit="$latestPlayableRelease->credit"
+                            :url="route('releases.show', $latestPlayableRelease->slug)"
+                            label="Play latest"
+                        />
                     @endif
 
                     @if (filled($artist->pressKitUrl()))

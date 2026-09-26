@@ -40,7 +40,8 @@
     /*
     | Homepage hero: the shade over the blurred artwork, the pulsing dot of
     | the eyebrow and the record behind the sleeve. The record spins only
-    | while the artwork (.group) is hovered; stage 4 spins it during playback.
+    | while the footer player plays the hero release: resources/js/player.js
+    | sets data-state="playing" on its [data-play-vinyl] wrapper.
     */
     .hero-shade {
         background:
@@ -70,7 +71,7 @@
         pointer-events: none;
     }
 
-    .group:hover .vinyl {
+    [data-play-vinyl][data-state="playing"] .vinyl {
         animation-play-state: running;
     }
 
@@ -175,6 +176,203 @@
 */
 .article-embed iframe {
     @apply block w-full rounded-xl border-0 bg-slab;
+}
+
+/*
+| The footer player (resources/js/player.js): "Now playing", the title
+| linked to its page, previous / next / close, and Spotify's embed shown as
+| it is. The bar is created outside <body>, so it sets its own font and
+| colours. Below 768px the controls sit above the full-width embed.
+| Outside @layer: the classes are only written in JavaScript.
+*/
+.player {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 50;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    border-top: 1px solid theme('colors.rule2');
+    background: rgb(17 21 26 / .94);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+    color: theme('colors.frost');
+    font-family: theme('fontFamily.body');
+    font-size: 15px;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color-scheme: dark;
+}
+
+.player [hidden] {
+    display: none;
+}
+
+.player-inner {
+    display: grid;
+    gap: 10px;
+    max-width: theme('maxWidth.site');
+    margin-inline: auto;
+    padding: 10px clamp(16px, 4vw, 48px);
+}
+
+.player-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.player-now {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.player-label {
+    margin: 0;
+    font-family: theme('fontFamily.meta');
+    font-size: 10px;
+    line-height: 1.6;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: theme('colors.mist');
+}
+
+.player-title {
+    display: block;
+    overflow: hidden;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: theme('colors.frost');
+    text-underline-offset: 3px;
+}
+
+.player-title:hover {
+    text-decoration: underline;
+}
+
+.player-credit,
+.player-hint {
+    margin: 0;
+    font-size: 13px;
+}
+
+.player-credit {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: theme('colors.mist');
+}
+
+.player-hint {
+    margin-top: 2px;
+    color: theme('colors.frost');
+}
+
+.player-controls {
+    display: flex;
+    flex: none;
+    gap: 6px;
+}
+
+.player-control {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid theme('colors.rule2');
+    border-radius: 9999px;
+    color: theme('colors.frost');
+    transition: border-color .2s, opacity .2s;
+}
+
+.player-control:hover {
+    border-color: theme('colors.frost');
+}
+
+.player-control[aria-disabled="true"] {
+    cursor: default;
+    opacity: .35;
+    border-color: theme('colors.rule2');
+}
+
+.player-control svg {
+    width: 16px;
+    height: 16px;
+}
+
+.player-embed {
+    min-width: 0;
+    height: 152px;
+}
+
+.player-embed iframe {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 12px;
+}
+
+.player-consent {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 20px;
+}
+
+.player-consent p {
+    flex: 1 1 260px;
+    margin: 0;
+}
+
+.player-consent-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.player-button {
+    border: 1px solid theme('colors.rule2');
+    border-radius: 9999px;
+    padding: 11px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    color: theme('colors.frost');
+    transition: background-color .2s, border-color .2s;
+}
+
+.player-button:hover {
+    border-color: theme('colors.frost');
+}
+
+.player-button-primary {
+    border-color: theme('colors.frost');
+    background: theme('colors.frost');
+    color: theme('colors.ink');
+}
+
+.player-button-primary:hover {
+    background: #fff;
+}
+
+@media (max-width: 479px) {
+    .player-credit {
+        display: none;
+    }
+}
+
+@media (min-width: 768px) {
+    .player-inner {
+        grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+        align-items: center;
+        column-gap: 28px;
+    }
+}
+
+@media print {
+    .player {
+        display: none;
+    }
 }
 
 @keyframes live-pulse {

@@ -181,6 +181,17 @@ class Release extends Model
     }
 
     /**
+     * The `spotify:` URI the footer player loads, or null when the Spotify link
+     * is missing, a short link or nothing the embed can play.
+     */
+    public function playUri(): ?string
+    {
+        $spotifyUrl = SpotifyUrl::parse($this->spotify_url);
+
+        return $spotifyUrl?->isPlayable() ? $spotifyUrl->uri() : null;
+    }
+
+    /**
      * Where "Listen now" leads: the distributor's smartlink (every platform,
      * pre-save before release day) or else Spotify.
      */

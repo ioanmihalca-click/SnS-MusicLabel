@@ -87,6 +87,15 @@ final class SpotifyUrl
         return in_array($this->type, $types, true);
     }
 
+    /**
+     * Whether the footer player can load it: Spotify's embed plays an album,
+     * a track or a playlist. Artist pages, episodes and shows stay links.
+     */
+    public function isPlayable(): bool
+    {
+        return $this->is('album', 'track', 'playlist');
+    }
+
     public function url(): string
     {
         return "https://open.spotify.com/{$this->type}/{$this->id}";
