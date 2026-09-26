@@ -6,11 +6,13 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IndexNowKeyController;
 use App\Http\Controllers\LlmsTxtController;
 use App\Http\Controllers\PlaylistsController;
+use App\Http\Controllers\PrivacyController;
 use App\Http\Controllers\ReleaseController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SitemapController;
 use App\Livewire\BlogIndex;
 use App\Livewire\BlogShow;
+use App\Livewire\DemoForm;
 use App\Livewire\ReleaseCatalogue;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +27,8 @@ Route::get('/artists/{artist:slug}', [ArtistController::class, 'show'])->name('a
 
 Route::get('/playlists', PlaylistsController::class)->name('playlists.index');
 Route::get('/about', AboutController::class)->name('about');
+Route::get('/demos', DemoForm::class)->name('demos');
+Route::get('/privacy', PrivacyController::class)->name('privacy');
 
 Route::get('/blog', BlogIndex::class)->name('blog.index');
 Route::get('/blog/{slug}', BlogShow::class)->name('blog.show');

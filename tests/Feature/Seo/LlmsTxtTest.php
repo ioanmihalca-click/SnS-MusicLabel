@@ -42,3 +42,14 @@ it('lists the catalogue pages under their own headings', function () {
         ->assertSee("## Artists\n\n- [Artists](https://snow-n-stuff.com/artists.md): ", escape: false)
         ->assertSee('- [G&S](https://snow-n-stuff.com/artists/g-and-s.md): A DJ and producer duo.', escape: false);
 });
+
+it('explains how to send a demo and lists the privacy policy as optional', function () {
+    config(['app.url' => 'https://snow-n-stuff.com']);
+
+    $text = $this->get('/llms.txt')->assertOk()->getContent();
+
+    expect($text)
+        ->toContain("## How to send a demo\n\n- [Send a demo](https://snow-n-stuff.com/demos.md): Send your demo to Snow 'n' Stuff: a private SoundCloud, Dropbox or Google Drive link")
+        ->toContain("## Optional\n\n- [Privacy & cookies](https://snow-n-stuff.com/privacy.md): ")
+        ->and(strpos($text, '## Optional'))->toBeGreaterThan(strpos($text, '## Blog'));
+});

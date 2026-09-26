@@ -8,6 +8,7 @@
         ['label' => 'Artists', 'href' => route('artists.index'), 'active' => request()->routeIs('artists.*')],
         ['label' => 'Playlists', 'href' => route('playlists.index'), 'active' => request()->routeIs('playlists.*')],
         ['label' => 'News', 'href' => route('blog.index'), 'active' => request()->routeIs('blog.*')],
+        ['label' => 'Demos', 'href' => route('demos'), 'active' => request()->routeIs('demos')],
         ['label' => 'About', 'href' => route('about'), 'active' => request()->routeIs('about')],
     ];
 @endphp
@@ -25,7 +26,7 @@
                 <span class="font-display text-[21px] font-black uppercase leading-none tracking-[.01em]">Snow 'n' Stuff</span>
             </a>
 
-            <nav aria-label="Main" class="ml-3 hidden gap-[26px] md:flex">
+            <nav aria-label="Main" class="ml-3 hidden gap-5 md:flex lg:gap-[26px]">
                 @foreach ($navLinks as $link)
                     <a
                         href="{{ $link['href'] }}"

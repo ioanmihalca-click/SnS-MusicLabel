@@ -146,26 +146,33 @@
         </section>
     @endif
 
-    <section aria-labelledby="follow-title" class="mt-[clamp(64px,9vw,120px)] border-y border-rule bg-slab">
-        <div class="site-wrap grid gap-x-[clamp(28px,4vw,64px)] gap-y-8 py-[clamp(44px,6vw,80px)] md:grid-cols-2">
-            <div class="flex flex-col gap-5">
+    <div class="mt-[clamp(64px,9vw,120px)] border-y border-rule bg-slab">
+        <div class="site-wrap grid md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <section aria-labelledby="demo-title" class="flex flex-col items-start gap-5 py-[clamp(44px,6vw,80px)] md:pr-[clamp(28px,4vw,64px)]">
+                <p class="{{ $monoClass }} text-mist">A&amp;R</p>
+                <h2 id="demo-title" class="m-0 font-display text-[clamp(2.4rem,4.6vw,3.8rem)] font-extrabold uppercase leading-[.86]">Send us your demo</h2>
+                <p class="m-0 max-w-[52ch] text-mist">Unreleased Tech House, Deep House, House or Techno? Send a private SoundCloud, Dropbox or Google Drive link. We listen to every demo.</p>
+                <x-site.button :href="route('demos')" primary class="mt-1">Send a demo <span aria-hidden="true">→</span></x-site.button>
+            </section>
+
+            <section aria-labelledby="follow-title" class="flex flex-col gap-5 border-t border-rule py-[clamp(44px,6vw,80px)] md:border-l md:border-t-0 md:pl-[clamp(28px,4vw,64px)]">
                 <p class="{{ $monoClass }} text-mist">Follow</p>
                 <h2 id="follow-title" class="m-0 font-display text-[clamp(2.4rem,4.6vw,3.8rem)] font-extrabold uppercase leading-[.86]">Stay in the loop</h2>
                 <p class="m-0 max-w-[52ch] text-mist">New releases land on Spotify first. Follow the label and the artists to get them on release day.</p>
-            </div>
 
-            <ul class="m-0 flex list-none flex-col border-t border-rule p-0 md:self-end">
-                @foreach ($followLinks as $link)
-                    <li>
-                        <a
-                            href="{{ $link['href'] }}"
-                            target="_blank"
-                            rel="noopener"
-                            class="flex items-baseline justify-between gap-3 border-b border-rule py-4 font-display text-[clamp(1.6rem,2.6vw,2.2rem)] font-extrabold uppercase leading-none transition-colors hover:text-white [&:hover_small]:text-mist"
-                        >{{ $link['label'] }} <small class="font-meta text-[10px] font-normal tracking-[.08em] text-dim">{{ $link['handle'] }}</small></a>
-                    </li>
-                @endforeach
-            </ul>
+                <ul class="m-0 flex list-none flex-col border-t border-rule p-0">
+                    @foreach ($followLinks as $link)
+                        <li>
+                            <a
+                                href="{{ $link['href'] }}"
+                                target="_blank"
+                                rel="noopener"
+                                class="flex items-baseline justify-between gap-3 border-b border-rule py-4 font-display text-[clamp(1.6rem,2.6vw,2.2rem)] font-extrabold uppercase leading-none transition-colors hover:text-white [&:hover_small]:text-mist"
+                            >{{ $link['label'] }} <small class="font-meta text-[10px] font-normal tracking-[.08em] text-dim">{{ $link['handle'] }}</small></a>
+                        </li>
+                    @endforeach
+                </ul>
+            </section>
         </div>
-    </section>
+    </div>
 </x-layouts.site>

@@ -193,8 +193,8 @@ it('never renders the footer player, which the browser creates on the first Play
             ->and($response->getContent())->not->toContain('open.spotify.com/embed/iframe-api');
     }
 
-    // A post keeps its own embedded players.
-    $this->get('/blog/back-to-black-is-out')->assertSee('src="https://open.spotify.com/embed/track/6xl7BbDBYIkWXcys8Shu4H', escape: false);
+    // A post keeps its own embedded players, as placeholders loaded on consent or on a click.
+    $this->get('/blog/back-to-black-is-out')->assertSee('data-embed-src="https://open.spotify.com/embed/track/6xl7BbDBYIkWXcys8Shu4H"', escape: false);
 });
 
 it('leaves the Play buttons out of the Markdown version', function (string $path, string $markdownPath, string $content) {

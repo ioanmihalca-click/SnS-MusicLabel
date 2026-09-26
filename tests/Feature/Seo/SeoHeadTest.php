@@ -107,10 +107,18 @@ it('prints the search engine verification codes when configured', function () {
         ->assertSee('<meta name="msvalidate.01" content="bing-code">', escape: false);
 });
 
-it('loads Google Analytics in production only', function () {
-    $this->get('/')->assertDontSee('googletagmanager.com', escape: false);
+it('never prints Google Analytics, and gives its id to the consent script in production only', function () {
+    config(['services.google_analytics.id' => 'G-TEST123']);
+
+    $this->get('/')
+        ->assertDontSee('googletagmanager.com', escape: false)
+        ->assertDontSee('gtag(', escape: false)
+        ->assertDontSee('name="sns-ga-id"', escape: false);
 
     app()->detectEnvironment(fn (): string => 'production');
 
-    $this->get('/')->assertSee('googletagmanager.com', escape: false);
+    $this->get('/')
+        ->assertDontSee('googletagmanager.com', escape: false)
+        ->assertDontSee('gtag(', escape: false)
+        ->assertSee('<meta name="sns-ga-id" content="G-TEST123">', escape: false);
 });

@@ -40,6 +40,8 @@ it('lists the homepage, the blog and its published posts as XML', function () {
         'https://snow-n-stuff.com/artists',
         'https://snow-n-stuff.com/blog',
         'https://snow-n-stuff.com/blog/live-post',
+        'https://snow-n-stuff.com/demos',
+        'https://snow-n-stuff.com/privacy',
     ]);
 });
 
@@ -59,7 +61,20 @@ it('lists every release and artist page', function () {
         'https://snow-n-stuff.com/artists',
         'https://snow-n-stuff.com/artists/g-and-s',
         'https://snow-n-stuff.com/blog',
+        'https://snow-n-stuff.com/demos',
+        'https://snow-n-stuff.com/privacy',
     ]);
+});
+
+it('gives the privacy policy a low priority and leaves the other pages at the default', function () {
+    config(['app.url' => 'https://snow-n-stuff.com']);
+
+    $xml = simplexml_load_string($this->get('/sitemap.xml')->assertOk()->getContent());
+    $priority = fn (string $path): array => array_map('strval', $xml->xpath('/*[local-name()="urlset"]/*[local-name()="url"][*[local-name()="loc"]="https://snow-n-stuff.com'.$path.'"]/*[local-name()="priority"]'));
+
+    expect($priority('/privacy'))->toBe(['0.3'])
+        ->and($priority('/demos'))->toBe([])
+        ->and($priority('/'))->toBe([]);
 });
 
 it('adds only uploaded artwork or Spotify thumbnails already in cache, without calling Spotify', function () {

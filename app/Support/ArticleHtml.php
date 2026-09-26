@@ -19,10 +19,14 @@ use SplObjectStorage;
  * `<font>` are unwrapped, empty paragraphs dropped and `<h1>` becomes `<h2>`
  * (the post title is the page's only `<h1>`).
  *
- * Embedded players are kept only from Spotify, Beatport and nfan.link, as a
- * responsive `<figure class="article-embed">` with a visible link under the
- * player, so the Markdown version still leads to the music. Trix cannot store
- * iframes, so a Spotify link alone in a paragraph also becomes a player.
+ * Embedded players are kept only from Spotify, Beatport and nfan.link, and
+ * never as an iframe: each becomes a `<figure class="article-embed">` holding
+ * the player's address (`data-embed-src`), a notice naming the provider with
+ * "Load player" and "Always allow external media", and a visible link to the
+ * music, which the Markdown version keeps. resources/js/consent.js swaps the
+ * notice for the player after a click or once external media is allowed, so
+ * nothing reaches the provider before. Trix cannot store iframes, so a
+ * Spotify link alone in a paragraph also becomes a player.
  */
 final class ArticleHtml
 {
@@ -68,8 +72,6 @@ final class ArticleHtml
      * @var list<string>
      */
     private const SAFE_SCHEMES = ['http', 'https', 'mailto', 'tel'];
-
-    private const IFRAME_ALLOW = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
 
     public static function render(?string $html): string
     {
@@ -249,7 +251,7 @@ final class ArticleHtml
                 ? 'Listen on Spotify'
                 : $linkText;
 
-            $paragraph->replaceWith(self::embed($document, $spotifyUrl->embedSrc(), 'Spotify player', 352, $spotifyUrl->url(), $caption));
+            $paragraph->replaceWith(self::embed($document, $spotifyUrl->embedSrc(), 'Spotify', 'Spotify player', 352, $spotifyUrl->url(), $caption));
             $embeddedUrls[] = $spotifyUrl->url();
         }
     }
@@ -299,7 +301,7 @@ final class ArticleHtml
     }
 
     /**
-     * Replace each allowed iframe with a responsive figure and drop the others.
+     * Replace each allowed iframe with a player's placeholder and drop the others.
      * A figure cannot sit inside a paragraph, so an iframe nested in the post's
      * text moves right after the top-level block that held it.
      */
@@ -350,24 +352,59 @@ final class ArticleHtml
         return match ($host) {
             'open.spotify.com' => ($spotifyUrl = SpotifyUrl::parse($src)) === null
                 ? null
-                : self::embed($document, $spotifyUrl->embedSrc(), 'Spotify player', $height ?? 352, $spotifyUrl->url(), 'Listen on Spotify'),
-            'embed.beatport.com' => self::embed($document, $https, 'Beatport player', $height ?? 162, $https, 'Listen on Beatport'),
-            'nfan.link' => self::embed($document, $https, 'Listen on all platforms', $height ?? 400, $https, 'Listen on all platforms'),
+                : self::embed($document, $spotifyUrl->embedSrc(), 'Spotify', 'Spotify player', $height ?? 352, $spotifyUrl->url(), 'Listen on Spotify'),
+            'embed.beatport.com' => self::embed($document, $https, 'Beatport', 'Beatport player', $height ?? 162, $https, 'Listen on Beatport'),
+            'nfan.link' => self::embed($document, $https, 'nfan.link', 'Listen on all platforms', $height ?? 400, $https, 'Listen on all platforms'),
             default => null,
         };
     }
 
     /**
-     * `<figure class="article-embed"><iframe ...><figcaption><a ...>` with the given player.
+     * The player's placeholder: the figure carries what the iframe needs, the
+     * notice (left out of the Markdown version) asks before loading it, and
+     * the caption links to the music.
+     *
+     * ```html
+     * <figure class="article-embed" data-embed-src="..." data-embed-provider="Spotify" data-embed-title="Spotify player" data-embed-height="352">
+     *     <div class="article-embed-notice" data-embed-notice data-markdown-ignore>
+     *         <p>This player is provided by Spotify, which may set cookies. <a href="/privacy#cookies">Privacy &amp; cookies</a></p>
+     *         <div class="article-embed-actions"><button data-embed-load>Load player</button> <button data-embed-allow>Always allow external media</button></div>
+     *     </div>
+     *     <figcaption><a href="..." target="_blank" rel="noopener">Listen on Spotify</a></figcaption>
+     * </figure>
+     * ```
      */
-    private static function embed(HTMLDocument $document, string $src, string $title, int $height, string $linkUrl, string $linkText): Element
+    private static function embed(HTMLDocument $document, string $src, string $provider, string $title, int $height, string $linkUrl, string $linkText): Element
     {
-        $iframe = $document->createElement('iframe');
-        $iframe->setAttribute('src', $src);
-        $iframe->setAttribute('title', $title);
-        $iframe->setAttribute('height', (string) $height);
-        $iframe->setAttribute('loading', 'lazy');
-        $iframe->setAttribute('allow', self::IFRAME_ALLOW);
+        $privacyLink = $document->createElement('a');
+        $privacyLink->setAttribute('href', route('privacy').'#cookies');
+        $privacyLink->setAttribute('wire:navigate', '');
+        $privacyLink->textContent = 'Privacy & cookies';
+
+        $text = $document->createElement('p');
+        $text->append("This player is provided by {$provider}, which may set cookies. ", $privacyLink);
+
+        $loadButton = $document->createElement('button');
+        $loadButton->setAttribute('type', 'button');
+        $loadButton->setAttribute('class', 'article-embed-load');
+        $loadButton->setAttribute('data-embed-load', '');
+        $loadButton->textContent = 'Load player';
+
+        $allowButton = $document->createElement('button');
+        $allowButton->setAttribute('type', 'button');
+        $allowButton->setAttribute('class', 'article-embed-allow');
+        $allowButton->setAttribute('data-embed-allow', '');
+        $allowButton->textContent = 'Always allow external media';
+
+        $actions = $document->createElement('div');
+        $actions->setAttribute('class', 'article-embed-actions');
+        $actions->append($loadButton, ' ', $allowButton);
+
+        $notice = $document->createElement('div');
+        $notice->setAttribute('class', 'article-embed-notice');
+        $notice->setAttribute('data-embed-notice', '');
+        $notice->setAttribute('data-markdown-ignore', '');
+        $notice->append($text, $actions);
 
         $link = $document->createElement('a');
         $link->setAttribute('href', $linkUrl);
@@ -380,7 +417,11 @@ final class ArticleHtml
 
         $figure = $document->createElement('figure');
         $figure->setAttribute('class', 'article-embed');
-        $figure->append($iframe, $caption);
+        $figure->setAttribute('data-embed-src', $src);
+        $figure->setAttribute('data-embed-provider', $provider);
+        $figure->setAttribute('data-embed-title', $title);
+        $figure->setAttribute('data-embed-height', (string) $height);
+        $figure->append($notice, $caption);
 
         return $figure;
     }

@@ -26,18 +26,14 @@
 
     {{ $slot }}
 
-    {{-- Google Analytics: production only, until the consent banner lands --}}
+    {{--
+        Google Analytics is never loaded from here: resources/js/consent.js
+        loads it with this id once the visitor accepts analytics cookies.
+    --}}
     @production
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-1PQQSTPYZC"></script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-
-            function gtag() {
-                dataLayer.push(arguments);
-            }
-            gtag('js', new Date());
-            gtag('config', 'G-1PQQSTPYZC');
-        </script>
+        @if (filled(config('services.google_analytics.id')))
+            <meta name="sns-ga-id" content="{{ config('services.google_analytics.id') }}">
+        @endif
     @endproduction
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])

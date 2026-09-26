@@ -1,5 +1,6 @@
 import { Fancybox } from '@fancyapps/ui';
 import '@fancyapps/ui/dist/fancybox/fancybox.css';
+import { startConsent } from './consent';
 import { startNavigation } from './navigation';
 import { startPlayer } from './player';
 
@@ -34,5 +35,7 @@ if (!window.snsPlayer) {
     window.addEventListener('photo-added', bindFancybox);
 
     startNavigation();
+    // Before the player, which reads the visitor's choice.
+    window.snsConsent = startConsent();
     window.snsPlayer = startPlayer();
 }

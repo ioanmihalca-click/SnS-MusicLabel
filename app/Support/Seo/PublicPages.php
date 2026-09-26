@@ -5,7 +5,9 @@ namespace App\Support\Seo;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\PlaylistsController;
+use App\Http\Controllers\PrivacyController;
 use App\Livewire\BlogIndex;
+use App\Livewire\DemoForm;
 use App\Livewire\ReleaseCatalogue;
 use App\Models\Artist;
 use App\Models\Blog;
@@ -32,6 +34,13 @@ final class PublicPages
 
     public const SECTION_BLOG = 'Blog';
 
+    public const SECTION_DEMOS = 'How to send a demo';
+
+    /**
+     * llms.txt's section for pages an agent may skip when it needs a shorter context.
+     */
+    public const SECTION_OPTIONAL = 'Optional';
+
     /**
      * Every public page, homepage first.
      *
@@ -55,7 +64,9 @@ final class PublicPages
             ->push($this->artistIndex($artists))
             ->concat($artists->map(fn (Artist $artist): PublicPage => $this->artist($artist)))
             ->push($this->blogIndex($posts))
-            ->concat($posts->map(fn (Blog $post): PublicPage => $this->blogPost($post)));
+            ->concat($posts->map(fn (Blog $post): PublicPage => $this->blogPost($post)))
+            ->push($this->demos())
+            ->push($this->privacy());
     }
 
     /**
@@ -213,6 +224,28 @@ final class PublicPages
             section: self::SECTION_BLOG,
             lastModifiedAt: $post->lastModifiedAt(),
             images: array_values(array_filter([$post->coverUrl()])),
+        );
+    }
+
+    private function demos(): PublicPage
+    {
+        return new PublicPage(
+            path: route('demos', absolute: false),
+            title: 'Send a demo',
+            description: DemoForm::DESCRIPTION,
+            section: self::SECTION_DEMOS,
+        );
+    }
+
+    private function privacy(): PublicPage
+    {
+        return new PublicPage(
+            path: route('privacy', absolute: false),
+            title: 'Privacy & cookies',
+            description: PrivacyController::DESCRIPTION,
+            section: self::SECTION_OPTIONAL,
+            lastModifiedAt: Carbon::parse(PrivacyController::UPDATED_AT),
+            priority: 0.3,
         );
     }
 

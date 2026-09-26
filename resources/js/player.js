@@ -12,6 +12,9 @@
  *   data-play-title, data-play-credit and data-play-url.
  * - The first Play asks, inside the bar, whether to continue: Spotify sets
  *   cookies. Until the visitor continues, nothing is requested from Spotify.
+ *   Continuing allows external media (consent.js), so a visitor who already
+ *   did, here or in the cookie banner, is not asked; withdrawn in the
+ *   Cookie settings, the bar closes.
  * - Spotify's iFrame API is loaded once, on the first accepted Play.
  * - Previous and next walk the Play buttons of the page where playback
  *   started (the queue) and stop at both ends.
@@ -19,11 +22,13 @@
  *   which keeps aria-pressed and data-state of the matching buttons in sync.
  */
 
+import { grantMediaConsent, hasMediaConsent } from './consent';
+
 const SPOTIFY_API_URL = 'https://open.spotify.com/embed/iframe-api/v1';
 const SPOTIFY_API_TIMEOUT_MS = 15000;
 const EMBED_HEIGHT = 152;
 const PLAY_HINT_DELAY_MS = 2500;
-const CONSENT_KEY = 'sns.consent.externalMedia';
+const PRIVACY_URL = '/privacy#cookies';
 const HOST_ATTRIBUTE = 'data-sns-player';
 
 /**
@@ -64,7 +69,7 @@ const HOST_HTML = `
             </div>
         </div>
         <div class="player-consent" data-player-part="consent" hidden>
-            <p id="player-consent-text">Playback runs through Spotify, which sets cookies.</p>
+            <p id="player-consent-text">Playback runs through Spotify, which sets cookies. Continuing allows external media on this site. <a class="player-consent-link" href="${PRIVACY_URL}">Privacy &amp; cookies</a></p>
             <div class="player-consent-actions">
                 <button type="button" class="player-button player-button-primary" data-player-part="continue" data-player-action="continue" aria-describedby="player-consent-text">Continue</button>
                 <button type="button" class="player-button" data-player-action="cancel">Cancel</button>
@@ -108,31 +113,6 @@ const state = {
 
 /** @type {Promise<object>|null} Spotify's IFrameAPI, loaded once. */
 let spotifyApi = null;
-
-/** Consent given during this visit, for browsers where localStorage throws. */
-let hasConsentForThisVisit = false;
-
-function hasConsent() {
-    if (hasConsentForThisVisit) {
-        return true;
-    }
-
-    try {
-        return window.localStorage.getItem(CONSENT_KEY) === 'granted';
-    } catch {
-        return false;
-    }
-}
-
-function grantConsent() {
-    hasConsentForThisVisit = true;
-
-    try {
-        window.localStorage.setItem(CONSENT_KEY, 'granted');
-    } catch {
-        // Private mode or blocked storage: asked again on the next visit.
-    }
-}
 
 /**
  * @param {HTMLElement} button A [data-play] button.
@@ -199,9 +179,9 @@ function createHost() {
 
 /**
  * Keeps the end of the page, and anything scrolled into view, clear of the
- * bar. The rule lives in the bar's own <style>: <body> and its attributes
- * are replaced on every visit, and Livewire copies <html>'s attributes from
- * the new page.
+ * bar; --sns-player-space lifts the cookie banner above it. The rule lives
+ * in the bar's own <style>: <body> and its attributes are replaced on every
+ * visit, and Livewire copies <html>'s attributes from the new page.
  *
  * @param {number} height
  */
@@ -213,7 +193,7 @@ function reserveSpace(height) {
     }
 
     state.reservedHeight = pixels;
-    state.parts.space.textContent = `@media screen { body { padding-bottom: ${pixels}px; } html { scroll-padding-bottom: ${pixels}px; } }`;
+    state.parts.space.textContent = `:root { --sns-player-space: ${pixels}px; } @media screen { body { padding-bottom: ${pixels}px; } html { scroll-padding-bottom: ${pixels}px; } }`;
 }
 
 /**
@@ -511,7 +491,7 @@ function play(item) {
     state.current = item;
     renderItem();
 
-    if (state.controller === null && !hasConsent()) {
+    if (state.controller === null && !hasMediaConsent()) {
         state.isAwaitingConsent = true;
         showView('consent');
         state.parts.continue.focus();
@@ -606,8 +586,12 @@ function close() {
 }
 
 function continueAfterConsent() {
-    grantConsent();
-    load(state.current);
+    // Announced as `sns:consent`, which loads the item (onConsentChange).
+    grantMediaConsent();
+
+    if (state.isAwaitingConsent) {
+        load(state.current);
+    }
 
     if (state.trigger?.isConnected) {
         state.trigger.focus({ preventScroll: true });
@@ -615,6 +599,28 @@ function continueAfterConsent() {
 }
 
 /* --------------------------------------------------------------- Events -- */
+
+/**
+ * External media allowed while the bar asks: the item loads. Withdrawn (or
+ * refused in the banner) while the bar is open: the bar closes.
+ *
+ * @param {CustomEvent<{ media: boolean }|null>} event sns:consent
+ */
+function onConsentChange(event) {
+    if (state.host === null) {
+        return;
+    }
+
+    if (event.detail?.media === true) {
+        if (state.isAwaitingConsent) {
+            load(state.current);
+        }
+
+        return;
+    }
+
+    close();
+}
 
 /**
  * A Play button: the loaded item toggles play and pause; any other item is
@@ -653,7 +659,7 @@ function onDocumentClick(event) {
  */
 function onHostClick(event) {
     const target = event.target instanceof Element ? event.target : null;
-    const link = target?.closest('[data-player-part="link"]');
+    const link = target?.closest('a[href]');
 
     if (link) {
         followLink(event, link);
@@ -695,8 +701,9 @@ function onHostKeydown(event) {
 }
 
 /**
- * The title link works like a wire:navigate link. It is handled here because
- * Livewire sets its links up inside <body>, and the bar lives outside it.
+ * The bar's links (the title, Privacy & cookies) work like wire:navigate
+ * links. They are handled here because Livewire sets its links up inside
+ * <body>, and the bar lives outside it.
  *
  * @param {MouseEvent} event
  * @param {HTMLAnchorElement} link
@@ -743,6 +750,7 @@ function whenLivewireIsLoaded(callback) {
 export function startPlayer() {
     document.addEventListener('click', onDocumentClick);
     document.addEventListener('sns:player', (event) => syncPlayButtons(event.detail));
+    document.addEventListener('sns:consent', onConsentChange);
     document.addEventListener('livewire:navigating', (event) => event.detail.onSwap(removeSnapshotCopies));
     // A new page, and a component re-rendered by Livewire (e.g. the filters
     // on /releases), come with the buttons' server state.

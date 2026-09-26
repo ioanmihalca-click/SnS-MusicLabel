@@ -15,11 +15,11 @@ beforeEach(function () {
 });
 
 /**
- * The links of the page's header, main content and footer.
+ * The links of the page's header, main content, footer and cookie banner.
  *
  * @return list<Element>
  */
-function siteLinks(TestResponse $response, string $selector = 'body > header a[href], body > main a[href], body > footer a[href]'): array
+function siteLinks(TestResponse $response, string $selector = 'body > header a[href], body > main a[href], body > footer a[href], body > [data-consent-banner] a[href]'): array
 {
     return iterator_to_array(htmlDocument($response)->querySelectorAll($selector), false);
 }
@@ -27,8 +27,9 @@ function siteLinks(TestResponse $response, string $selector = 'body > header a[h
 /**
  * Whether the link should load with wire:navigate, which keeps the footer
  * player playing: a page of this site opened in the same tab. Files, text and
- * XML routes, the admin, the lightbox, links inside a post's body and
- * Livewire's pagination load as before.
+ * XML routes, the admin, the lightbox, links inside a post's body (except the
+ * policy link of a player's notice, added by the site) and Livewire's
+ * pagination load as before.
  */
 function loadsWithoutReload(Element $link): bool
 {
@@ -41,7 +42,7 @@ function loadsWithoutReload(Element $link): bool
         && $link->getAttribute('target') !== '_blank'
         && ! $link->hasAttribute('data-fancybox')
         && ! $link->hasAttribute('wire:click.prevent')
-        && $link->closest('.article-body') === null
+        && ($link->closest('.article-body') === null || $link->closest('[data-embed-notice]') !== null)
         && ! preg_match('#^/(admin|storage)(/|$)|\.(md|txt|xml)$#', $path);
 }
 
@@ -69,6 +70,10 @@ function seedEveryKindOfLink(): void
     Blog::factory()->published()->create([
         'slug' => 'back-to-black-is-out',
         'content' => '<p>Listen to <a href="/releases/back-to-black">Back to Black</a> or read <a href="https://example.com/review">the review</a>.</p>',
+    ]);
+    Blog::factory()->published()->create([
+        'slug' => 'warrior-on-beatport',
+        'content' => '<p>Out now.</p><p><iframe src="https://embed.beatport.com/?id=20186693&amp;type=track" height="162"></iframe></p>',
     ]);
 }
 
@@ -108,6 +113,20 @@ it('keeps wire:navigate off the links in a post and off the pagination', functio
     expect($postLinks)->toHaveCount(2)
         ->and($paginationLinks)->not->toBeEmpty()
         ->and(array_filter([...$postLinks, ...$paginationLinks], fn (Element $link): bool => $link->hasAttribute('wire:navigate')))->toBe([]);
+});
+
+it('loads the policy link of a player in a post with wire:navigate, and the music link in a new tab', function () {
+    seedEveryKindOfLink();
+
+    $response = $this->get('/blog/warrior-on-beatport');
+    $policyLinks = siteLinks($response, '.article-body [data-embed-notice] a');
+    $musicLinks = siteLinks($response, '.article-body figcaption a');
+
+    expect($policyLinks)->toHaveCount(1)
+        ->and($policyLinks[0]->hasAttribute('wire:navigate'))->toBeTrue()
+        ->and($musicLinks)->toHaveCount(1)
+        ->and($musicLinks[0]->getAttribute('target'))->toBe('_blank')
+        ->and($musicLinks[0]->hasAttribute('wire:navigate'))->toBeFalse();
 });
 
 it('loads an internal button with wire:navigate and opens an external one in a new tab', function () {

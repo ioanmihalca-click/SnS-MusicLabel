@@ -1,6 +1,7 @@
 {{--
     Site footer: label pages, contacts, locations and the label's profiles,
-    then the full-width wordmark.
+    then the full-width wordmark, the privacy policy and the button that
+    reopens the cookie settings (resources/js/consent.js).
 --}}
 @php
     $labelLinks = [
@@ -8,6 +9,7 @@
         'Artists' => route('artists.index'),
         'Playlists' => route('playlists.index'),
         'News' => route('blog.index'),
+        'Demos' => route('demos'),
         'About' => route('about'),
     ];
     $contacts = [
@@ -70,7 +72,11 @@
         <p aria-hidden="true" class="whitespace-nowrap font-display text-[clamp(3rem,12.6vw,13.5rem)] font-black uppercase leading-[.8] tracking-[-.01em] text-frost">Snow 'n' Stuff</p>
 
         <div class="mt-7 flex flex-wrap justify-between gap-x-6 gap-y-2.5 border-t border-rule pt-[18px] text-[13px] text-dim">
-            <p>&copy; {{ now()->year }} Snow 'n' Stuff. All rights reserved.</p>
+            <div class="flex flex-wrap gap-x-6 gap-y-2.5">
+                <p>&copy; {{ now()->year }} Snow 'n' Stuff. All rights reserved.</p>
+                <a href="{{ route('privacy') }}" wire:navigate class="transition-colors hover:text-frost">Privacy</a>
+                <button type="button" data-consent-open aria-controls="cookie-consent" class="transition-colors hover:text-frost">Cookie settings</button>
+            </div>
             <a href="https://clickstudios-digital.com" target="_blank" rel="noopener" class="transition-colors hover:text-frost">Web application by Click Studios Digital</a>
         </div>
     </div>

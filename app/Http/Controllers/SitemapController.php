@@ -31,6 +31,10 @@ class SitemapController extends Controller
             $tag->setLastModificationDate($page->lastModifiedAt);
         }
 
+        if ($page->priority !== null) {
+            $tag->setPriority($page->priority);
+        }
+
         foreach ($page->images as $image) {
             $tag->addImage($image);
         }

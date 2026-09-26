@@ -171,11 +171,36 @@
 }
 
 /*
-| The players kept in a post (App\Support\ArticleHtml). Outside @layer: the
-| class is only written in PHP, which Tailwind does not scan.
+| The players kept in a post (App\Support\ArticleHtml): a notice naming the
+| provider until resources/js/consent.js swaps in the iframe. Outside
+| @layer: the classes are only written in PHP and JavaScript.
 */
 .article-embed iframe {
     @apply block w-full rounded-xl border-0 bg-slab;
+}
+
+.article-embed-notice {
+    @apply flex min-h-[152px] flex-col justify-center gap-3.5 rounded-xl border border-rule2 bg-slab px-[22px] py-5 text-[15px] leading-normal;
+}
+
+.article-embed-notice[hidden] {
+    display: none;
+}
+
+.article-embed-notice p {
+    @apply m-0 text-mist;
+}
+
+.article-embed-actions {
+    @apply flex flex-wrap items-center gap-x-[18px] gap-y-2.5;
+}
+
+.article-embed-load {
+    @apply rounded-full border border-frost bg-frost px-[18px] py-[11px] text-sm font-semibold leading-none text-ink transition-colors hover:bg-white;
+}
+
+.article-embed-allow {
+    @apply text-sm font-semibold text-frost underline decoration-rule2 underline-offset-4 transition-colors hover:decoration-frost;
 }
 
 /*
@@ -323,6 +348,18 @@
 .player-consent p {
     flex: 1 1 260px;
     margin: 0;
+}
+
+.player-consent-link {
+    color: theme('colors.frost');
+    text-decoration: underline;
+    text-decoration-color: theme('colors.rule2');
+    text-underline-offset: 3px;
+    white-space: nowrap;
+}
+
+.player-consent-link:hover {
+    text-decoration-color: theme('colors.frost');
 }
 
 .player-consent-actions {

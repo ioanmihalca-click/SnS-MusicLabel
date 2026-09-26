@@ -34,6 +34,7 @@ it('gives every public page one <h1>, one <main> and one valid JSON-LD graph', f
     expect($pages->map(fn (PublicPage $page): string => $page->path)->all())->toContain(
         '/', '/about', '/playlists', '/releases', '/releases/back-to-black', '/releases/warrior',
         '/artists', '/artists/g-and-s', '/artists/style-da-kid', '/blog', '/blog/back-to-black-is-out',
+        '/demos', '/privacy',
     );
 
     foreach ($pages as $page) {
@@ -67,5 +68,23 @@ it('gives every page the site header with the main navigation and the footer', f
     '/about',
     '/blog',
     '/blog/back-to-black-is-out',
+    '/demos',
+    '/privacy',
+    'not found' => '/releases/nope',
+]);
+
+it('gives every page the cookie banner, hidden until the script finds no choice, and the Cookie settings button', function (string $uri) {
+    fakeSpotifyThumbnails();
+    Release::factory()->create(['title' => 'Back to Black']);
+
+    $response = $this->get($uri);
+
+    expect(countElements($response, 'body > section#cookie-consent[data-consent-banner][role="dialog"][hidden][data-markdown-ignore]'))->toBe(1)
+        ->and(countElements($response, 'body > footer button[type="button"][data-consent-open]'))->toBe(1);
+})->with([
+    '/',
+    '/releases/back-to-black',
+    '/demos',
+    '/privacy',
     'not found' => '/releases/nope',
 ]);

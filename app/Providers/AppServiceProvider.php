@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Support\Seo\LeagueDriverWithTables;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -12,7 +13,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Registered after the package's own binding, which it replaces.
+        $this->app->singleton('markdown-response.driver.league', fn (): LeagueDriverWithTables => new LeagueDriverWithTables(
+            config('markdown-response.driver_options.league.options', []),
+        ));
     }
 
     /**

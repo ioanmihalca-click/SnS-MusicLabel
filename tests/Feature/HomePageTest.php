@@ -155,3 +155,14 @@ it('exposes the label once in the JSON-LD graph', function () {
         ->and($graph->firstWhere('@type', 'Organization')['foundingDate'])->toBe('2020')
         ->and($graph->where('@type', 'WebSite'))->toHaveCount(1);
 });
+
+it('invites artists to send a demo, next to Follow', function () {
+    $document = homeDocument($this->get('/')->assertOk());
+    $demo = $document->querySelector('section[aria-labelledby="demo-title"]');
+    $link = $demo->querySelector('a[href="'.route('demos').'"]');
+
+    expect(trim($demo->querySelector('h2')->textContent))->toBe('Send us your demo')
+        ->and($link)->not->toBeNull()
+        ->and($link->hasAttribute('wire:navigate'))->toBeTrue()
+        ->and($demo->nextElementSibling->getAttribute('aria-labelledby'))->toBe('follow-title');
+});
