@@ -1,123 +1,85 @@
 @php
-    $focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 focus-visible:ring-offset-black';
+    $posts = $blogs->getCollection();
+    $lead = $blogs->onFirstPage() ? $posts->first() : null;
+    $rest = $lead ? $posts->skip(1) : $posts;
 @endphp
 
-<div class="mx-auto max-w-7xl">
-    <!-- Header & Search -->
-    <div class="mb-12 space-y-6">
-        <h1 class="text-4xl font-bold text-white">Our Blog <span class="text-red-800">Posts</span></h1>
+<div class="site-wrap pt-[clamp(32px,5vw,64px)]">
+    <x-breadcrumbs :trail="$trail" class="mb-6" />
 
-        <!-- Search Bar -->
-        {{-- <div class="relative max-w-xl">
-            <input
-                type="text"
-                wire:model.live.debounce.300ms="search"
-                placeholder="Search posts..."
-                class="w-full px-4 py-3 text-white placeholder-gray-400 border border-gray-800 rounded-lg bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-red-800 focus:border-transparent"
-            >
-        </div> --}}
-    </div>
+    <x-section-heading as="h1" title="News" subtitle="Releases, charts, playlists and label updates." />
 
-    <!-- Blog Grid -->
-    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        @forelse($blogs as $blog)
-            <article
-                class="relative overflow-hidden transition-all duration-300 group bg-gradient-to-b from-gray-900/50 to-black rounded-xl hover:transform hover:-translate-y-1 hover:shadow-2xl"
-            >
-                <!-- Image Container -->
-                <div class="relative aspect-[16/9] overflow-hidden">
-                    @if($blog->cover_image)
-                        <img
-                            src="{{ asset('storage/' . $blog->cover_image) }}"
-                            alt="{{ $blog->title }}"
-                            width="1200"
-                            height="630"
-                            loading="lazy"
-                            decoding="async"
-                            class="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
-                        >
-                    @else
-                        <div class="absolute inset-0 bg-gradient-to-br from-red-800/20 to-black"></div>
-                    @endif
+    <div wire:loading.class="opacity-60" class="transition-opacity">
+        @if ($posts->isNotEmpty())
+            @if ($lead)
+                @php
+                    $leadUrl = route('blog.show', $lead->slug);
+                    $leadCoverUrl = $lead->coverUrl();
+                @endphp
 
-                    <!-- Date Badge -->
-                    <div class="absolute px-3 py-1 text-sm text-gray-300 rounded-full top-4 right-4 bg-black/70 backdrop-blur-sm">
-                        {{ $blog->published_at->format('F j, Y') }}
+                <article wire:key="lead-{{ $lead->id }}" class="group mb-[clamp(48px,6vw,80px)] grid items-center gap-[clamp(20px,4vw,56px)] md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+                    <a href="{{ $leadUrl }}" wire:navigate tabindex="-1" aria-hidden="true" data-markdown-ignore class="block aspect-[1200/630] overflow-hidden bg-slab">
+                        @if ($leadCoverUrl)
+                            <img
+                                src="{{ $leadCoverUrl }}"
+                                alt=""
+                                width="1200"
+                                height="630"
+                                fetchpriority="high"
+                                decoding="async"
+                                class="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(.2,.7,.1,1)] group-hover:scale-[1.03]"
+                            >
+                        @else
+                            <span class="grid h-full w-full place-items-center bg-gradient-to-br from-slab2 to-slab">
+                                <x-icons.logomark class="h-20 w-20 text-signal" />
+                            </span>
+                        @endif
+                    </a>
+
+                    <div class="flex min-w-0 flex-col gap-4">
+                        <p class="m-0 flex gap-2.5 font-meta text-[10.5px] uppercase tracking-[.08em] text-dim">
+                            <span class="text-frost">Latest</span>
+                            <time datetime="{{ $lead->published_at->toDateString() }}">{{ $lead->published_at->format('d.m.Y') }}</time>
+                        </p>
+
+                        <h2 class="m-0 font-display text-[clamp(2.2rem,4.4vw,3.8rem)] font-extrabold uppercase leading-[.9] [overflow-wrap:anywhere]">
+                            <a href="{{ $leadUrl }}" wire:navigate class="decoration-2 underline-offset-4 hover:underline">{{ $lead->title }}</a>
+                        </h2>
+
+                        <p class="m-0 line-clamp-4 text-mist">{{ $lead->summary() }}</p>
+
+                        <div>
+                            <a href="{{ $leadUrl }}" wire:navigate class="inline-flex items-center gap-2 border-b border-rule2 pb-[3px] font-semibold transition-colors hover:border-frost">Read more<span class="sr-only">: {{ $lead->title }}</span> <span aria-hidden="true">→</span></a>
+                        </div>
                     </div>
-                </div>
+                </article>
+            @endif
 
-                <!-- Content -->
-                <div class="p-6 space-y-4">
-                    <h2 class="text-xl font-bold text-white transition-colors duration-300 line-clamp-1 group-hover:text-red-800">
-                        <a href="{{ route('blog.show', $blog->slug) }}" class="rounded hover:text-red-700 {{ $focusRing }}">
-                            {{ $blog->title }}
-                        </a>
-                    </h2>
-
-                    <p class="text-gray-400 line-clamp-3">
-                        {!! strip_tags($blog->content) !!}
-                    </p>
-
-                    <!-- Read More Link -->
-                    <div class="pt-4">
-                        <a
-                            href="{{ route('blog.show', $blog->slug) }}"
-                            class="inline-flex items-center space-x-2 text-red-800 transition-colors duration-300 rounded hover:text-red-700 {{ $focusRing }}"
-                        >
-                            <span>Read more</span>
-                            <x-icons.arrow-right />
-                        </a>
-                    </div>
+            @if ($rest->isNotEmpty())
+                <div class="grid gap-x-[22px] gap-y-10 border-t border-rule pt-8 sm:grid-cols-2 lg:grid-cols-3">
+                    @foreach ($rest as $post)
+                        <x-news-card :item="\App\Support\NewsItem::fromPost($post)" heading-level="h2" with-summary wire:key="post-{{ $post->id }}" />
+                    @endforeach
                 </div>
-            </article>
-        @empty
-            <div class="py-12 text-center col-span-full">
-                <div class="max-w-sm mx-auto space-y-4">
-                    <div class="text-gray-400">
-                        <svg class="w-16 h-16 mx-auto text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                        </svg>
-                        <h3 class="mt-4 text-xl font-semibold text-gray-300">No posts found</h3>
-                        <p class="mt-2 text-gray-400">{{ $search ? 'Try different search terms or' : 'Check back later for' }} new blog posts.</p>
-                    </div>
-                    @if($search)
-                        <button
-                            wire:click="$set('search', '')"
-                            type="button"
-                            class="inline-flex items-center px-4 py-2 text-gray-300 transition-colors duration-300 border border-gray-700 rounded-md hover:bg-gray-800 {{ $focusRing }}"
-                        >
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                            Clear search
-                        </button>
-                    @endif
-                </div>
+            @endif
+        @else
+            <div class="border-t border-rule pt-5">
+                <p class="m-0 text-mist">No posts found{{ $search !== '' ? ' for "'.$search.'"' : '' }}.</p>
+
+                @if ($search !== '')
+                    <button
+                        type="button"
+                        wire:click="$set('search', '')"
+                        class="mt-4 rounded-full border border-rule2 px-4 py-2.5 text-sm font-semibold text-frost transition-colors hover:border-frost"
+                    >Clear search</button>
+                @endif
             </div>
-        @endforelse
+        @endif
     </div>
 
-    <!-- Pagination -->
-    @if($blogs->hasPages())
-        <div class="mt-12">
+    @if ($blogs->hasPages())
+        <div data-markdown-ignore>
             {{ $blogs->links() }}
         </div>
     @endif
-
-    <!-- Loading State -->
-    <div
-        wire:loading.delay
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
-        role="status"
-        aria-live="polite"
-        aria-label="Loading"
-    >
-        <div class="flex items-center p-4 space-x-4 bg-gray-900 rounded-lg">
-            <svg class="w-6 h-6 text-red-800 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span class="text-white">Loading...</span>
-        </div>
-    </div>
 </div>

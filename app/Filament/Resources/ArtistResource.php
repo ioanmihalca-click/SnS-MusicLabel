@@ -35,13 +35,78 @@ class ArtistResource extends Resource
                             ->integer()
                             ->default(0)
                             ->helperText('Lower numbers appear first.'),
+                        Forms\Components\TextInput::make('role')
+                            ->maxLength(255)
+                            ->placeholder('DJ / producer duo'),
+                        Forms\Components\TextInput::make('origin')
+                            ->maxLength(255)
+                            ->placeholder('Stockholm, Sweden'),
+                    ])
+                    ->columns(2),
+
+                Forms\Components\Section::make('Photo')
+                    ->schema([
+                        Forms\Components\FileUpload::make('photo')
+                            ->hiddenLabel()
+                            ->image()
+                            ->imageCropAspectRatio('4:5')
+                            ->imageResizeTargetWidth('1200')
+                            ->imageResizeTargetHeight('1500')
+                            ->directory('artist-photos')
+                            ->imagePreviewHeight('250')
+                            ->helperText('Portrait (4:5), resized to 1200×1500.'),
+                    ]),
+
+                Forms\Components\Section::make('Links')
+                    ->schema([
                         Forms\Components\TextInput::make('spotify_url')
+                            ->label('Spotify')
                             ->required()
                             ->url()
                             ->maxLength(255)
                             ->placeholder('https://open.spotify.com/artist/...'),
+                        Forms\Components\TextInput::make('instagram_url')
+                            ->label('Instagram')
+                            ->url()
+                            ->maxLength(255)
+                            ->placeholder('https://www.instagram.com/...'),
+                        Forms\Components\TextInput::make('soundcloud_url')
+                            ->label('SoundCloud')
+                            ->url()
+                            ->maxLength(255)
+                            ->placeholder('https://soundcloud.com/...'),
+                        Forms\Components\TextInput::make('beatport_url')
+                            ->label('Beatport')
+                            ->url()
+                            ->maxLength(255)
+                            ->placeholder('https://www.beatport.com/artist/...'),
                     ])
                     ->columns(2),
+
+                Forms\Components\Section::make('Highlights')
+                    ->description('Short facts for the artist page, e.g. charts, key DJ support or airplay.')
+                    ->schema([
+                        Forms\Components\Repeater::make('highlights')
+                            ->hiddenLabel()
+                            ->simple(
+                                Forms\Components\TextInput::make('highlight')
+                                    ->required()
+                                    ->maxLength(255),
+                            )
+                            ->defaultItems(0)
+                            ->addActionLabel('Add highlight'),
+                    ]),
+
+                Forms\Components\Section::make('Press kit')
+                    ->schema([
+                        Forms\Components\FileUpload::make('press_kit')
+                            ->hiddenLabel()
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(10240)
+                            ->directory('press-kits')
+                            ->downloadable()
+                            ->helperText('PDF, up to 10 MB.'),
+                    ]),
 
                 Forms\Components\Section::make('Description')
                     ->schema([
@@ -49,6 +114,16 @@ class ArtistResource extends Resource
                             ->required()
                             ->columnSpanFull()
                             ->maxLength(65535),
+                    ]),
+
+                Forms\Components\Section::make('Advanced')
+                    ->collapsed()
+                    ->schema([
+                        Forms\Components\TextInput::make('slug')
+                            ->maxLength(255)
+                            ->alphaDash()
+                            ->unique(ignoreRecord: true)
+                            ->helperText('Leave empty to generate it from the name. Changing it changes the public URL.'),
                     ]),
             ]);
     }
@@ -60,6 +135,11 @@ class ArtistResource extends Resource
                 Tables\Columns\TextColumn::make('order')
                     ->sortable()
                     ->width(60),
+                Tables\Columns\ImageColumn::make('photo')
+                    ->label('')
+                    ->circular()
+                    ->width(48)
+                    ->height(48),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable(),

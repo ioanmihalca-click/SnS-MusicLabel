@@ -3,17 +3,26 @@
 namespace App\Livewire;
 
 use App\Models\Blog;
+use App\Support\Seo\Schema;
+use App\Support\Seo\SeoData;
+use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-#[Layout('components.layouts.blog')]
-#[Title('Our Blog - Latest Posts')]
+/**
+ * The News listing at /blog: published posts only, newest first, the first
+ * one shown large. The search field is hidden for now, but ?search= still
+ * filters (and keeps the results out of the index).
+ */
+#[Layout('components.layouts.site')]
 class BlogIndex extends Component
 {
     use WithPagination;
+
+    public const DESCRIPTION = "News and insights from the Snow 'n' Stuff label: releases, artists, music production and the electronic music industry.";
 
     #[Url(except: '')]
     public string $search = '';
@@ -25,25 +34,49 @@ class BlogIndex extends Component
         $this->resetPage();
     }
 
-    public function render()
+    public function render(): View
     {
         $blogs = Blog::query()
-            ->where('published_at', '<=', now())
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('title', 'like', '%'.$this->search.'%')
+            ->published()
+            ->when($this->search, function (Builder $query): void {
+                $query->where(function (Builder $query): void {
+                    $query->where('title', 'like', '%'.$this->search.'%')
                         ->orWhere('content', 'like', '%'.$this->search.'%');
                 });
             })
-            ->orderBy('published_at', 'desc')
+            ->latest('published_at')
+            ->latest('id')
             ->paginate($this->postsPerPage);
 
         return view('livewire.blog-index', [
             'blogs' => $blogs,
+            'trail' => $this->trail(),
         ])->layoutData([
-            'meta_title' => 'Our Blog - Latest Posts',
-            'meta_description' => 'Read our latest blog posts on various topics.',
-            'meta_keywords' => 'blog, articles, news',
+            'seo' => $this->seo(),
         ]);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function trail(): array
+    {
+        return ['/' => 'Home', route('blog.index', absolute: false) => 'News'];
+    }
+
+    /**
+     * Search results are kept out of the index; the listing itself is canonical at /blog.
+     */
+    private function seo(): SeoData
+    {
+        return new SeoData(
+            title: 'News - '.SeoData::SITE_NAME,
+            description: self::DESCRIPTION,
+            path: route('blog.index', absolute: false),
+            noindex: $this->search !== '',
+            schema: [
+                Schema::breadcrumbs($this->trail()),
+            ],
+        );
     }
 }

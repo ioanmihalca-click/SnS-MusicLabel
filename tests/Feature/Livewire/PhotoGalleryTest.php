@@ -22,3 +22,17 @@ it('orders photos newest first', function () {
 
     expect($photos->first()->title)->toBe('Newer');
 });
+
+it('renders the grid with the lightbox links', function () {
+    Photo::factory()->create(['title' => 'In the studio', 'image_path' => 'photos/studio.jpg']);
+
+    Livewire::test(PhotoGallery::class)
+        ->assertViewIs('livewire.photo-gallery')
+        ->assertSee('alt="In the studio"', escape: false)
+        ->assertSee('data-fancybox="gallery"', escape: false)
+        ->assertSee('href="'.asset('storage/photos/studio.jpg').'"', escape: false);
+});
+
+it('says so when there are no photos', function () {
+    Livewire::test(PhotoGallery::class)->assertSee('Photos are on the way.');
+});

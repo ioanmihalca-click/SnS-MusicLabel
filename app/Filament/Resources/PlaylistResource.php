@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PlaylistResource\Pages;
 use App\Models\Playlist;
+use App\Support\Spotify\SpotifyUrlRule;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -24,15 +25,36 @@ class PlaylistResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Spotify embed')
+                Forms\Components\Section::make('Playlist')
                     ->schema([
-                        Forms\Components\Textarea::make('spotify_embed_url')
-                            ->label('Spotify embed code')
+                        Forms\Components\TextInput::make('spotify_url')
+                            ->label('Spotify URL')
                             ->required()
-                            ->autosize()
-                            ->rows(4)
-                            ->helperText('Paste the full Spotify embed iframe code here.'),
-                    ]),
+                            ->maxLength(255)
+                            ->rule(new SpotifyUrlRule('playlist'))
+                            ->placeholder('https://open.spotify.com/playlist/...')
+                            ->helperText('The playlist link from Spotify ("Share" → "Copy link").')
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('title')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('description')
+                            ->label('Tags')
+                            ->maxLength(255)
+                            ->placeholder('Melodic Techno · Ibiza · Afro House')
+                            ->helperText('Separate tags with " · ".'),
+                        Forms\Components\FileUpload::make('cover_image')
+                            ->label('Cover')
+                            ->image()
+                            ->imageCropAspectRatio('1:1')
+                            ->imageResizeTargetWidth('1200')
+                            ->imageResizeTargetHeight('1200')
+                            ->directory('playlist-covers')
+                            ->imagePreviewHeight('200')
+                            ->helperText('Optional square cover, resized to 1200×1200.')
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2),
 
                 Forms\Components\Section::make('Display')
                     ->schema([
@@ -55,10 +77,10 @@ class PlaylistResource extends Resource
                 Tables\Columns\TextColumn::make('order')
                     ->sortable()
                     ->width(60),
-                Tables\Columns\TextColumn::make('spotify_embed_url')
-                    ->label('Embed')
-                    ->limit(40)
-                    ->color('gray'),
+                Tables\Columns\TextColumn::make('title')
+                    ->searchable()
+                    ->sortable()
+                    ->description(fn (Playlist $record): ?string => $record->description),
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Active')
                     ->boolean(),

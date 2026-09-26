@@ -4,185 +4,427 @@
 
 /*
 | ---------------------------------------------------------------------------
-| Design tokens
+| The site (<html class="theme-site">, components.layouts.site).
 | ---------------------------------------------------------------------------
 |
-| Single source of truth for the SnS visual system. Tailwind handles the
-| atomic utilities; this block holds the values that don't fit cleanly into
-| Tailwind classes — radii, shadows, motion easings, brand color channels.
+| Everything else is Tailwind utilities built on the colour and font tokens
+| in tailwind.config.js (ink, slab, rule, frost, mist, dim, signal; body,
+| meta, display).
 |
 */
-
-:root {
-    /* Brand reds (RGB channel triplets, ready for `rgb(var(--xxx) / alpha)`) */
-    --color-red-900: 127 29 29;
-    --color-red-800: 153 27 27;
-    --color-red-700: 185 28 28;
-    --color-red-500: 239 68 68;
-
-    /* Surface borders / shadows tinted to brand */
-    --b-subtle: rgba(255, 255, 255, 0.06);
-    --b-accent: rgba(220, 38, 38, 0.25);
-
-    --sh-card: 0 8px 30px -10px rgba(0, 0, 0, 0.6);
-    --sh-card-hover: 0 16px 40px -8px rgba(127, 29, 29, 0.35);
-    --sh-cta-glow: 0 8px 30px -8px rgba(220, 38, 38, 0.6);
-    --sh-cta-glow-hover: 0 12px 40px -6px rgba(220, 38, 38, 0.85);
-
-    /* Radii */
-    --r-card: 1rem;
-    --r-pill: 9999px;
-    --r-control: 0.5rem;
-
-    /* Motion */
-    --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
-    --t-fast: 200ms;
-    --t-base: 400ms;
-    --t-slow: 700ms;
-}
 
 [x-cloak] {
     display: none !important;
 }
 
-/*
-| ---------------------------------------------------------------------------
-| Global texture — subtle noise overlay
-| ---------------------------------------------------------------------------
-|
-| SVG fractal-noise layer sits above the page, below interactive content.
-| Mix-blend-mode: overlay keeps it perceptual (most users won't see it as
-| "noise" — they'll just feel a tactile, less plastic surface).
-| Suppressed for users with prefers-reduced-motion.
-|
-*/
-
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 1;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-    opacity: 0.05;
-    mix-blend-mode: overlay;
+.theme-site {
+    color-scheme: dark;
+    overflow-x: clip;
 }
 
-@media (prefers-reduced-motion: reduce) {
-    body::before {
+.theme-site :focus-visible {
+    outline: 2px solid theme('colors.frost');
+    outline-offset: 3px;
+}
+
+.theme-site :is(h1, h2, h3) {
+    text-wrap: balance;
+}
+
+@layer components {
+    /* The page column: 1320px wide, fluid 16-48px gutters. */
+    .site-wrap {
+        @apply mx-auto w-full max-w-site px-[clamp(16px,4vw,48px)];
+    }
+
+    /*
+    | Homepage hero: the shade over the blurred artwork, the pulsing dot of
+    | the eyebrow and the record behind the sleeve. The record spins only
+    | while the footer player plays the hero release: resources/js/player.js
+    | sets data-state="playing" on its [data-play-vinyl] wrapper.
+    */
+    .hero-shade {
+        background:
+            linear-gradient(90deg, rgb(10 12 15 / .88) 0%, rgb(10 12 15 / .55) 55%, rgb(10 12 15 / .25) 100%),
+            linear-gradient(180deg, rgb(10 12 15 / 0) 60%, theme('colors.ink') 100%);
+    }
+
+    .live-dot {
+        animation: live-pulse 2s infinite;
+    }
+
+    .vinyl {
+        background:
+            radial-gradient(circle, #0c0c0e 0 2.2%, transparent 2.4%),
+            repeating-radial-gradient(circle, #18181b 0 1px, #0b0b0d 1.6px 3.2px);
+        box-shadow: 0 20px 60px rgb(0 0 0 / .6), inset 0 0 0 1px rgb(255 255 255 / .05);
+        animation: vinyl-spin 1.9s linear infinite;
+        animation-play-state: paused;
+    }
+
+    .vinyl::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 9999px;
+        background: conic-gradient(from 20deg, transparent 0 8%, rgb(255 255 255 / .07) 14%, transparent 22% 55%, rgb(255 255 255 / .05) 62%, transparent 70%);
+        pointer-events: none;
+    }
+
+    [data-play-vinyl][data-state="playing"] .vinyl {
+        animation-play-state: running;
+    }
+
+    .vinyl-label {
+        position: absolute;
+        inset: 33%;
+        border-radius: 9999px;
+        background-color: theme('colors.signal');
+        background-size: cover;
+        background-position: center;
+        box-shadow: 0 0 0 3px #0b0b0d;
+    }
+
+    .vinyl-label::after {
+        content: "";
+        position: absolute;
+        inset: 44%;
+        border-radius: 9999px;
+        background: theme('colors.ink');
+    }
+
+    /*
+    | A blog post's body (App\Support\ArticleHtml): the stored HTML has no
+    | classes, so its typography is set here.
+    */
+    .article-body {
+        @apply text-[17px] leading-[1.7] text-frost;
+    }
+
+    .article-body > * + * {
+        @apply mt-5;
+    }
+
+    .article-body :is(h2, h3, h4, h5, h6) {
+        @apply mb-0 mt-10 font-semibold leading-tight;
+    }
+
+    .article-body h2 {
+        @apply font-display text-[clamp(1.9rem,3.4vw,2.6rem)] font-extrabold uppercase leading-[.95];
+    }
+
+    .article-body h3 {
+        @apply text-[1.35rem];
+    }
+
+    .article-body :is(h4, h5, h6) {
+        @apply text-lg;
+    }
+
+    .article-body a {
+        @apply underline decoration-rule2 underline-offset-4 transition-colors hover:decoration-frost;
+    }
+
+    .article-body :is(strong, b) {
+        @apply font-semibold;
+    }
+
+    .article-body ul {
+        @apply list-disc pl-6;
+    }
+
+    .article-body ol {
+        @apply list-decimal pl-6;
+    }
+
+    .article-body li + li {
+        @apply mt-2;
+    }
+
+    .article-body blockquote {
+        @apply border-l-2 border-signal pl-5 text-mist;
+    }
+
+    .article-body :is(pre, code) {
+        @apply font-meta text-[13px];
+    }
+
+    .article-body pre {
+        @apply overflow-x-auto bg-slab p-4;
+    }
+
+    .article-body hr {
+        @apply border-rule;
+    }
+
+    .article-body img {
+        @apply h-auto max-w-full;
+    }
+
+    .article-body figure {
+        @apply mx-0 mb-0;
+    }
+
+    .article-body figcaption {
+        @apply mt-2.5 font-meta text-[10.5px] uppercase tracking-[.08em] text-mist;
+    }
+}
+
+/*
+| The players kept in a post (App\Support\ArticleHtml): a notice naming the
+| provider until resources/js/consent.js swaps in the iframe. Outside
+| @layer: the classes are only written in PHP and JavaScript.
+*/
+.article-embed iframe {
+    @apply block w-full rounded-xl border-0 bg-slab;
+}
+
+.article-embed-notice {
+    @apply flex min-h-[152px] flex-col justify-center gap-3.5 rounded-xl border border-rule2 bg-slab px-[22px] py-5 text-[15px] leading-normal;
+}
+
+.article-embed-notice[hidden] {
+    display: none;
+}
+
+.article-embed-notice p {
+    @apply m-0 text-mist;
+}
+
+.article-embed-actions {
+    @apply flex flex-wrap items-center gap-x-[18px] gap-y-2.5;
+}
+
+.article-embed-load {
+    @apply rounded-full border border-frost bg-frost px-[18px] py-[11px] text-sm font-semibold leading-none text-ink transition-colors hover:bg-white;
+}
+
+.article-embed-allow {
+    @apply text-sm font-semibold text-frost underline decoration-rule2 underline-offset-4 transition-colors hover:decoration-frost;
+}
+
+/*
+| The footer player (resources/js/player.js): "Now playing", the title
+| linked to its page, previous / next / close, and Spotify's embed shown as
+| it is. The bar is created outside <body>, so it sets its own font and
+| colours. Below 768px the controls sit above the full-width embed.
+| Outside @layer: the classes are only written in JavaScript.
+*/
+.player {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 50;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    border-top: 1px solid theme('colors.rule2');
+    background: rgb(17 21 26 / .94);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+    color: theme('colors.frost');
+    font-family: theme('fontFamily.body');
+    font-size: 15px;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color-scheme: dark;
+}
+
+.player [hidden] {
+    display: none;
+}
+
+.player-inner {
+    display: grid;
+    gap: 10px;
+    max-width: theme('maxWidth.site');
+    margin-inline: auto;
+    padding: 10px clamp(16px, 4vw, 48px);
+}
+
+.player-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.player-now {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.player-label {
+    margin: 0;
+    font-family: theme('fontFamily.meta');
+    font-size: 10px;
+    line-height: 1.6;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: theme('colors.mist');
+}
+
+.player-title {
+    display: block;
+    overflow: hidden;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: theme('colors.frost');
+    text-underline-offset: 3px;
+}
+
+.player-title:hover {
+    text-decoration: underline;
+}
+
+.player-credit,
+.player-hint {
+    margin: 0;
+    font-size: 13px;
+}
+
+.player-credit {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: theme('colors.mist');
+}
+
+.player-hint {
+    margin-top: 2px;
+    color: theme('colors.frost');
+}
+
+.player-controls {
+    display: flex;
+    flex: none;
+    gap: 6px;
+}
+
+.player-control {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid theme('colors.rule2');
+    border-radius: 9999px;
+    color: theme('colors.frost');
+    transition: border-color .2s, opacity .2s;
+}
+
+.player-control:hover {
+    border-color: theme('colors.frost');
+}
+
+.player-control[aria-disabled="true"] {
+    cursor: default;
+    opacity: .35;
+    border-color: theme('colors.rule2');
+}
+
+.player-control svg {
+    width: 16px;
+    height: 16px;
+}
+
+.player-embed {
+    min-width: 0;
+    height: 152px;
+}
+
+.player-embed iframe {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 12px;
+}
+
+.player-consent {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 20px;
+}
+
+.player-consent p {
+    flex: 1 1 260px;
+    margin: 0;
+}
+
+.player-consent-link {
+    color: theme('colors.frost');
+    text-decoration: underline;
+    text-decoration-color: theme('colors.rule2');
+    text-underline-offset: 3px;
+    white-space: nowrap;
+}
+
+.player-consent-link:hover {
+    text-decoration-color: theme('colors.frost');
+}
+
+.player-consent-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.player-button {
+    border: 1px solid theme('colors.rule2');
+    border-radius: 9999px;
+    padding: 11px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    color: theme('colors.frost');
+    transition: background-color .2s, border-color .2s;
+}
+
+.player-button:hover {
+    border-color: theme('colors.frost');
+}
+
+.player-button-primary {
+    border-color: theme('colors.frost');
+    background: theme('colors.frost');
+    color: theme('colors.ink');
+}
+
+.player-button-primary:hover {
+    background: #fff;
+}
+
+@media (max-width: 479px) {
+    .player-credit {
         display: none;
     }
 }
 
-/*
-| ---------------------------------------------------------------------------
-| Scrollbar (WebKit + Firefox), brand-tinted.
-| ---------------------------------------------------------------------------
-*/
-
-::-webkit-scrollbar {
-    width: 12px;
-}
-
-::-webkit-scrollbar-track {
-    background: rgb(var(--color-red-900) / 0.1);
-}
-
-::-webkit-scrollbar-thumb {
-    background: rgb(var(--color-red-900));
-    border-radius: 6px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: rgb(var(--color-red-800));
-}
-
-* {
-    scrollbar-width: thin;
-    scrollbar-color: rgb(var(--color-red-900)) rgb(var(--color-red-900) / 0.1);
-}
-
-/*
-| ---------------------------------------------------------------------------
-| Scroll-triggered reveal — IntersectionObserver toggles [data-revealed].
-| ---------------------------------------------------------------------------
-*/
-
-[data-reveal] {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity var(--t-slow) var(--ease-out-expo),
-        transform var(--t-slow) var(--ease-out-expo);
-    will-change: opacity, transform;
-}
-
-[data-reveal][data-revealed] {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-@media (prefers-reduced-motion: reduce) {
-    [data-reveal] {
-        opacity: 1;
-        transform: none;
-        transition: none;
+@media (min-width: 768px) {
+    .player-inner {
+        grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+        align-items: center;
+        column-gap: 28px;
     }
 }
 
-/*
-| ---------------------------------------------------------------------------
-| Equalizer animation (Featured Track pill + preloader).
-| ---------------------------------------------------------------------------
-*/
-
-@keyframes eq-1 { 0%, 100% { height: 30%; } 50% { height: 90%; } }
-@keyframes eq-2 { 0%, 100% { height: 70%; } 50% { height: 30%; } }
-@keyframes eq-3 { 0%, 100% { height: 50%; } 50% { height: 100%; } }
-@keyframes eq-4 { 0%, 100% { height: 60%; } 50% { height: 25%; } }
-@keyframes eq-5 { 0%, 100% { height: 40%; } 50% { height: 85%; } }
-
-.eq-bar { transform-origin: bottom; }
-.eq-bar-1 { animation: eq-1 0.9s ease-in-out infinite; }
-.eq-bar-2 { animation: eq-2 1.1s ease-in-out infinite; }
-.eq-bar-3 { animation: eq-3 0.7s ease-in-out infinite; }
-.eq-bar-4 { animation: eq-4 1.0s ease-in-out infinite; }
-.eq-bar-5 { animation: eq-5 0.8s ease-in-out infinite; }
-
-@media (prefers-reduced-motion: reduce) {
-    .eq-bar-1, .eq-bar-2, .eq-bar-3, .eq-bar-4, .eq-bar-5 { animation: none; height: 60%; }
-}
-
-/*
-| ---------------------------------------------------------------------------
-| Brand pulse — used by the preloader logomark.
-| Scale + glow breathe in sync with a slow tempo.
-| ---------------------------------------------------------------------------
-*/
-
-@keyframes brand-pulse {
-    0%, 100% {
-        transform: scale(1);
-        filter: drop-shadow(0 0 12px rgba(220, 38, 38, 0.4));
-    }
-    50% {
-        transform: scale(1.08);
-        filter: drop-shadow(0 0 28px rgba(220, 38, 38, 0.7));
+@media print {
+    .player {
+        display: none;
     }
 }
 
-.animate-brand-pulse {
-    animation: brand-pulse 1.6s ease-in-out infinite;
+@keyframes live-pulse {
+    0% { box-shadow: 0 0 0 0 rgb(229 56 59 / .55); }
+    70% { box-shadow: 0 0 0 10px rgb(229 56 59 / 0); }
+    100% { box-shadow: 0 0 0 0 rgb(229 56 59 / 0); }
 }
 
-@keyframes brand-orbit {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-}
-
-.animate-brand-orbit {
-    animation: brand-orbit 4s linear infinite;
+@keyframes vinyl-spin {
+    to { transform: rotate(360deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .animate-brand-pulse, .animate-brand-orbit { animation: none; }
+    .live-dot,
+    .vinyl {
+        animation: none;
+    }
 }

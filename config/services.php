@@ -35,4 +35,32 @@ return [
         ],
     ],
 
+    'indexnow' => [
+        'enabled' => (bool) env('INDEXNOW_ENABLED', env('APP_ENV') === 'production'),
+    ],
+
+    'google' => [
+        'site_verification' => env('GOOGLE_SITE_VERIFICATION'),
+    ],
+
+    'bing' => [
+        'site_verification' => env('BING_SITE_VERIFICATION'),
+    ],
+
+    /*
+     * Google Analytics 4. The id is printed (in production only) for
+     * resources/js/consent.js, which loads gtag.js after the visitor accepts
+     * analytics cookies, never before.
+     */
+    'google_analytics' => [
+        'id' => env('GOOGLE_ANALYTICS_ID', 'G-1PQQSTPYZC'),
+    ],
+
+    /*
+     * Where the notification of each demo sent through /demos goes.
+     */
+    'demos' => [
+        'notify_email' => env('DEMO_NOTIFY_EMAIL', 'demo@1namm.com'),
+    ],
+
 ];
