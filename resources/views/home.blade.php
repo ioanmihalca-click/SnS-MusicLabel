@@ -20,7 +20,7 @@
 <x-layouts.site :seo="$seo">
     <h1 class="sr-only">Snow 'n' Stuff</h1>
 
-    <x-home.hero :release="$heroRelease" :next="$nextRelease" />
+    <x-home.hero :release="$heroRelease" :next="$nextRelease" :announcement="$heroAnnouncement" />
 
     @if ($latestReleases->isNotEmpty())
         <section id="releases" class="{{ $sectionClass }}">

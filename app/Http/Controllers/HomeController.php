@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Artist;
+use App\Models\Blog;
 use App\Models\Photo;
 use App\Models\Playlist;
 use App\Models\Release;
@@ -20,10 +21,11 @@ class HomeController extends Controller
     public const PHOTOS = 6;
 
     /**
-     * The homepage: the featured release, the newest releases, DJ support and
-     * charts, the roster, the playlists, a short about with photos, the news
-     * and where to follow the label. The Spotify thumbnails that stand in for
-     * missing artwork are looked up all at once, before rendering.
+     * The homepage: a news post announced in the hero (if any), the featured
+     * release, the newest releases, DJ support and charts, the roster, the
+     * playlists, a short about with photos, the news and where to follow the
+     * label. The Spotify thumbnails that stand in for missing artwork are
+     * looked up all at once, before rendering.
      *
      * It is also routed as `/index` so that its Markdown version lives at
      * `/index.md`; any other request for `/index` goes to `/`.
@@ -55,6 +57,7 @@ class HomeController extends Controller
         ]);
 
         return view('home', [
+            'heroAnnouncement' => Blog::query()->inHero()->first(),
             'heroRelease' => $heroRelease,
             'nextRelease' => $nextRelease,
             'releases' => $releases,

@@ -26,12 +26,15 @@ class Blog extends Model
         'meta_description',
         'meta_keywords',
         'cover_image',
+        'hero_until',
+        'hero_text',
     ];
 
     protected function casts(): array
     {
         return [
             'published_at' => 'datetime',
+            'hero_until' => 'datetime',
         ];
     }
 
@@ -58,9 +61,37 @@ class Blog extends Model
         $query->where('published_at', '<=', now());
     }
 
+    /**
+     * Published posts announced in the homepage hero right now, newest published first.
+     */
+    #[Scope]
+    protected function inHero(Builder $query): void
+    {
+        $query->published()
+            ->where('hero_until', '>', now())
+            ->orderByDesc('published_at')
+            ->orderByDesc('id');
+    }
+
     public function isPublished(): bool
     {
         return $this->published_at !== null && $this->published_at->lte(now());
+    }
+
+    /**
+     * Whether the homepage hero announces the post right now (see the inHero scope).
+     */
+    public function isInHero(): bool
+    {
+        return $this->isPublished() && $this->hero_until !== null && $this->hero_until->isFuture();
+    }
+
+    /**
+     * The homepage hero line: the hero text, or else the title.
+     */
+    public function heroText(): string
+    {
+        return filled($this->hero_text) ? Str::squish($this->hero_text) : $this->title;
     }
 
     /**

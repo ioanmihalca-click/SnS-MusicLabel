@@ -32,6 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->favicon(asset('assets/favicon/favicon.ico?v=2'))
             ->darkMode(true)
             ->sidebarCollapsibleOnDesktop()
+            ->navigationGroups(['Catalogue', 'Content', 'Label', 'Media', 'Help'])
             ->colors([
                 'primary' => Color::Red,
             ])

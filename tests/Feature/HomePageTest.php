@@ -8,6 +8,7 @@ use App\Models\Release;
 use Dom\Element;
 use Dom\HTMLDocument;
 use Illuminate\Database\Eloquent\Factories\Sequence;
+use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
 
 beforeEach(function () {
@@ -20,6 +21,14 @@ beforeEach(function () {
 function homeDocument(TestResponse $response): HTMLDocument
 {
     return HTMLDocument::createFromString($response->getContent(), LIBXML_NOERROR);
+}
+
+/**
+ * The link to the news post announced in the homepage hero, if any.
+ */
+function heroAnnouncement(TestResponse $response): ?Element
+{
+    return homeDocument($response)->querySelector('section[aria-labelledby="hero-title"] a[href^="'.route('blog.index').'/"]');
 }
 
 it('renders every section so nothing silently disappears', function () {
@@ -182,4 +191,56 @@ it('looks up the Spotify thumbnails it shows in one round of parallel requests',
 
     // The eight upcoming releases, the one only in the news, an artist and a playlist.
     expect($lookups->getArrayCopy())->toBe(oneParallelRound(11));
+});
+
+it('announces a news post in one line above the hero', function () {
+    Release::factory()->featured()->create(['title' => 'Human Made', 'released_at' => '2026-02-27']);
+    Blog::factory()->published()->inHero('Meet us at ADE 2026 · Amsterdam, 21–25 October')->create(['slug' => 'ade-2026']);
+
+    $response = $this->get('/')->assertOk();
+    $link = heroAnnouncement($response);
+
+    expect($link)->not->toBeNull()
+        ->and(Str::squish($link->textContent))->toBe('Meet us at ADE 2026 · Amsterdam, 21–25 October →')
+        ->and($link->getAttribute('href'))->toBe(route('blog.show', 'ade-2026'))
+        ->and($link->hasAttribute('wire:navigate'))->toBeTrue()
+        ->and(homeDocument($response)->querySelectorAll('h1'))->toHaveCount(1);
+    $response->assertSeeInOrder(['Meet us at ADE 2026', 'Featured release', 'Human Made']);
+    $this->get('/', ['Accept' => 'text/markdown'])
+        ->assertOk()
+        ->assertSee('[Meet us at ADE 2026 · Amsterdam, 21–25 October →]('.route('blog.show', 'ade-2026').')', escape: false);
+});
+
+it('announces the post by its title when it has no hero text, even without releases', function () {
+    Blog::factory()->published()->inHero()->create(['title' => 'Speak To Me Is Out', 'slug' => 'speak-to-me-is-out']);
+
+    $link = heroAnnouncement($this->get('/')->assertOk());
+
+    expect(Str::squish($link->textContent))->toBe('Speak To Me Is Out →')
+        ->and($link->getAttribute('href'))->toBe(route('blog.show', 'speak-to-me-is-out'));
+});
+
+it('drops the announcement on its own once its date has passed', function () {
+    Blog::factory()->published()->inHero('Meet us at ADE 2026')->create();
+
+    expect(heroAnnouncement($this->get('/')))->not->toBeNull();
+
+    $this->travel(8)->days();
+
+    expect(heroAnnouncement($this->get('/')->assertOk()))->toBeNull();
+});
+
+it('announces only published posts', function (string $state) {
+    Blog::factory()->{$state}()->inHero('Meet us at ADE 2026')->create();
+
+    $this->get('/')->assertOk()->assertDontSeeText('Meet us at ADE 2026');
+})->with(['draft', 'scheduled']);
+
+it('announces the newest published post when several are in the hero', function () {
+    Blog::factory()->inHero('Older announcement')->create(['published_at' => now()->subWeek()]);
+    Blog::factory()->inHero('Newer announcement')->create(['published_at' => now()->subDay()]);
+
+    $link = heroAnnouncement($this->get('/')->assertOk());
+
+    expect(Str::squish($link->textContent))->toBe('Newer announcement →');
 });

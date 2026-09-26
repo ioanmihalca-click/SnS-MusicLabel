@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\BlogResource\Pages;
 use App\Models\Blog;
+use Carbon\CarbonInterface;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -14,6 +15,8 @@ use Illuminate\Database\Eloquent\Builder;
 class BlogResource extends Resource
 {
     public const EMBEDS_WARNING = 'The editor cannot keep embedded players: saving this post removes them. Use plain Spotify links instead; a Spotify link alone in a paragraph becomes a player on the site.';
+
+    public const UNPUBLISH_DESCRIPTION = 'The post disappears from the site until it is published again.';
 
     protected static ?string $model = Blog::class;
 
@@ -58,7 +61,30 @@ class BlogResource extends Resource
                         Forms\Components\DateTimePicker::make('published_at')
                             ->label('Publish Date')
                             ->seconds(false)
+                            ->suffixAction(
+                                Forms\Components\Actions\Action::make('setPublishDateToNow')
+                                    ->label('Now')
+                                    ->tooltip('Use the current date and time')
+                                    ->icon('heroicon-m-clock')
+                                    ->action(function (Forms\Components\DateTimePicker $component): void {
+                                        $component->state(now())->callAfterStateHydrated();
+                                    }),
+                            )
                             ->helperText('Posts dated in the future are hidden until that date.'),
+                    ]),
+
+                Forms\Components\Section::make('Homepage hero')
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\DateTimePicker::make('hero_until')
+                            ->label('Show in homepage hero until')
+                            ->seconds(false)
+                            ->helperText('Leave empty to keep this post out of the hero. The line disappears automatically after this date. Only published posts are shown.'),
+                        Forms\Components\TextInput::make('hero_text')
+                            ->label('Hero text')
+                            ->maxLength(80)
+                            ->placeholder('Defaults to the post title')
+                            ->helperText('Short line, e.g. Meet us at ADE 2026 · Amsterdam, 21–25 October'),
                     ]),
 
                 Forms\Components\Section::make('SEO')
@@ -98,6 +124,13 @@ class BlogResource extends Resource
                     ->label('Published')
                     ->dateTime('M j, Y H:i')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('in_hero')
+                    ->label('In hero')
+                    ->state(fn (Blog $record): ?CarbonInterface => $record->isInHero() ? $record->hero_until : null)
+                    ->formatStateUsing(fn (CarbonInterface $state): string => 'Until '.$state->format('M j, H:i'))
+                    ->badge()
+                    ->color('success')
+                    ->toggleable(),
             ])
             ->filters([
                 Tables\Filters\Filter::make('published')
@@ -112,6 +145,30 @@ class BlogResource extends Resource
             ])
             ->defaultSort('published_at', 'desc')
             ->actions([
+                Tables\Actions\Action::make('publishNow')
+                    ->label('Publish now')
+                    ->icon('heroicon-o-paper-airplane')
+                    ->color('success')
+                    ->visible(fn (Blog $record): bool => ! $record->isPublished())
+                    ->successNotificationTitle('Published')
+                    ->action(function (Blog $record, Tables\Actions\Action $action): void {
+                        $record->update(['published_at' => now()]);
+
+                        $action->success();
+                    }),
+                Tables\Actions\Action::make('unpublish')
+                    ->label('Unpublish')
+                    ->icon('heroicon-o-eye-slash')
+                    ->color('warning')
+                    ->visible(fn (Blog $record): bool => $record->isPublished())
+                    ->requiresConfirmation()
+                    ->modalDescription(self::UNPUBLISH_DESCRIPTION)
+                    ->successNotificationTitle('Unpublished')
+                    ->action(function (Blog $record, Tables\Actions\Action $action): void {
+                        $record->update(['published_at' => null]);
+
+                        $action->success();
+                    }),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -119,7 +176,7 @@ class BlogResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\BulkAction::make('publishNow')
                         ->label('Publish now')
-                        ->icon('heroicon-o-rocket-launch')
+                        ->icon('heroicon-o-paper-airplane')
                         ->action(fn ($records) => $records->each->update(['published_at' => now()])),
                     Tables\Actions\BulkAction::make('unpublish')
                         ->label('Unpublish')

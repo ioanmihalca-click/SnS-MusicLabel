@@ -4,12 +4,14 @@
     slides out while the artwork is hovered, and slides out and spins while
     the footer player plays this release (data-play-vinyl, kept in sync by
     resources/js/player.js). Below, the newest other release. Without any
-    release, only the label's line is shown.
+    release, only the label's line is shown. Above it all, one line can
+    announce a news post (Blog::inHero(), managed from the post in the admin).
     Expects the `artists` relation to be loaded, and `tracks` on the release.
 --}}
 @props([
     'release' => null,
     'next' => null,
+    'announcement' => null,
 ])
 
 @php
@@ -41,6 +43,16 @@
         'md:grid-cols-[minmax(0,1.1fr)_minmax(0,.9fr)]' => $release !== null,
     ])>
         <div class="relative flex min-w-0 flex-col gap-[22px]">
+            @if ($announcement)
+                <p class="m-0">
+                    <a href="{{ route('blog.show', $announcement->slug) }}" wire:navigate class="inline-flex items-center gap-2.5 font-meta text-[11px] uppercase tracking-[.08em] text-mist transition-colors hover:text-frost">
+                        <span aria-hidden="true" data-markdown-ignore class="h-2 w-2 flex-none rounded-full bg-signal"></span>
+                        <span>{{ $announcement->heroText() }}</span>
+                        <span aria-hidden="true">→</span>
+                    </a>
+                </p>
+            @endif
+
             @if ($release)
                 @php
                     $releaseUrl = route('releases.show', $release->slug);

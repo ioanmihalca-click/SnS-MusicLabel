@@ -22,8 +22,8 @@ class BlogFactory extends Factory
             'slug' => Str::slug($title),
             'content' => '<p>'.fake()->paragraphs(3, true).'</p>',
             'published_at' => now()->subDay(),
-            'meta_title' => fake()->sentence(8),
-            'meta_description' => fake()->sentence(15),
+            'meta_title' => fake()->text(60),
+            'meta_description' => fake()->text(160),
             'meta_keywords' => implode(', ', fake()->words(5)),
             'cover_image' => null,
         ];
@@ -42,5 +42,13 @@ class BlogFactory extends Factory
     public function draft(): static
     {
         return $this->state(fn () => ['published_at' => null]);
+    }
+
+    /**
+     * Announced in the homepage hero for another week (once published).
+     */
+    public function inHero(?string $heroText = null): static
+    {
+        return $this->state(fn () => ['hero_until' => now()->addWeek(), 'hero_text' => $heroText]);
     }
 }
